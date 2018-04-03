@@ -4,6 +4,7 @@ go:
 - '1.10'
 
 before_install:
+- ./.travis/install-protoc.sh 3.5.1
 - make deps
 
 script:
