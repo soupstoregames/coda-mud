@@ -3,7 +3,6 @@ package services
 import (
 	"github.com/golang/protobuf/proto"
 	"github.com/soupstore/coda-world/simulation/model"
-	"github.com/soupstore/mud-experiment/world-server/services/character"
 )
 
 // buildEventMessage takes an event from a character's event stream and tries to convert it
@@ -18,6 +17,10 @@ func buildEventMessage(event interface{}) (*EventMessage, error) {
 		if eventMessage, err = buildEventRoomDescription(v); err != nil {
 			return nil, err
 		}
+	case model.EvtCharacterWakesUp:
+		if eventMessage, err = buildEventCharacterWakesUp(v); err != nil {
+			return nil, err
+		}
 	default:
 		// TODO: log warning
 	}
@@ -26,10 +29,25 @@ func buildEventMessage(event interface{}) (*EventMessage, error) {
 }
 
 func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, error) {
-	payload, err := proto.Marshal(&character.RoomDescriptionEvent{
+	payload, err := proto.Marshal(&RoomDescriptionEvent{
 		Name:        event.Room.Name,
 		Description: event.Room.Description,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &EventMessage{
+		Type:    EventType_EvtRoomDescription,
+		Payload: payload,
+	}, nil
+}
+
+func buildEventCharacterWakesUp(event model.EvtCharacterWakesUp) (*EventMessage, error) {
+	payload, err := proto.Marshal(&CharacterWakesUpEvent{
+		Name: event.Character.Name,
+	})
+
 	if err != nil {
 		return nil, err
 	}

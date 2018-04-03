@@ -30,3 +30,11 @@ message RoomDescriptionEvent {
   string name = 1;
   string description = 2;
 }
+
+message CharacterWakesUpEvent {
+  string name = 1;
+}
+
+message CharacterSleepsEvent {
+  string name = 1;
+}

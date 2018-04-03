@@ -31,10 +31,6 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/soupstore/mud-experiment"
-
-[[constraint]]
-  branch = "master"
   name = "golang.org/x/net"
 
 [[constraint]]

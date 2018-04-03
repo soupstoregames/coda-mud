@@ -15,12 +15,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/soupstore/mud-experiment"
-  packages = ["world-server/services/character"]
-  revision = "dc83df3299af94ed562571cb2bbedd75bc449dc7"
-
-[[projects]]
-  branch = "master"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -99,6 +93,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "799ff86ea576b85483ca494cfdab5389e3ceef415f17ba06c9fd57121576d95c"
+  inputs-digest = "0bb21684c0dea9ce04e10112c601a90c0e7256d1fad9d848ea0b84b8ddc8fdf0"
   solver-name = "gps-cdcl"
   solver-version = 1
