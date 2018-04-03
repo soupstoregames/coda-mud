@@ -1,0 +1,32 @@
+syntax = "proto3";
+package services;
+
+service Character {
+  rpc Subscribe(stream CommandMessage) returns (stream EventMessage) {}
+}
+
+enum CommandType {
+  CmdLook = 0;
+}
+
+message CommandMessage {
+  CommandType type = 1;
+  bytes payload = 2;
+}
+
+enum EventType {
+  EvtRoomDescription = 0;
+}
+
+message EventMessage {
+  EventType type = 1;
+  bytes payload = 2;
+}
+
+// Commands
+
+// Events
+message RoomDescriptionEvent {
+  string name = 1;
+  string description = 2;
+}
