@@ -21,11 +21,12 @@ func TestWakingAndSleepingCharacter(t *testing.T) {
 	wc.SetSpawnRoom(roomID)
 
 	// create our actor
-	cc := simulation.CharacterController(sim)
-	sleepyID := cc.MakeCharacter("Sleepy")
-	grumpyID := cc.MakeCharacter("Grumpy")
+	rc := simulation.RegistrationController(sim)
+	sleepyID := rc.MakeCharacter("Sleepy")
+	grumpyID := rc.MakeCharacter("Grumpy")
 
 	// wake up sleepy
+	cc := simulation.CharacterController(sim)
 	sleepyEvents := cc.WakeUpCharacter(sleepyID)
 
 	// assert sleepy gets rooms description

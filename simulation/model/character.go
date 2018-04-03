@@ -20,5 +20,8 @@ func NewCharacter(id CharacterID, name string, room *Room) *Character {
 }
 
 func (c *Character) Dispatch(event interface{}) {
+	if !c.Awake {
+		return
+	}
 	c.Events <- event
 }
