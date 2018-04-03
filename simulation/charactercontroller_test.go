@@ -14,20 +14,17 @@ import (
 func TestWakingAndSleepingCharacter(t *testing.T) {
 	// set up simulation
 	sim := simulation.NewSimulation()
-
-	// set up world
-	wc := simulation.WorldController(sim)
-	roomID := wc.MakeRoom("Void", "Nothing")
-	wc.SetSpawnRoom(roomID)
-
-	// create our actor
-	rc := simulation.RegistrationController(sim)
-	sleepyID := rc.MakeCharacter("Sleepy")
-	grumpyID := rc.MakeCharacter("Grumpy")
+	roomID := sim.MakeRoom("Void", "Nothing")
+	sim.SetSpawnRoom(roomID)
+	sleepyID := sim.MakeCharacter("Sleepy")
+	grumpyID := sim.MakeCharacter("Grumpy")
+	target := simulation.CharacterController(sim)
 
 	// wake up sleepy
-	cc := simulation.CharacterController(sim)
-	sleepyEvents := cc.WakeUpCharacter(sleepyID)
+	sleepyEvents, err := target.WakeUpCharacter(sleepyID)
+	if err != nil {
+		t.Error(err)
+	}
 
 	// assert sleepy gets rooms description
 	event := <-sleepyEvents
@@ -40,7 +37,10 @@ func TestWakingAndSleepingCharacter(t *testing.T) {
 	}
 
 	// wake up grumpy
-	grumpyEvents := cc.WakeUpCharacter(grumpyID)
+	grumpyEvents, err := target.WakeUpCharacter(grumpyID)
+	if err != nil {
+		t.Error(err)
+	}
 
 	// assert sleepy gets a wake up event
 	event = <-sleepyEvents
@@ -63,7 +63,7 @@ func TestWakingAndSleepingCharacter(t *testing.T) {
 	}
 
 	// send grumpy to sleep
-	cc.SleepCharacter(grumpyID)
+	target.SleepCharacter(grumpyID)
 
 	// assert sleepy gets a sleep event
 	event = <-sleepyEvents
@@ -73,5 +73,50 @@ func TestWakingAndSleepingCharacter(t *testing.T) {
 	}
 	if sleepEvent.Character.ID != grumpyID {
 		t.Errorf("Expected sleep event to be about character %d, but got character %d", grumpyID, wakeupEvent.Character.ID)
+	}
+}
+
+// In this test we create an empty simulation and attempt to wake up a character.
+// That character doesnt exist so we get an error.
+func TestWakeUpWithUnknownCharacter(t *testing.T) {
+	sim := simulation.NewSimulation()
+	_, err := sim.WakeUpCharacter(0)
+	if err != simulation.ErrCharacterNotFound {
+		t.Error("Did not get expected error")
+	}
+}
+
+// In this test we create an empty simulation and attempt to sleep a character.
+// That character doesnt exist so we get an error.
+func TestSleepWithUnknownCharacter(t *testing.T) {
+	sim := simulation.NewSimulation()
+	err := sim.SleepCharacter(0)
+	if err != simulation.ErrCharacterNotFound {
+		t.Error("Did not get expected error")
+	}
+}
+
+// Waking up an awake character implies that someone is connecting to a character
+// that has already been connected to. This is an error.
+func TestWakeUpWithAwakeCharacter(t *testing.T) {
+	sim := simulation.NewSimulation()
+	sim.SetSpawnRoom(sim.MakeRoom("Void", "Nothing"))
+	sleepyID := sim.MakeCharacter("Sleepy")
+	sim.WakeUpCharacter(sleepyID)
+	_, err := sim.WakeUpCharacter(sleepyID)
+	if err != simulation.ErrCharacterAlreadyAwake {
+		t.Error("Did not get expected error")
+	}
+}
+
+// Sleeping a character that is already asleep means that someone has disconnected
+// from this character twice. This is an error.
+func TestSleepWithSleepingCharacter(t *testing.T) {
+	sim := simulation.NewSimulation()
+	sim.SetSpawnRoom(sim.MakeRoom("Void", "Nothing"))
+	sleepyID := sim.MakeCharacter("Sleepy")
+	err := sim.SleepCharacter(sleepyID)
+	if err != simulation.ErrCharacterAlreadyAsleep {
+		t.Error("Did not get expected error")
 	}
 }

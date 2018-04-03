@@ -4,6 +4,9 @@ import (
 	"github.com/soupstore/coda-world/simulation/model"
 )
 
+// Simulation is the engine of the world.
+// It holds rooms, characters, items etc...
+// It exposes a number of interfaces to manipulate the simulation.
 type Simulation struct {
 	nextRoomID      model.RoomID
 	nextCharacterID model.CharacterID
@@ -13,6 +16,7 @@ type Simulation struct {
 	characters      map[model.CharacterID]*model.Character
 }
 
+// NewSimulation returns a Simulation with default params.
 func NewSimulation() *Simulation {
 	return &Simulation{
 		nextRoomID:      0,
@@ -26,7 +30,7 @@ func NewSimulation() *Simulation {
 
 func (s *Simulation) getNextRoomID() model.RoomID {
 	roomID := s.nextRoomID
-	s.nextRoomID = s.nextRoomID + 1
+	s.nextRoomID = roomID + 1
 	return roomID
 }
 

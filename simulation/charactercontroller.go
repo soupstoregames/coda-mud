@@ -5,17 +5,21 @@ import "github.com/soupstore/coda-world/simulation/model"
 // CharacterController is an interface over the Simulation that exposes all actions a connected
 // player will need to perform
 type CharacterController interface {
-	WakeUpCharacter(model.CharacterID) <-chan interface{}
-	SleepCharacter(model.CharacterID)
+	WakeUpCharacter(model.CharacterID) (<-chan interface{}, error)
+	SleepCharacter(model.CharacterID) error
 }
 
 // WakeUpCharacter make a character wake up.
 // It sends a room description to the waking character.
 // It sends a character waking event to the other characters in the room.
-func (s *Simulation) WakeUpCharacter(id model.CharacterID) <-chan interface{} {
+func (s *Simulation) WakeUpCharacter(id model.CharacterID) (<-chan interface{}, error) {
 	actor, ok := s.characters[id]
 	if !ok {
-		// error
+		return nil, ErrCharacterNotFound
+	}
+
+	if actor.Awake {
+		return nil, ErrCharacterAlreadyAwake
 	}
 
 	// wake character and send description
@@ -33,15 +37,19 @@ func (s *Simulation) WakeUpCharacter(id model.CharacterID) <-chan interface{} {
 		c.Dispatch(wakeUpEvent)
 	}
 
-	return actor.Events
+	return actor.Events, nil
 }
 
 // SleepCharacter sets a character to sleeping.
 // It sends a character sleeping event to all other characters in the room.
-func (s *Simulation) SleepCharacter(id model.CharacterID) {
+func (s *Simulation) SleepCharacter(id model.CharacterID) error {
 	actor, ok := s.characters[id]
 	if !ok {
-		// error
+		return ErrCharacterNotFound
+	}
+
+	if !actor.Awake {
+		return ErrCharacterAlreadyAsleep
 	}
 
 	actor.Awake = false
@@ -51,4 +59,6 @@ func (s *Simulation) SleepCharacter(id model.CharacterID) {
 	for _, c := range actor.Room.GetCharacters() {
 		c.Dispatch(sleepEvent)
 	}
+
+	return nil
 }
