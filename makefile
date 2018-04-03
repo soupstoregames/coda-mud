@@ -21,6 +21,7 @@ run:
 	bin/$(BINARY_NAME)
 deps:
 	$(GOGET) golang.org/x/tools/cmd/stringer
+	$(GOGET) github.com/golang/protobuf/protoc-gen-go
 
 # Cross compilation
 build-linux:

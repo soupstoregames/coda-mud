@@ -5,7 +5,12 @@ language: go
 go:
 - '1.10'
 
+env:
+  global:
+  - "PATH=$PATH:$HOME/local/bin"
+
 before_install:
+- chmod +x ./.travis/install-protoc.sh
 - ./.travis/install-protoc.sh 3.5.1
 - make deps
 
