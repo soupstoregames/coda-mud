@@ -16,6 +16,8 @@ message CommandMessage {
 
 enum EventType {
   EvtRoomDescription = 0;
+  EvtCharacterWakesUp = 1;
+  EvtCharacterSleeps = 2;
 }
 
 message EventMessage {

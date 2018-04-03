@@ -53,7 +53,22 @@ func buildEventCharacterWakesUp(event model.EvtCharacterWakesUp) (*EventMessage,
 	}
 
 	return &EventMessage{
-		Type:    EventType_EvtRoomDescription,
+		Type:    EventType_EvtCharacterWakesUp,
+		Payload: payload,
+	}, nil
+}
+
+func buildEventCharacterSleeps(event model.EvtCharacterFallsAsleep) (*EventMessage, error) {
+	payload, err := proto.Marshal(&CharacterSleepsEvent{
+		Name: event.Character.Name,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &EventMessage{
+		Type:    EventType_EvtCharacterSleeps,
 		Payload: payload,
 	}, nil
 }
