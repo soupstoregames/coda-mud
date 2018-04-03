@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/codingconcepts/env"
+  packages = ["."]
+  revision = "31f8d99d7765666589f9b44db294011c1d95aed3"
+
+[[projects]]
   name = "github.com/golang/protobuf"
   packages = [
     "proto",
@@ -12,6 +18,12 @@
   ]
   revision = "925541529c1fa6821df4e44ce2723319eb2be768"
   version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
 
 [[projects]]
   branch = "master"
@@ -93,6 +105,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0bb21684c0dea9ce04e10112c601a90c0e7256d1fad9d848ea0b84b8ddc8fdf0"
+  inputs-digest = "b543a26e1851b7a69ffefa92428ce4b5dc1e9c36b52893eb2773a760202c2c2f"
   solver-name = "gps-cdcl"
   solver-version = 1
