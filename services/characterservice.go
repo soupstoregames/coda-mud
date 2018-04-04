@@ -64,11 +64,11 @@ func (s *CharacterService) extractCharacterID(stream Character_SubscribeServer) 
 		return 0, ErrMalformedCharacterID
 	}
 
-	if len(md["characterID"]) != 1 {
+	if len(md["characterid"]) != 1 {
 		return 0, ErrMalformedCharacterID
 	}
 
-	characterIDint, err := strconv.Atoi(md["characterID"][0])
+	characterIDint, err := strconv.Atoi(md["characterid"][0])
 	if err != nil {
 		return 0, ErrMalformedCharacterID
 	}

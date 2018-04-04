@@ -5,7 +5,7 @@
 #
 # required = ["github.com/user/thing/cmd/thing"]
 # ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
-#
+#a
 # [[constraint]]
 #   name = "github.com/user/project"
 #   version = "1.0.0"
@@ -24,7 +24,7 @@
 #   go-tests = true
 #   unused-packages = true
 
-ignored=["google.golang.org/grpc"]
+ignored=["google.golang.org/grpc", "google.golang.org/grpc/metadata"]
 
 [[constraint]]
   name = "github.com/golang/protobuf"

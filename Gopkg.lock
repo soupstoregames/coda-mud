@@ -31,15 +31,9 @@
   packages = ["errgroup"]
   revision = "1d60e4601c6fd243af51cc01ddf169918a5407ca"
 
-[[projects]]
-  name = "google.golang.org/grpc"
-  packages = ["metadata"]
-  revision = "1e2570b1b19ade82d8dbb31bba4e65e9f9ef5b34"
-  version = "v1.11.1"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e0060e3c60e61f8213a68afdee906e519278e290336e83c784e79a32a2fd7c86"
+  inputs-digest = "2c4e40f8cd78be555947858c40bd672b3c3ad797027eef23f6bea12ce9b7a72b"
   solver-name = "gps-cdcl"
   solver-version = 1

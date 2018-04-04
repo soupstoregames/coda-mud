@@ -18,6 +18,13 @@ func main() {
 	}
 
 	sim := simulation.NewSimulation()
+	voidID := sim.MakeRoom("Void", "Blackness. Silence. There is nothing here.")
+	sim.SetSpawnRoom(voidID)
+
+	// temporary
+	sim.MakeCharacter("rinse")
+	sim.MakeCharacter("claw")
+	sim.MakeCharacter("gesau")
 
 	listenAddr := fmt.Sprintf("%s:%s", conf.Address, conf.Port)
 	characterService := services.NewCharacterService(sim)
