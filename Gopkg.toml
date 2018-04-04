@@ -24,6 +24,7 @@
 #   go-tests = true
 #   unused-packages = true
 
+ignored=["google.golang.org/grpc"]
 
 [[constraint]]
   name = "github.com/golang/protobuf"
@@ -36,10 +37,6 @@
 [[constraint]]
   branch = "master"
   name = "golang.org/x/sync"
-
-[[constraint]]
-  name = "google.golang.org/grpc"
-  version = "1.11.1"
 
 [prune]
   go-tests = true
