@@ -29,9 +29,18 @@ func buildEventMessage(event interface{}) (*EventMessage, error) {
 }
 
 func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, error) {
+	characters := []*CharacterDescription{}
+	for _, ch := range event.Room.GetCharacters() {
+		characters = append(characters, &CharacterDescription{
+			Name:  ch.Name,
+			Awake: ch.Awake,
+		})
+	}
+
 	payload, err := proto.Marshal(&RoomDescriptionEvent{
 		Name:        event.Room.Name,
 		Description: event.Room.Description,
+		Characters:  characters,
 	})
 	if err != nil {
 		return nil, err

@@ -28,9 +28,15 @@ message EventMessage {
 // Commands
 
 // Events
+message CharacterDescription {
+  string name = 1;
+  bool awake = 2;
+}
+
 message RoomDescriptionEvent {
   string name = 1;
   string description = 2;
+  repeated CharacterDescription characters = 3;
 }
 
 message CharacterWakesUpEvent {
