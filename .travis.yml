@@ -17,7 +17,7 @@ before_install:
 script:
 - make build
 - make test
-- make docker-build
+- make build-docker
 
 after_success:
   # Discord notification
