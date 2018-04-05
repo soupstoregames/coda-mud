@@ -5,10 +5,10 @@ import "errors"
 var (
 	// ErrCharacterNotFound means that an attempt was made to act on a character that does not exist
 	ErrCharacterNotFound = errors.New("character not found")
-	// ErrCharacterAlreadyAwake is thrown when trying to sleep a woke character
-	ErrCharacterAlreadyAwake = errors.New("character is already awake")
-	// ErrCharacterAlreadyAsleep is thrown when trying to sleep a sleeping character
-	ErrCharacterAlreadyAsleep = errors.New("character is already asleep")
+	// ErrCharacterAwake is thrown when trying to wake a woke character
+	ErrCharacterAwake = errors.New("character is awake")
+	// ErrCharacterAsleep is thrown when trying do anything other than wake up a sleeping character
+	ErrCharacterAsleep = errors.New("character is asleep")
 	// ErrRoomNotFound means that an attempt was made to act on a room that does not exist
 	ErrRoomNotFound = errors.New("room not found")
 )

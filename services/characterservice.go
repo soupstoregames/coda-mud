@@ -5,6 +5,7 @@ import (
 	"io"
 	"strconv"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/soupstore/coda-world/simulation"
 	"github.com/soupstore/coda-world/simulation/model"
 	"go.uber.org/zap"
@@ -90,7 +91,7 @@ func (s *CharacterService) extractCharacterID(stream Character_SubscribeServer) 
 	return model.CharacterID(characterIDint), nil
 }
 
-func (s *CharacterService) listenForCommands(stream Character_SubscribeServer, id model.CharacterID, quit chan<- struct{}) func() error {
+func (s *CharacterService) listenForCommands(stream Character_SubscribeServer, characterID model.CharacterID, quit chan<- struct{}) func() error {
 	return func() error {
 		for {
 			command, err := stream.Recv()
@@ -116,8 +117,9 @@ func (s *CharacterService) listenForCommands(stream Character_SubscribeServer, i
 				return err
 			}
 
-			switch command.GetType() {
-			// send commands to the simulation here
+			err = s.handleCommand(characterID, command)
+			if err != nil {
+				return err
 			}
 		}
 
@@ -152,4 +154,20 @@ func (s *CharacterService) sendEvents(stream Character_SubscribeServer, events <
 			}
 		}
 	}
+}
+
+func (s *CharacterService) handleCommand(characterID model.CharacterID, cmd *CommandMessage) error {
+	// TODO: address the concurrency issues with this approach
+	switch cmd.Type {
+	case CommandType_CmdLook:
+		s.controller.Look(characterID)
+	case CommandType_CmdSay:
+		var msg SayCommand
+		err := proto.Unmarshal(cmd.Payload, &msg)
+		if err != nil {
+			return err
+		}
+		s.controller.Say(characterID, msg.Content)
+	}
+	return nil
 }

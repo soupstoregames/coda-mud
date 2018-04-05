@@ -25,6 +25,10 @@ func buildEventMessage(event interface{}) (*EventMessage, error) {
 		if eventMessage, err = buildEventCharacterSleeps(v); err != nil {
 			return nil, err
 		}
+	case model.EvtCharacterSpeaks:
+		if eventMessage, err = buildEventCharacterSpeaks(v); err != nil {
+			return nil, err
+		}
 	default:
 		// TODO: log warning
 	}
@@ -35,11 +39,7 @@ func buildEventMessage(event interface{}) (*EventMessage, error) {
 func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, error) {
 	characters := []*CharacterDescription{}
 	for _, ch := range event.Room.GetCharacters() {
-		characters = append(characters, &CharacterDescription{
-			Id:    int64(ch.ID),
-			Name:  ch.Name,
-			Awake: ch.Awake,
-		})
+		characters = append(characters, buildCharacterDesciption(ch))
 	}
 
 	payload, err := proto.Marshal(&RoomDescriptionEvent{
@@ -59,11 +59,7 @@ func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, e
 
 func buildEventCharacterWakesUp(event model.EvtCharacterWakesUp) (*EventMessage, error) {
 	payload, err := proto.Marshal(&CharacterWakesUpEvent{
-		Character: &CharacterDescription{
-			Id:    int64(event.Character.ID),
-			Name:  event.Character.Name,
-			Awake: event.Character.Awake,
-		},
+		Character: buildCharacterDesciption(event.Character),
 	})
 
 	if err != nil {
@@ -78,11 +74,7 @@ func buildEventCharacterWakesUp(event model.EvtCharacterWakesUp) (*EventMessage,
 
 func buildEventCharacterSleeps(event model.EvtCharacterFallsAsleep) (*EventMessage, error) {
 	payload, err := proto.Marshal(&CharacterSleepsEvent{
-		Character: &CharacterDescription{
-			Id:    int64(event.Character.ID),
-			Name:  event.Character.Name,
-			Awake: event.Character.Awake,
-		},
+		Character: buildCharacterDesciption(event.Character),
 	})
 
 	if err != nil {
@@ -93,4 +85,28 @@ func buildEventCharacterSleeps(event model.EvtCharacterFallsAsleep) (*EventMessa
 		Type:    EventType_EvtCharacterSleeps,
 		Payload: payload,
 	}, nil
+}
+
+func buildEventCharacterSpeaks(event model.EvtCharacterSpeaks) (*EventMessage, error) {
+	payload, err := proto.Marshal(&CharacterSpeaksEvent{
+		Character: buildCharacterDesciption(event.Character),
+		Content:   event.Content,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &EventMessage{
+		Type:    EventType_EvtCharacterSpeaks,
+		Payload: payload,
+	}, nil
+}
+
+func buildCharacterDesciption(character *model.Character) *CharacterDescription {
+	return &CharacterDescription{
+		Id:    int64(character.ID),
+		Name:  character.Name,
+		Awake: character.Awake,
+	}
 }

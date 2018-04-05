@@ -7,6 +7,7 @@ service Character {
 
 enum CommandType {
   CmdLook = 0;
+  CmdSay = 1;
 }
 
 message CommandMessage {
@@ -18,6 +19,7 @@ enum EventType {
   EvtRoomDescription = 0;
   EvtCharacterWakesUp = 1;
   EvtCharacterSleeps = 2;
+  EvtCharacterSpeaks = 3;
 }
 
 message EventMessage {
@@ -26,6 +28,9 @@ message EventMessage {
 }
 
 // Commands
+message SayCommand {
+  string content = 1;
+}
 
 // Events
 message CharacterDescription {
@@ -46,4 +51,9 @@ message CharacterWakesUpEvent {
 
 message CharacterSleepsEvent {
   CharacterDescription character = 1;
+}
+
+message CharacterSpeaksEvent {
+  CharacterDescription character = 1;
+  string content = 2;
 }

@@ -105,7 +105,7 @@ func TestWakeUpWithAwakeCharacter(t *testing.T) {
 	sleepyID := sim.MakeCharacter("Sleepy")
 	sim.WakeUpCharacter(sleepyID)
 	_, err := sim.WakeUpCharacter(sleepyID)
-	if err != simulation.ErrCharacterAlreadyAwake {
+	if err != simulation.ErrCharacterAwake {
 		t.Error("Did not get expected error")
 	}
 }
@@ -117,7 +117,7 @@ func TestSleepWithSleepingCharacter(t *testing.T) {
 	sim.SetSpawnRoom(sim.MakeRoom("Void", "Nothing"))
 	sleepyID := sim.MakeCharacter("Sleepy")
 	err := sim.SleepCharacter(sleepyID)
-	if err != simulation.ErrCharacterAlreadyAsleep {
+	if err != simulation.ErrCharacterAsleep {
 		t.Error("Did not get expected error")
 	}
 }
