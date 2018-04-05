@@ -32,6 +32,7 @@ func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, e
 	characters := []*CharacterDescription{}
 	for _, ch := range event.Room.GetCharacters() {
 		characters = append(characters, &CharacterDescription{
+			Id:    int64(ch.ID),
 			Name:  ch.Name,
 			Awake: ch.Awake,
 		})

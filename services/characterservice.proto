@@ -29,8 +29,9 @@ message EventMessage {
 
 // Events
 message CharacterDescription {
-  string name = 1;
-  bool awake = 2;
+  int64 id = 1;
+  string name = 2;
+  bool awake = 3;
 }
 
 message RoomDescriptionEvent {
