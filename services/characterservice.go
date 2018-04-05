@@ -7,8 +7,11 @@ import (
 
 	"github.com/soupstore/coda-world/simulation"
 	"github.com/soupstore/coda-world/simulation/model"
+	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 var (
@@ -18,21 +21,26 @@ var (
 
 	// ErrUnknownEventType is returned when an unknown type is dispatched to a characters event queue
 	ErrUnknownEventType = errors.New("unknown event type")
+
+	errConnectionEnded = errors.New("connection ended")
 )
 
 // CharacterService is a GRPC service for controlling characters.
 type CharacterService struct {
 	controller simulation.CharacterController
+	logger     *zap.Logger
 }
 
 // NewCharacterService returns a pointer to a character service and sets the character controller.
-func NewCharacterService(controller simulation.CharacterController) *CharacterService {
-	return &CharacterService{controller}
+func NewCharacterService(controller simulation.CharacterController, logger *zap.Logger) *CharacterService {
+	return &CharacterService{controller, logger}
 }
 
 // Subscribe is the handler for the bidrirectional GRPC stream of commands and events.
 func (s *CharacterService) Subscribe(stream Character_SubscribeServer) error {
 	var err error
+
+	s.logger.Info("Player connected")
 
 	// get characterID from metadata
 	characterID, err := s.extractCharacterID(stream)
@@ -48,10 +56,16 @@ func (s *CharacterService) Subscribe(stream Character_SubscribeServer) error {
 	defer s.controller.SleepCharacter(characterID)
 
 	// start listening for commands and events
+	quit := make(chan struct{})
 	var g errgroup.Group
-	g.Go(s.listenForCommands(stream, characterID))
-	g.Go(s.sendEvents(stream, events))
+	g.Go(s.listenForCommands(stream, characterID, quit))
+	g.Go(s.sendEvents(stream, events, quit))
 	err = g.Wait()
+	if err != nil && err != errConnectionEnded {
+		s.logger.Error(err.Error())
+	}
+
+	s.logger.Info("Player disconnected")
 
 	return err
 }
@@ -76,18 +90,29 @@ func (s *CharacterService) extractCharacterID(stream Character_SubscribeServer) 
 	return model.CharacterID(characterIDint), nil
 }
 
-func (s *CharacterService) listenForCommands(stream Character_SubscribeServer, id model.CharacterID) func() error {
+func (s *CharacterService) listenForCommands(stream Character_SubscribeServer, id model.CharacterID, quit chan<- struct{}) func() error {
 	return func() error {
 		for {
 			command, err := stream.Recv()
 
 			// client disconnected
 			if err == io.EOF {
-				return nil
+				quit <- struct{}{}
+				return errConnectionEnded
+			}
+
+			grpcStatus, ok := status.FromError(err)
+			if ok {
+				switch grpcStatus.Code() {
+				case codes.Canceled:
+					quit <- struct{}{}
+					return errConnectionEnded
+				}
 			}
 
 			// unknown error
 			if err != nil {
+				quit <- struct{}{}
 				return err
 			}
 
@@ -95,31 +120,35 @@ func (s *CharacterService) listenForCommands(stream Character_SubscribeServer, i
 			// send commands to the simulation here
 			}
 		}
+
 	}
 }
 
-func (s *CharacterService) sendEvents(stream Character_SubscribeServer, events <-chan interface{}) func() error {
+func (s *CharacterService) sendEvents(stream Character_SubscribeServer, events <-chan interface{}, quit <-chan struct{}) func() error {
 	return func() error {
 		for {
-			// read from the events channel
-			event, more := <-events
-			if !more {
-				// TODO: log warning
+			select {
+			case <-quit:
 				return nil
-			}
+			case event, more := <-events:
+				if !more {
+					// TODO: log warning
+					return nil
+				}
 
-			// parse event
-			eventMessage, err := buildEventMessage(event)
-			if err != nil {
-				return err
-			}
-			if eventMessage == nil {
-				continue
-			}
+				// parse event
+				eventMessage, err := buildEventMessage(event)
+				if err != nil {
+					return err
+				}
+				if eventMessage == nil {
+					continue
+				}
 
-			// post the event over the stream
-			if err = stream.Send(eventMessage); err != nil {
-				return err
+				// post the event over the stream
+				if err = stream.Send(eventMessage); err != nil {
+					return err
+				}
 			}
 		}
 	}

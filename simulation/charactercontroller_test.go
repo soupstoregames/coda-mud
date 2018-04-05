@@ -5,6 +5,7 @@ import (
 
 	"github.com/soupstore/coda-world/simulation"
 	"github.com/soupstore/coda-world/simulation/model"
+	"go.uber.org/zap"
 )
 
 // In this test, we create one room and two characters, Sleepy and Grumpy.
@@ -13,7 +14,7 @@ import (
 // Grump then goes to sleep again, Sleepy gets a character goes to sleep.
 func TestWakingAndSleepingCharacter(t *testing.T) {
 	// set up simulation
-	sim := simulation.NewSimulation()
+	sim := simulation.NewSimulation(zap.NewNop())
 	roomID := sim.MakeRoom("Void", "Nothing")
 	sim.SetSpawnRoom(roomID)
 	sleepyID := sim.MakeCharacter("Sleepy")
@@ -79,7 +80,7 @@ func TestWakingAndSleepingCharacter(t *testing.T) {
 // In this test we create an empty simulation and attempt to wake up a character.
 // That character doesnt exist so we get an error.
 func TestWakeUpWithUnknownCharacter(t *testing.T) {
-	sim := simulation.NewSimulation()
+	sim := simulation.NewSimulation(zap.NewNop())
 	_, err := sim.WakeUpCharacter(0)
 	if err != simulation.ErrCharacterNotFound {
 		t.Error("Did not get expected error")
@@ -89,7 +90,7 @@ func TestWakeUpWithUnknownCharacter(t *testing.T) {
 // In this test we create an empty simulation and attempt to sleep a character.
 // That character doesnt exist so we get an error.
 func TestSleepWithUnknownCharacter(t *testing.T) {
-	sim := simulation.NewSimulation()
+	sim := simulation.NewSimulation(zap.NewNop())
 	err := sim.SleepCharacter(0)
 	if err != simulation.ErrCharacterNotFound {
 		t.Error("Did not get expected error")
@@ -99,7 +100,7 @@ func TestSleepWithUnknownCharacter(t *testing.T) {
 // Waking up an awake character implies that someone is connecting to a character
 // that has already been connected to. This is an error.
 func TestWakeUpWithAwakeCharacter(t *testing.T) {
-	sim := simulation.NewSimulation()
+	sim := simulation.NewSimulation(zap.NewNop())
 	sim.SetSpawnRoom(sim.MakeRoom("Void", "Nothing"))
 	sleepyID := sim.MakeCharacter("Sleepy")
 	sim.WakeUpCharacter(sleepyID)
@@ -112,7 +113,7 @@ func TestWakeUpWithAwakeCharacter(t *testing.T) {
 // Sleeping a character that is already asleep means that someone has disconnected
 // from this character twice. This is an error.
 func TestSleepWithSleepingCharacter(t *testing.T) {
-	sim := simulation.NewSimulation()
+	sim := simulation.NewSimulation(zap.NewNop())
 	sim.SetSpawnRoom(sim.MakeRoom("Void", "Nothing"))
 	sleepyID := sim.MakeCharacter("Sleepy")
 	err := sim.SleepCharacter(sleepyID)

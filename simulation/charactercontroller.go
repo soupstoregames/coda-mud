@@ -1,6 +1,8 @@
 package simulation
 
-import "github.com/soupstore/coda-world/simulation/model"
+import (
+	"github.com/soupstore/coda-world/simulation/model"
+)
 
 // CharacterController is an interface over the Simulation that exposes all actions a connected
 // player will need to perform
@@ -23,6 +25,7 @@ func (s *Simulation) WakeUpCharacter(id model.CharacterID) (<-chan interface{}, 
 	}
 
 	// wake character and send description
+	actor.Events = make(chan interface{}, 1)
 	actor.Awake = true
 	actor.Dispatch(model.EvtRoomDescription{Room: actor.Room})
 
@@ -36,6 +39,8 @@ func (s *Simulation) WakeUpCharacter(id model.CharacterID) (<-chan interface{}, 
 
 		c.Dispatch(wakeUpEvent)
 	}
+
+	s.logger.Debug("Character woke up")
 
 	return actor.Events, nil
 }
@@ -53,12 +58,15 @@ func (s *Simulation) SleepCharacter(id model.CharacterID) error {
 	}
 
 	actor.Awake = false
+	close(actor.Events)
 
 	// send character sleeps
 	sleepEvent := model.EvtCharacterFallsAsleep{Character: actor}
 	for _, c := range actor.Room.GetCharacters() {
 		c.Dispatch(sleepEvent)
 	}
+
+	s.logger.Debug("Character fell asleep")
 
 	return nil
 }

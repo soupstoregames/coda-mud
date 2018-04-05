@@ -24,7 +24,7 @@
 #   go-tests = true
 #   unused-packages = true
 
-ignored=["google.golang.org/grpc", "google.golang.org/grpc/metadata"]
+ignored=["google.golang.org/grpc" , "google.golang.org/grpc/*"]
 
 [[constraint]]
   name = "github.com/golang/protobuf"

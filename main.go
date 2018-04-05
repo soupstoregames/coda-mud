@@ -8,16 +8,24 @@ import (
 	"github.com/soupstore/coda-world/config"
 	"github.com/soupstore/coda-world/services"
 	"github.com/soupstore/coda-world/simulation"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
 func main() {
+	//logger
+	logger, err := zap.NewProduction()
+	if err != nil {
+		panic(err)
+	}
+	defer logger.Sync()
+
 	conf, err := config.Load()
 	if err != nil {
 		panic(err)
 	}
 
-	sim := simulation.NewSimulation()
+	sim := simulation.NewSimulation(logger)
 	voidID := sim.MakeRoom("Void", "Blackness. Silence. There is nothing here.")
 	sim.SetSpawnRoom(voidID)
 
@@ -27,7 +35,7 @@ func main() {
 	sim.MakeCharacter("gesau")
 
 	listenAddr := fmt.Sprintf("%s:%s", conf.Address, conf.Port)
-	characterService := services.NewCharacterService(sim)
+	characterService := services.NewCharacterService(sim, logger)
 
 	// LISTEN TO GRPC
 	lis, err := net.Listen("tcp", listenAddr)

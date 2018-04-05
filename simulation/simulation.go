@@ -2,12 +2,14 @@ package simulation
 
 import (
 	"github.com/soupstore/coda-world/simulation/model"
+	"go.uber.org/zap"
 )
 
 // Simulation is the engine of the world.
 // It holds rooms, characters, items etc...
 // It exposes a number of interfaces to manipulate the simulation.
 type Simulation struct {
+	logger          *zap.Logger
 	nextRoomID      model.RoomID
 	nextCharacterID model.CharacterID
 	spawnRoom       *model.Room
@@ -17,8 +19,9 @@ type Simulation struct {
 }
 
 // NewSimulation returns a Simulation with default params.
-func NewSimulation() *Simulation {
+func NewSimulation(logger *zap.Logger) *Simulation {
 	return &Simulation{
+		logger:          logger,
 		nextRoomID:      0,
 		nextCharacterID: 0,
 		spawnRoom:       nil,

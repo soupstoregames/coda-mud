@@ -12,10 +12,9 @@ type Character struct {
 
 func NewCharacter(id CharacterID, name string, room *Room) *Character {
 	return &Character{
-		ID:     id,
-		Name:   name,
-		Room:   room,
-		Events: make(chan interface{}, 1),
+		ID:   id,
+		Name: name,
+		Room: room,
 	}
 }
 
