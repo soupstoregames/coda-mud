@@ -41,9 +41,9 @@ message RoomDescriptionEvent {
 }
 
 message CharacterWakesUpEvent {
-  string name = 1;
+  CharacterDescription character = 1;
 }
 
 message CharacterSleepsEvent {
-  string name = 1;
+  CharacterDescription character = 1;
 }

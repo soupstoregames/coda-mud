@@ -21,6 +21,10 @@ func buildEventMessage(event interface{}) (*EventMessage, error) {
 		if eventMessage, err = buildEventCharacterWakesUp(v); err != nil {
 			return nil, err
 		}
+	case model.EvtCharacterFallsAsleep:
+		if eventMessage, err = buildEventCharacterSleeps(v); err != nil {
+			return nil, err
+		}
 	default:
 		// TODO: log warning
 	}
@@ -55,7 +59,11 @@ func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, e
 
 func buildEventCharacterWakesUp(event model.EvtCharacterWakesUp) (*EventMessage, error) {
 	payload, err := proto.Marshal(&CharacterWakesUpEvent{
-		Name: event.Character.Name,
+		Character: &CharacterDescription{
+			Id:    int64(event.Character.ID),
+			Name:  event.Character.Name,
+			Awake: event.Character.Awake,
+		},
 	})
 
 	if err != nil {
@@ -70,7 +78,11 @@ func buildEventCharacterWakesUp(event model.EvtCharacterWakesUp) (*EventMessage,
 
 func buildEventCharacterSleeps(event model.EvtCharacterFallsAsleep) (*EventMessage, error) {
 	payload, err := proto.Marshal(&CharacterSleepsEvent{
-		Name: event.Character.Name,
+		Character: &CharacterDescription{
+			Id:    int64(event.Character.ID),
+			Name:  event.Character.Name,
+			Awake: event.Character.Awake,
+		},
 	})
 
 	if err != nil {
