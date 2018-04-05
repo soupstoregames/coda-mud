@@ -7,6 +7,7 @@ GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 BINARY_NAME=coda-world
 BINARY_UNIX=$(BINARY_NAME)-linux-amd64
+DOCKER_SLUG=soupstore/$(BINARY_NAME)
 
 build:
 	$(GOGENERATE) ./...
@@ -26,5 +27,6 @@ deps:
 	$(GOGET) github.com/golang/protobuf/protoc-gen-go
 
 # Cross compilation
-build-linux:
+build-docker:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o bin/$(BINARY_UNIX) -v
+	docker build -t $(DOCKER_SLUG):dev .
