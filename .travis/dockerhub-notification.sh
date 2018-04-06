@@ -14,12 +14,12 @@ IMAGE=$1
 case $STATE in
   "success" )
     EMBED_COLOR=3066993
-    STATUS_MESSAGE="Pushed image"
+    STATUS_MESSAGE="Pushed"
     ;;
 
   "failure" )
     EMBED_COLOR=15158332
-    STATUS_MESSAGE="Failed to push"
+    STATUS_MESSAGE="Failed"
     ;;
 
   * )
@@ -43,7 +43,7 @@ WEBHOOK_DATA='{
     "color": '$EMBED_COLOR',
     "author": {
       "name": "'"$IMAGE"'",
-      "url": "https://travis-ci.org/'"$TRAVIS_REPO_SLUG"'/builds/'"$TRAVIS_BUILD_ID"'"
+      "url": "https://hub.docker.com/r/'"$TRAVIS_REPO_SLUG"'/tags/"
     },
     "title": "'"$COMMIT_SUBJECT"'",
     "url": "'"$URL"'",
