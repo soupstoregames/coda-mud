@@ -9,6 +9,7 @@ fi
 
 echo -e "[Webhook]: Sending webhook to Discord...\\n";
 
+IMAGE=$1
 
 case $STATE in
   "success" )
@@ -41,12 +42,12 @@ WEBHOOK_DATA='{
   "embeds": [ {
     "color": '$EMBED_COLOR',
     "author": {
-      "name": "$1",
+      "name": "'"$IMAGE"'",
       "url": "https://travis-ci.org/'"$TRAVIS_REPO_SLUG"'/builds/'"$TRAVIS_BUILD_ID"'"
     },
     "title": "'"$COMMIT_SUBJECT"'",
     "url": "'"$URL"'",
-    "description": "'"${COMMIT_MESSAGE//$'\n'/ }"\\n\\n"$CREDITS"'",
+    "description": "'"$STATUS_MESSAGE"'",
     "fields": [],
     "timestamp": "'"$TIMESTAMP"'"
   } ]
