@@ -37,15 +37,29 @@ fi
 TIMESTAMP=$(date --utc +%FT%TZ)
 WEBHOOK_DATA='{
   "username": "",
-  "avatar_url": "https://iconscout.com/icon/docker-7",
+  "avatar_url": "https://travis-ci.org/images/logos/TravisCI-Mascot-1.png",
   "embeds": [ {
     "color": '$EMBED_COLOR',
     "author": {
-      "name": "$TRAVIS_REPO_SLUG",
+      "name": "Job #'"$TRAVIS_JOB_NUMBER"' (Build #'"$TRAVIS_BUILD_NUMBER"') '"$STATUS_MESSAGE"' - '"$TRAVIS_REPO_SLUG"'",
+      "url": "https://travis-ci.org/'"$TRAVIS_REPO_SLUG"'/builds/'"$TRAVIS_BUILD_ID"'",
+      "icon_url": "'$AVATAR'"
     },
-    "title": "PUSHING CONTAINER AND VERSION TO DOCKERHUB",
-    "url": "URL TO DOCKERHUB HERE",
-    "description": "PUT THE VERSION PUSHED HERE",
+    "title": "'"$COMMIT_SUBJECT"'",
+    "url": "'"$URL"'",
+    "description": "'"${COMMIT_MESSAGE//$'\n'/ }"\\n\\n"$CREDITS"'",
+    "fields": [
+      {
+        "name": "Commit",
+        "value": "'"[\`${TRAVIS_COMMIT:0:7}\`](https://github.com/$TRAVIS_REPO_SLUG/commit/$TRAVIS_COMMIT)"'",
+        "inline": true
+      },
+      {
+        "name": "Branch/Tag",
+        "value": "'"[\`$TRAVIS_BRANCH\`](https://github.com/$TRAVIS_REPO_SLUG/tree/$TRAVIS_BRANCH)"'",
+        "inline": true
+      }
+    ],
     "timestamp": "'"$TIMESTAMP"'"
   } ]
 }'
