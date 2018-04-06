@@ -10,8 +10,7 @@ env:
   - "PATH=$PATH:$HOME/local/bin"
 
 before_install:
-- chmod +x ./.travis/*
-- ./.travis/install-protoc.sh 3.5.1
+- curl -s https://raw.githubusercontent.com/soupstore/build-scripts/master/install-protoc.sh | bash -s 3.5.1
 - make deps
 
 script:
