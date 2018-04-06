@@ -13,12 +13,12 @@ echo -e "[Webhook]: Sending webhook to Discord...\\n";
 case $STATE in
   "success" )
     EMBED_COLOR=3066993
-    STATUS_MESSAGE="Pushed"
+    STATUS_MESSAGE="Pushed image"
     ;;
 
   "failure" )
     EMBED_COLOR=15158332
-    STATUS_MESSAGE="Failed"
+    STATUS_MESSAGE="Failed to push"
     ;;
 
   * )
@@ -41,24 +41,13 @@ WEBHOOK_DATA='{
   "embeds": [ {
     "color": '$EMBED_COLOR',
     "author": {
-      "name": "Job #'"$TRAVIS_JOB_NUMBER"' (Build #'"$TRAVIS_BUILD_NUMBER"') '"$STATUS_MESSAGE"' - '"$TRAVIS_REPO_SLUG"'",
+      "name": "$1",
       "url": "https://travis-ci.org/'"$TRAVIS_REPO_SLUG"'/builds/'"$TRAVIS_BUILD_ID"'"
     },
     "title": "'"$COMMIT_SUBJECT"'",
     "url": "'"$URL"'",
     "description": "'"${COMMIT_MESSAGE//$'\n'/ }"\\n\\n"$CREDITS"'",
-    "fields": [
-      {
-        "name": "Commit",
-        "value": "'"[\`${TRAVIS_COMMIT:0:7}\`](https://github.com/$TRAVIS_REPO_SLUG/commit/$TRAVIS_COMMIT)"'",
-        "inline": true
-      },
-      {
-        "name": "Branch/Tag",
-        "value": "'"[\`$TRAVIS_BRANCH\`](https://github.com/$TRAVIS_REPO_SLUG/tree/$TRAVIS_BRANCH)"'",
-        "inline": true
-      }
-    ],
+    "fields": [],
     "timestamp": "'"$TIMESTAMP"'"
   } ]
 }'
