@@ -10,7 +10,7 @@ env:
   - "PATH=$PATH:$HOME/local/bin"
 
 before_install:
-- chmod +x ./.travis/install-protoc.sh
+- chmod +x ./.travis/*
 - ./.travis/install-protoc.sh 3.5.1
 - make deps
 
@@ -29,13 +29,20 @@ after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker push $TRAVIS_REPO_SLUG:dev;
+    ./.travis/dockerhub-notification.sh $TRAVIS_REPO_SLUG:dev $DOCKERHUB_WEBHOOK;
     fi
   - if [ $TRAVIS_TAG ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+
+    # push latest image
     docker tag $TRAVIS_REPO_SLUG:dev $TRAVIS_REPO_SLUG:latest;
     docker push $TRAVIS_REPO_SLUG:latest;
+    ./.travis/dockerhub-notification.sh $TRAVIS_REPO_SLUG:latest $DOCKERHUB_WEBHOOK;
+
+    # push version tagged image
     docker tag $TRAVIS_REPO_SLUG $TRAVIS_REPO_SLUG:${TRAVIS_TAG:1};
     docker push $TRAVIS_REPO_SLUG:${TRAVIS_TAG:1};
+    ./.travis/dockerhub-notification.sh $TRAVIS_REPO_SLUG:${TRAVIS_TAG:1} $DOCKERHUB_WEBHOOK;
     fi
 
 after_failure:
