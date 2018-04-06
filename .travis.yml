@@ -10,7 +10,7 @@ env:
   - "PATH=$PATH:$HOME/local/bin"
 
 before_install:
-- curl -s https://git.io/install-protoc | bash -s 3.5.1
+- curl -sL https://git.io/install-protoc | bash -s 3.5.1
 - make deps
 
 script:
