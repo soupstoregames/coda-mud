@@ -35,7 +35,6 @@ after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker push $TRAVIS_REPO_SLUG:dev;
-    ./.travis/dockerhub-notification.sh $TRAVIS_REPO_SLUG:dev
     fi
   - if [ $TRAVIS_TAG ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
