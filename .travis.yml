@@ -10,7 +10,7 @@ env:
   - "PATH=$PATH:$HOME/local/bin"
 
 before_install:
-- curl -s https://git.io/install-protoc | bash -s 3.5.1
+- curl -s https://git.io/ss-install-protoc | bash -s 3.5.1
 - make deps
 
 script:
@@ -20,22 +20,22 @@ script:
 
 after_success:
   # Discord notification
-  - curl -s https://git.io/notify-discord-travis success $WEBHOOK_URL
+  - curl -s https://git.io/ss-notify-discord-travis success $WEBHOOK_URL
   
   # push to docker
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker push $TRAVIS_REPO_SLUG:dev;
-    curl -s https://git.io/notify-discord-docker $TRAVIS_REPO_SLUG:dev $DOCKERHUB_WEBHOOK;
+    curl -s https://git.io/ss-notify-discord-docker $TRAVIS_REPO_SLUG:dev $DOCKERHUB_WEBHOOK;
     fi
   - if [ $TRAVIS_TAG ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker tag $TRAVIS_REPO_SLUG:dev $TRAVIS_REPO_SLUG:latest;
     docker push $TRAVIS_REPO_SLUG:latest;
-    curl -s https://git.io/notify-discord-docker $TRAVIS_REPO_SLUG:latest $DOCKERHUB_WEBHOOK;
+    curl -s https://git.io/ss-notify-discord-docker $TRAVIS_REPO_SLUG:latest $DOCKERHUB_WEBHOOK;
     docker tag $TRAVIS_REPO_SLUG $TRAVIS_REPO_SLUG:${TRAVIS_TAG:1};
     docker push $TRAVIS_REPO_SLUG:${TRAVIS_TAG:1};
-    curl -s https://git.io/notify-discord-docker $TRAVIS_REPO_SLUG:${TRAVIS_TAG:1} $DOCKERHUB_WEBHOOK;
+    curl -s https://git.io/ss-notify-discord-docker $TRAVIS_REPO_SLUG:${TRAVIS_TAG:1} $DOCKERHUB_WEBHOOK;
     fi
 
 after_failure:
