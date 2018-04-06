@@ -40,4 +40,4 @@ after_success:
 
 after_failure:
   # Discord notification
-  - curl -s https://git.io/notify-discord-travis failure $WEBHOOK_URL
+  - curl -s https://git.io/notify-discord-travis | bash -s failure $WEBHOOK_URL
