@@ -1,17 +1,16 @@
 #!/bin/bash
 
 ret=$?
-state = ""
 if [ $ret -eq 0 ]; then
-  state = "success"
+  STATE="success"
 else
-  state = "failure"
+  STATE="failure"
 fi
 
 echo -e "[Webhook]: Sending webhook to Discord...\\n";
 
 
-case state in
+case $STATE in
   "success" )
     EMBED_COLOR=3066993
     STATUS_MESSAGE="Pushed"
