@@ -37,13 +37,12 @@ fi
 TIMESTAMP=$(date --utc +%FT%TZ)
 WEBHOOK_DATA='{
   "username": "",
-  "avatar_url": "https://travis-ci.org/images/logos/TravisCI-Mascot-1.png",
+  "avatar_url": "https://cdn.iconscout.com/public/images/icon/free/png-512/docker-logo-35698963e9c1a96c-512x512.png",
   "embeds": [ {
     "color": '$EMBED_COLOR',
     "author": {
       "name": "Job #'"$TRAVIS_JOB_NUMBER"' (Build #'"$TRAVIS_BUILD_NUMBER"') '"$STATUS_MESSAGE"' - '"$TRAVIS_REPO_SLUG"'",
-      "url": "https://travis-ci.org/'"$TRAVIS_REPO_SLUG"'/builds/'"$TRAVIS_BUILD_ID"'",
-      "icon_url": "'$AVATAR'"
+      "url": "https://travis-ci.org/'"$TRAVIS_REPO_SLUG"'/builds/'"$TRAVIS_BUILD_ID"'"
     },
     "title": "'"$COMMIT_SUBJECT"'",
     "url": "'"$URL"'",
