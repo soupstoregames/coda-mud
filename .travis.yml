@@ -26,7 +26,7 @@ after_success:
   - ./send.sh success $WEBHOOK_URL
 
   # docker deploy on release
-  - if [ "$TRAVIS_BRANCH" == "notification"]; then
+  - if [ "$TRAVIS_BRANCH" == "notification" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker tag $TRAVIS_REPO_SLUG:dev $TRAVIS_REPO_SLUG:notification;
     docker push $TRAVIS_REPO_SLUG:notification;
