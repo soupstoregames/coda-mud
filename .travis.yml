@@ -30,7 +30,7 @@ after_success:
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker tag $TRAVIS_REPO_SLUG:dev $TRAVIS_REPO_SLUG:notification;
     docker push $TRAVIS_REPO_SLUG:notification;
-    ./.travis/dockerhub-notification.sh $TRAVIS_REPO_SLUG:notification;
+    ./.travis/dockerhub-notification.sh $TRAVIS_REPO_SLUG:notification $WEBHOOK_URL;
     fi
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";

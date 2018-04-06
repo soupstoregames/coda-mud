@@ -43,7 +43,6 @@ WEBHOOK_DATA='{
     "color": '$EMBED_COLOR',
     "author": {
       "name": "$TRAVIS_REPO_SLUG",
-      "url": "https://travis-ci.org/'"$TRAVIS_REPO_SLUG"'/builds/'"$TRAVIS_BUILD_ID"'"
     },
     "title": "PUSHING CONTAINER AND VERSION TO DOCKERHUB",
     "url": "URL TO DOCKERHUB HERE",
