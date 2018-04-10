@@ -1,6 +1,8 @@
 package simulation
 
-import "github.com/soupstore/coda-world/simulation/model"
+import (
+	"github.com/soupstore/coda-world/simulation/model"
+)
 
 // WorldController is an interface over Simulation for modifying the world itself
 type WorldController interface {

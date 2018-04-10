@@ -19,6 +19,14 @@ enum Direction {
 enum CommandType {
   CmdLook = 0;
   CmdSay = 1;
+  CmdNorth = 2;
+  CmdNorthEast = 3;
+  CmdEast = 4;
+  CmdSouthEast = 5;
+  CmdSouth = 6;
+  CmdSouthWest = 7;
+  CmdWest = 8;
+  CmdNorthWest = 9;
 }
 
 message CommandMessage {
