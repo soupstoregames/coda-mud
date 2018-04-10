@@ -5,6 +5,17 @@ service Character {
   rpc Subscribe(stream CommandMessage) returns (stream EventMessage) {}
 }
 
+enum Direction {
+	North = 0;
+	NorthEast = 1;
+	East = 2;
+	SouthEast = 3;
+	South = 4;
+	SouthWest = 5;
+	West = 6;
+	NorthWest = 7;
+}
+
 enum CommandType {
   CmdLook = 0;
   CmdSay = 1;
@@ -39,10 +50,16 @@ message CharacterDescription {
   bool awake = 3;
 }
 
+message ExitDescription {
+  Direction direction = 1;
+  string name = 2;
+}
+
 message RoomDescriptionEvent {
   string name = 1;
   string description = 2;
   repeated CharacterDescription characters = 3;
+  repeated ExitDescription exits = 4;
 }
 
 message CharacterWakesUpEvent {

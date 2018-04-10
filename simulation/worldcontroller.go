@@ -26,3 +26,25 @@ func (s *Simulation) SetSpawnRoom(id model.RoomID) error {
 
 	return nil
 }
+
+// LinkRoom creates an exit from the origin room to the destination room in the direction specified.
+// If the link is bidirectional then an exit is created from the destination room to the origin room in the opposite direction.
+func (s *Simulation) LinkRoom(origin model.RoomID, direction model.Direction, destination model.RoomID, bidirectional bool) error {
+	originRoom, ok := s.rooms[origin]
+	if !ok {
+		return ErrRoomNotFound
+	}
+
+	destinationRoom, ok := s.rooms[destination]
+	if !ok {
+		return ErrRoomNotFound
+	}
+
+	originRoom.Exits[direction] = destinationRoom
+
+	if bidirectional {
+		destinationRoom.Exits[direction.Opposite()] = originRoom
+	}
+
+	return nil
+}

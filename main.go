@@ -8,6 +8,7 @@ import (
 	"github.com/soupstore/coda-world/config"
 	"github.com/soupstore/coda-world/services"
 	"github.com/soupstore/coda-world/simulation"
+	"github.com/soupstore/coda-world/simulation/model"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -28,6 +29,8 @@ func main() {
 	sim := simulation.NewSimulation(logger)
 	voidID := sim.MakeRoom("Void", "Blackness. Silence. There is nothing here.")
 	sim.SetSpawnRoom(voidID)
+	constructID := sim.MakeRoom("The Construct", "This is the Construct. It's our loading program. We can load anything... From clothing to equipment, weapons, training simulations; anything we need.")
+	sim.LinkRoom(voidID, model.East, constructID, true)
 
 	// temporary
 	sim.MakeCharacter("rinse")

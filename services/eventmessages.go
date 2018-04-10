@@ -37,9 +37,23 @@ func buildEventMessage(event interface{}) (*EventMessage, error) {
 }
 
 func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, error) {
+	// build present characters
 	characters := []*CharacterDescription{}
 	for _, ch := range event.Room.GetCharacters() {
 		characters = append(characters, buildCharacterDesciption(ch))
+	}
+
+	// build exits
+	exits := []*ExitDescription{}
+	keys := make([]model.Direction, 8)
+	for k := range event.Room.Exits {
+		keys = append(keys, k)
+	}
+	for _, k := range keys {
+		exits = append(exits, &ExitDescription{
+			Direction: mapDirection(k),
+			Name:      event.Room.Exits[k].Name,
+		})
 	}
 
 	payload, err := proto.Marshal(&RoomDescriptionEvent{
@@ -109,4 +123,27 @@ func buildCharacterDesciption(character *model.Character) *CharacterDescription 
 		Name:  character.Name,
 		Awake: character.Awake,
 	}
+}
+
+func mapDirection(d model.Direction) Direction {
+	switch d {
+	case model.North:
+		return Direction_North
+	case model.NorthEast:
+		return Direction_NorthEast
+	case model.East:
+		return Direction_East
+	case model.SouthEast:
+		return Direction_SouthEast
+	case model.South:
+		return Direction_South
+	case model.SouthWest:
+		return Direction_SouthWest
+	case model.West:
+		return Direction_West
+	case model.NorthWest:
+		return Direction_NorthWest
+	}
+
+	return 0
 }
