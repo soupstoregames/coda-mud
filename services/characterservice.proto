@@ -39,6 +39,8 @@ enum EventType {
   EvtCharacterWakesUp = 1;
   EvtCharacterSleeps = 2;
   EvtCharacterSpeaks = 3;
+  EvtCharacterArrives = 4;
+  EvtCharacterLeaves = 5;
 }
 
 message EventMessage {
@@ -81,4 +83,14 @@ message CharacterSleepsEvent {
 message CharacterSpeaksEvent {
   CharacterDescription character = 1;
   string content = 2;
+}
+
+message CharacterArrivesEvent {
+  CharacterDescription character = 1;
+  Direction direction = 2;
+}
+
+message CharacterLeavesEvent {
+  CharacterDescription character = 1;
+  Direction direction = 2;
 }

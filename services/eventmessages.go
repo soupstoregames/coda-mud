@@ -29,6 +29,14 @@ func buildEventMessage(event interface{}) (*EventMessage, error) {
 		if eventMessage, err = buildEventCharacterSpeaks(v); err != nil {
 			return nil, err
 		}
+	case model.EvtCharacterArrives:
+		if eventMessage, err = buildEventCharacterArrives(v); err != nil {
+			return nil, err
+		}
+	case model.EvtCharacterLeaves:
+		if eventMessage, err = buildEventCharacterLeaves(v); err != nil {
+			return nil, err
+		}
 	default:
 		// TODO: log warning
 	}
@@ -118,6 +126,38 @@ func buildEventCharacterSpeaks(event model.EvtCharacterSpeaks) (*EventMessage, e
 
 	return &EventMessage{
 		Type:    EventType_EvtCharacterSpeaks,
+		Payload: payload,
+	}, nil
+}
+
+func buildEventCharacterArrives(event model.EvtCharacterArrives) (*EventMessage, error) {
+	payload, err := proto.Marshal(&CharacterArrivesEvent{
+		Character: buildCharacterDesciption(event.Character),
+		Direction: mapDirection(event.Direction),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &EventMessage{
+		Type:    EventType_EvtCharacterArrives,
+		Payload: payload,
+	}, nil
+}
+
+func buildEventCharacterLeaves(event model.EvtCharacterLeaves) (*EventMessage, error) {
+	payload, err := proto.Marshal(&CharacterLeavesEvent{
+		Character: buildCharacterDesciption(event.Character),
+		Direction: mapDirection(event.Direction),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &EventMessage{
+		Type:    EventType_EvtCharacterLeaves,
 		Payload: payload,
 	}, nil
 }
