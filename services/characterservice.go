@@ -161,6 +161,7 @@ func (s *CharacterService) handleCommand(characterID model.CharacterID, cmd *Com
 	switch cmd.Type {
 	case CommandType_CmdLook:
 		s.controller.Look(characterID)
+
 	case CommandType_CmdSay:
 		var msg SayCommand
 		err := proto.Unmarshal(cmd.Payload, &msg)
@@ -168,6 +169,54 @@ func (s *CharacterService) handleCommand(characterID model.CharacterID, cmd *Com
 			return err
 		}
 		s.controller.Say(characterID, msg.Content)
+
+	case CommandType_CmdNorth:
+		err := s.controller.Move(characterID, model.North)
+		if err != nil {
+			return err
+		}
+
+	case CommandType_CmdNorthEast:
+		err := s.controller.Move(characterID, model.NorthEast)
+		if err != nil {
+			return err
+		}
+
+	case CommandType_CmdEast:
+		err := s.controller.Move(characterID, model.East)
+		if err != nil {
+			return err
+		}
+
+	case CommandType_CmdSouthEast:
+		err := s.controller.Move(characterID, model.SouthEast)
+		if err != nil {
+			return err
+		}
+
+	case CommandType_CmdSouth:
+		err := s.controller.Move(characterID, model.South)
+		if err != nil {
+			return err
+		}
+
+	case CommandType_CmdSouthWest:
+		err := s.controller.Move(characterID, model.SouthWest)
+		if err != nil {
+			return err
+		}
+
+	case CommandType_CmdWest:
+		err := s.controller.Move(characterID, model.West)
+		if err != nil {
+			return err
+		}
+
+	case CommandType_CmdNorthWest:
+		err := s.controller.Move(characterID, model.NorthWest)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -34,6 +34,15 @@ func (r *Room) AddCharacter(c *Character) {
 	r.characters = append(r.characters, c)
 }
 
+func (r *Room) RemoveCharacter(c *Character) {
+	for i, ch := range r.characters {
+		if ch == c {
+			r.characters = append(r.characters[:i], r.characters[i+1:]...)
+			return
+		}
+	}
+}
+
 func (r *Room) GetCharacters() []*Character {
 	return r.characters
 }

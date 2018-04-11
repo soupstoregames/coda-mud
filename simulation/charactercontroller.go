@@ -9,8 +9,9 @@ import (
 type CharacterController interface {
 	WakeUpCharacter(model.CharacterID) (<-chan interface{}, error)
 	SleepCharacter(model.CharacterID) error
-	Look(id model.CharacterID) error
-	Say(id model.CharacterID, content string) error
+	Look(model.CharacterID) error
+	Say(model.CharacterID, string) error
+	Move(model.CharacterID, model.Direction) error
 }
 
 // WakeUpCharacter make a character wake up.
@@ -98,6 +99,47 @@ func (s *Simulation) Say(id model.CharacterID, content string) error {
 		}
 		c.Dispatch(speechEvent)
 	}
+
+	return nil
+}
+
+func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error {
+	actor, err := s.findAwakeCharacter(id)
+	if err != nil {
+		return err
+	}
+	originalRoom := actor.Room
+
+	newRoom := actor.Room.Exits[direction]
+	if newRoom == nil {
+		return ErrRoomNotFound
+	}
+
+	// remove actor from current room
+	originalRoom.RemoveCharacter(actor)
+
+	// tell people in the room that the actor has left
+	personLeftEvent := model.EvtCharacterLeaves{
+		Character: actor,
+		Direction: direction,
+	}
+	for _, c := range originalRoom.GetCharacters() {
+		c.Dispatch(personLeftEvent)
+	}
+
+	// tell people in the target room that a character has arrived
+	personArrivedEvent := model.EvtCharacterArrives{
+		Character: actor,
+		Direction: direction.Opposite(),
+	}
+	for _, c := range newRoom.GetCharacters() {
+		c.Dispatch(personArrivedEvent)
+	}
+
+	// move actor to the new room
+	actor.Room = newRoom
+	newRoom.AddCharacter(actor)
+	actor.Dispatch(model.EvtRoomDescription{Room: actor.Room})
 
 	return nil
 }

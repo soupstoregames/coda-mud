@@ -8,6 +8,7 @@ import (
 type WorldController interface {
 	MakeRoom(name, description string) model.RoomID
 	SetSpawnRoom(id model.RoomID) error
+	LinkRoom(model.RoomID, model.Direction, model.RoomID, bool)
 }
 
 // MakeRoom creates a new room at the next available ID
