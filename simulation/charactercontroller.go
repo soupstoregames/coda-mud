@@ -94,9 +94,6 @@ func (s *Simulation) Say(id model.CharacterID, content string) error {
 	}
 
 	for _, c := range actor.Room.GetCharacters() {
-		if c.ID == id {
-			continue
-		}
 		c.Dispatch(speechEvent)
 	}
 
