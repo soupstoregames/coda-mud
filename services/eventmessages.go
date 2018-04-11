@@ -37,6 +37,10 @@ func buildEventMessage(event interface{}) (*EventMessage, error) {
 		if eventMessage, err = buildEventCharacterLeaves(v); err != nil {
 			return nil, err
 		}
+	case model.EvtNoExitInThatDirection:
+		if eventMessage, err = buildEventNoExitInThatDirection(); err != nil {
+			return nil, err
+		}
 	default:
 		// TODO: log warning
 	}
@@ -159,6 +163,12 @@ func buildEventCharacterLeaves(event model.EvtCharacterLeaves) (*EventMessage, e
 	return &EventMessage{
 		Type:    EventType_EvtCharacterLeaves,
 		Payload: payload,
+	}, nil
+}
+
+func buildEventNoExitInThatDirection() (*EventMessage, error) {
+	return &EventMessage{
+		Type: EventType_EvtNoExitInThatDirection,
 	}, nil
 }
 

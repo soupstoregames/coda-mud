@@ -36,3 +36,6 @@ type EvtCharacterArrives struct {
 	Character *Character
 	Direction Direction
 }
+
+type EvtNoExitInThatDirection struct {
+}

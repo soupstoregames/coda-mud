@@ -41,6 +41,7 @@ enum EventType {
   EvtCharacterSpeaks = 3;
   EvtCharacterArrives = 4;
   EvtCharacterLeaves = 5;
+  EvtNoExitInThatDirection = 6;
 }
 
 message EventMessage {

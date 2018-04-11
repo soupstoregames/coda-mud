@@ -112,7 +112,8 @@ func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error
 
 	newRoom := actor.Room.Exits[direction]
 	if newRoom == nil {
-		return ErrRoomNotFound
+		actor.Dispatch(model.EvtNoExitInThatDirection{})
+		return nil
 	}
 
 	// remove actor from current room
