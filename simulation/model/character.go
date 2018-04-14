@@ -3,6 +3,7 @@ package model
 type CharacterID int64
 
 type Character struct {
+	Rig
 	ID     CharacterID
 	Name   string
 	Awake  bool

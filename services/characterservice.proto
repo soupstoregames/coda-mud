@@ -61,6 +61,10 @@ message CharacterDescription {
   bool awake = 3;
 }
 
+message ItemDescription {
+  string name = 1;
+}
+
 message ExitDescription {
   Direction direction = 1;
   string name = 2;
@@ -70,7 +74,8 @@ message RoomDescriptionEvent {
   string name = 1;
   string description = 2;
   repeated CharacterDescription characters = 3;
-  repeated ExitDescription exits = 4;
+  repeated ItemDescription items = 4;
+  repeated ExitDescription exits = 5;
 }
 
 message CharacterWakesUpEvent {

@@ -27,15 +27,17 @@ func main() {
 	}
 
 	sim := simulation.NewSimulation(logger)
+
+	// temporary
 	voidID := sim.MakeRoom("Void", "Blackness. Silence. There is nothing here.")
 	sim.SetSpawnRoom(voidID)
 	constructID := sim.MakeRoom("The Construct", "This is the Construct. It's our loading program. We can load anything... From clothing to equipment, weapons, training simulations; anything we need.")
 	sim.LinkRoom(voidID, model.East, constructID, true)
-
-	// temporary
 	sim.MakeCharacter("rinse")
 	sim.MakeCharacter("claw")
 	sim.MakeCharacter("gesau")
+	voidRoom, _ := sim.GetRoom(voidID)
+	sim.SpawnItem(model.NewBackpack(0, "CODA Recon Pack"), voidRoom.Container.ID)
 
 	listenAddr := fmt.Sprintf("%s:%s", conf.Address, conf.Port)
 	characterService := services.NewCharacterService(sim, logger)

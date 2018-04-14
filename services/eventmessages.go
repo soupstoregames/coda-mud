@@ -55,6 +55,12 @@ func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, e
 		characters = append(characters, buildCharacterDesciption(ch))
 	}
 
+	// build items
+	items := []*ItemDescription{}
+	for _, v := range event.Room.Container.Items {
+		items = append(items, &ItemDescription{Name: v.GetName()})
+	}
+
 	// build exits
 	exits := []*ExitDescription{}
 	keys := make([]model.Direction, 8)
@@ -76,6 +82,7 @@ func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, e
 		Name:        event.Room.Name,
 		Description: event.Room.Description,
 		Characters:  characters,
+		Items:       items,
 		Exits:       exits,
 	})
 	if err != nil {

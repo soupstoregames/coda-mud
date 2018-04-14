@@ -11,9 +11,9 @@ type Room struct {
 	Exits       map[Direction]*Room
 }
 
-func NewRoom(id RoomID, name string, description string) *Room {
+func NewRoom(roomID RoomID, containerID ContainerID, name string, description string) *Room {
 	return &Room{
-		ID:          id,
+		ID:          roomID,
 		Name:        name,
 		Description: description,
 		characters:  []*Character{},
@@ -27,6 +27,7 @@ func NewRoom(id RoomID, name string, description string) *Room {
 			West:      nil,
 			NorthWest: nil,
 		},
+		Container: newRoomContainer(containerID),
 	}
 }
 

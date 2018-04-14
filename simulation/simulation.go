@@ -12,10 +12,12 @@ type Simulation struct {
 	logger          *zap.Logger
 	nextRoomID      model.RoomID
 	nextCharacterID model.CharacterID
+	nextContainerID model.ContainerID
 	spawnRoom       *model.Room
 	rooms           map[model.RoomID]*model.Room
 	items           map[model.ItemID]*model.Item
 	characters      map[model.CharacterID]*model.Character
+	containers      map[model.ContainerID]*model.Container
 }
 
 // NewSimulation returns a Simulation with default params.
@@ -24,10 +26,12 @@ func NewSimulation(logger *zap.Logger) *Simulation {
 		logger:          logger,
 		nextRoomID:      0,
 		nextCharacterID: 0,
+		nextContainerID: 0,
 		spawnRoom:       nil,
 		rooms:           make(map[model.RoomID]*model.Room),
 		items:           make(map[model.ItemID]*model.Item),
 		characters:      make(map[model.CharacterID]*model.Character),
+		containers:      make(map[model.ContainerID]*model.Container),
 	}
 }
 
@@ -40,5 +44,11 @@ func (s *Simulation) getNextRoomID() model.RoomID {
 func (s *Simulation) getNextCharacterID() model.CharacterID {
 	id := s.nextCharacterID
 	s.nextCharacterID = s.nextCharacterID + 1
+	return id
+}
+
+func (s *Simulation) getNextContainerID() model.ContainerID {
+	id := s.nextContainerID
+	s.nextContainerID = s.nextContainerID + 1
 	return id
 }

@@ -8,14 +8,26 @@ import (
 type WorldController interface {
 	MakeRoom(name, description string) model.RoomID
 	SetSpawnRoom(id model.RoomID) error
-	LinkRoom(model.RoomID, model.Direction, model.RoomID, bool)
+	LinkRoom(model.RoomID, model.Direction, model.RoomID, bool) error
+	SpawnItem(*model.Item, model.ContainerID) error
+}
+
+func (s *Simulation) GetRoom(id model.RoomID) (*model.Room, error) {
+	spawnRoom, ok := s.rooms[id]
+	if !ok {
+		return nil, ErrRoomNotFound
+	}
+	return spawnRoom, nil
 }
 
 // MakeRoom creates a new room at the next available ID
 func (s *Simulation) MakeRoom(name, description string) model.RoomID {
 	roomID := s.getNextRoomID()
-	room := model.NewRoom(roomID, name, description)
+	containerID := s.getNextContainerID()
+	room := model.NewRoom(roomID, containerID, name, description)
 	s.rooms[roomID] = room
+	container := room.Container
+	s.containers[container.ID] = container
 	return roomID
 }
 
@@ -49,5 +61,15 @@ func (s *Simulation) LinkRoom(origin model.RoomID, direction model.Direction, de
 		destinationRoom.Exits[direction.Opposite()] = originRoom
 	}
 
+	return nil
+}
+
+func (s *Simulation) SpawnItem(item model.Item, containerID model.ContainerID) error {
+	container, ok := s.containers[containerID]
+	if !ok {
+		return ErrContainerNotFound
+	}
+
+	container.PutItem(item)
 	return nil
 }
