@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"github.com/soupstore/coda-world/simulation/model"
+	"go.uber.org/zap"
 )
 
 // CharacterController is an interface over the Simulation that exposes all actions a connected
@@ -12,6 +13,8 @@ type CharacterController interface {
 	Look(model.CharacterID) error
 	Say(model.CharacterID, string) error
 	Move(model.CharacterID, model.Direction) error
+	TakeItem(id model.CharacterID, alias string) error
+	EquipItem(id model.CharacterID, itemID model.ItemID) error
 }
 
 // WakeUpCharacter make a character wake up.
@@ -43,7 +46,7 @@ func (s *Simulation) WakeUpCharacter(id model.CharacterID) (<-chan interface{}, 
 		c.Dispatch(wakeUpEvent)
 	}
 
-	s.logger.Debug("Character woke up")
+	zap.L().Debug("Character woke up")
 
 	return actor.Events, nil
 }
@@ -65,7 +68,7 @@ func (s *Simulation) SleepCharacter(id model.CharacterID) error {
 		c.Dispatch(sleepEvent)
 	}
 
-	s.logger.Debug("Character fell asleep")
+	zap.L().Debug("Character fell asleep")
 
 	return nil
 }
@@ -138,6 +141,46 @@ func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error
 	actor.Room = newRoom
 	newRoom.AddCharacter(actor)
 	actor.Dispatch(model.EvtRoomDescription{Room: actor.Room})
+
+	return nil
+}
+
+func (s *Simulation) TakeItem(id model.CharacterID, alias string) error {
+	actor, err := s.findAwakeCharacter(id)
+	if err != nil {
+		return err
+	}
+
+	for _, item := range actor.Room.Container.Items {
+		if item.KnownAs(alias) {
+			actor.Backpack.Container.PutItem(item)
+			break
+		}
+	}
+
+	actor.Dispatch(model.EvtItemNotHere{})
+
+	return nil
+}
+
+func (s *Simulation) EquipItem(id model.CharacterID, itemID model.ItemID) error {
+	actor, err := s.findAwakeCharacter(id)
+	if err != nil {
+		return err
+	}
+
+	item, ok := actor.Room.Container.Items[itemID]
+	if !ok {
+		return ErrItemNotFound
+	}
+
+	switch v := item.(type) {
+	case *model.Backpack:
+		_ = actor.EquipBackpack(v)
+		actor.Room.Container.RemoveItem(item.GetID())
+	default:
+		return ErrCannotEquipItem
+	}
 
 	return nil
 }

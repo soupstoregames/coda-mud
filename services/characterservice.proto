@@ -27,6 +27,7 @@ enum CommandType {
   CmdSouthWest = 7;
   CmdWest = 8;
   CmdNorthWest = 9;
+  CmdTake = 10;
 }
 
 message CommandMessage {
@@ -42,6 +43,7 @@ enum EventType {
   EvtCharacterArrives = 4;
   EvtCharacterLeaves = 5;
   EvtNoExitInThatDirection = 6;
+  EvtItemNotHere = 7;
 }
 
 message EventMessage {
@@ -54,6 +56,10 @@ message SayCommand {
   string content = 1;
 }
 
+message TakeCommand {
+  string alias = 1;
+}
+
 // Events
 message CharacterDescription {
   int64 id = 1;
@@ -62,7 +68,8 @@ message CharacterDescription {
 }
 
 message ItemDescription {
-  string name = 1;
+  int64 id = 1;
+  string name = 2;
 }
 
 message ExitDescription {

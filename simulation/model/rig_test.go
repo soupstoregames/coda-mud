@@ -9,7 +9,7 @@ import (
 func Test_EquipBackpack_NothingEquipped(t *testing.T) {
 	rig := model.Rig{}
 
-	backpack := model.NewBackpack(0, "Test Backpack")
+	backpack := model.NewBackpack(0, "Test Backpack", []string{})
 	oldBackpack := rig.EquipBackpack(backpack)
 	if rig.Backpack != backpack {
 		t.Error("Backpack was not equipped")
@@ -21,9 +21,9 @@ func Test_EquipBackpack_NothingEquipped(t *testing.T) {
 
 func Test_EquipBackpack_ReplacesCurrent(t *testing.T) {
 	rig := model.Rig{}
-	rig.Backpack = model.NewBackpack(0, "Old Backpack")
+	rig.Backpack = model.NewBackpack(0, "Old Backpack", []string{})
 
-	newBackpack := model.NewBackpack(1, "New Backpack")
+	newBackpack := model.NewBackpack(1, "New Backpack", []string{})
 	oldBackpack := rig.EquipBackpack(newBackpack)
 	if rig.Backpack != newBackpack {
 		t.Error("Backpack was not equipped")

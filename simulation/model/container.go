@@ -19,3 +19,7 @@ func newRoomContainer(id ContainerID) *Container {
 func (c *Container) PutItem(item Item) {
 	c.Items[item.GetID()] = item
 }
+
+func (c *Container) RemoveItem(itemID ItemID) {
+	delete(c.Items, itemID)
+}

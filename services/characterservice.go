@@ -6,9 +6,9 @@ import (
 	"strconv"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/soupstore/coda-world/log"
 	"github.com/soupstore/coda-world/simulation"
 	"github.com/soupstore/coda-world/simulation/model"
-	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -29,19 +29,18 @@ var (
 // CharacterService is a GRPC service for controlling characters.
 type CharacterService struct {
 	controller simulation.CharacterController
-	logger     *zap.Logger
 }
 
 // NewCharacterService returns a pointer to a character service and sets the character controller.
-func NewCharacterService(controller simulation.CharacterController, logger *zap.Logger) *CharacterService {
-	return &CharacterService{controller, logger}
+func NewCharacterService(controller simulation.CharacterController) *CharacterService {
+	return &CharacterService{controller}
 }
 
 // Subscribe is the handler for the bidrirectional GRPC stream of commands and events.
 func (s *CharacterService) Subscribe(stream Character_SubscribeServer) error {
 	var err error
 
-	s.logger.Info("Player connected")
+	log.Logger().Info("Player connected")
 
 	// get characterID from metadata
 	characterID, err := s.extractCharacterID(stream)
@@ -63,10 +62,10 @@ func (s *CharacterService) Subscribe(stream Character_SubscribeServer) error {
 	g.Go(s.sendEvents(stream, events, quit))
 	err = g.Wait()
 	if err != nil && err != errConnectionEnded {
-		s.logger.Error(err.Error())
+		log.Logger().Error(err.Error())
 	}
 
-	s.logger.Info("Player disconnected")
+	log.Logger().Info("Player disconnected")
 
 	return err
 }
@@ -214,6 +213,17 @@ func (s *CharacterService) handleCommand(characterID model.CharacterID, cmd *Com
 
 	case CommandType_CmdNorthWest:
 		err := s.controller.Move(characterID, model.NorthWest)
+		if err != nil {
+			return err
+		}
+
+	case CommandType_CmdTake:
+		var msg TakeCommand
+		err := proto.Unmarshal(cmd.Payload, &msg)
+		if err != nil {
+			return err
+		}
+		err = s.controller.TakeItem(characterID, msg.Alias)
 		if err != nil {
 			return err
 		}
