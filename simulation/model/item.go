@@ -4,36 +4,33 @@ import "strings"
 
 type ItemID int64
 
-type Item interface {
-	GetID() ItemID
-	GetName() string
-	KnownAs(string) bool
+type Item struct {
+	ID        ItemID
+	Name      string
+	Aliases   []string
+	RigSlot   RigSlot
+	Container *Container
 }
 
-type Backpack struct {
-	ID   ItemID
-	Name string
-	Container
-}
-
-func NewBackpack(id ItemID, name string, aliases []string) *Backpack {
-	return &Backpack{
-		ID:   id,
-		Name: name,
+func NewItem(id ItemID, containerID ContainerID, name string, aliases []string, RigSlot RigSlot) *Item {
+	return &Item{
+		ID:        id,
+		Name:      name,
+		Aliases:   append(aliases, name),
+		RigSlot:   RigSlot,
+		Container: newFiniteContainer(containerID),
 	}
 }
 
-func (b *Backpack) GetID() ItemID {
-	return b.ID
-}
-
-func (b *Backpack) GetName() string {
-	return b.Name
-}
-
-func (b *Backpack) KnownAs(alias string) bool {
+func (b *Item) KnownAs(alias string) bool {
 	if strings.ToLower(alias) == strings.ToLower(b.Name) {
 		return true
+	}
+
+	for _, al := range b.Aliases {
+		if strings.ToLower(alias) == strings.ToLower(al) {
+			return true
+		}
 	}
 
 	return false

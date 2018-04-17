@@ -151,10 +151,18 @@ func (s *Simulation) TakeItem(id model.CharacterID, alias string) error {
 		return err
 	}
 
-	for _, item := range actor.Room.Container.Items {
+	for itemID, item := range actor.Room.Container.Items {
 		if item.KnownAs(alias) {
 			actor.Backpack.Container.PutItem(item)
-			break
+			actor.Room.Container.RemoveItem(itemID)
+			event := model.EvtCharacterTakesItem{
+				Character: actor,
+				Item:      item,
+			}
+			for _, ch := range actor.Room.GetCharacters() {
+				ch.Dispatch(event)
+			}
+			return nil
 		}
 	}
 
@@ -174,13 +182,11 @@ func (s *Simulation) EquipItem(id model.CharacterID, itemID model.ItemID) error 
 		return ErrItemNotFound
 	}
 
-	switch v := item.(type) {
-	case *model.Backpack:
-		_ = actor.EquipBackpack(v)
-		actor.Room.Container.RemoveItem(item.GetID())
-	default:
+	_, err = actor.Equip(item)
+	if err == model.ErrNotEquipable {
 		return ErrCannotEquipItem
 	}
+	actor.Room.Container.RemoveItem(item.ID)
 
 	return nil
 }

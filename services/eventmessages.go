@@ -41,6 +41,10 @@ func buildEventMessage(event interface{}) (*EventMessage, error) {
 		if eventMessage, err = buildEventNoExitInThatDirection(); err != nil {
 			return nil, err
 		}
+	case model.EvtCharacterTakesItem:
+		if eventMessage, err = buildCharacterTakesItem(v); err != nil {
+			return nil, err
+		}
 	default:
 		// TODO: log warning
 	}
@@ -59,8 +63,8 @@ func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, e
 	items := []*ItemDescription{}
 	for _, v := range event.Room.Container.Items {
 		items = append(items, &ItemDescription{
-			Id:   int64(v.GetID()),
-			Name: v.GetName(),
+			Id:   int64(v.ID),
+			Name: v.Name,
 		})
 	}
 
@@ -160,7 +164,6 @@ func buildEventCharacterLeaves(event model.EvtCharacterLeaves) (*EventMessage, e
 		Character: buildCharacterDesciption(event.Character),
 		Direction: mapDirection(event.Direction),
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -174,6 +177,24 @@ func buildEventCharacterLeaves(event model.EvtCharacterLeaves) (*EventMessage, e
 func buildEventNoExitInThatDirection() (*EventMessage, error) {
 	return &EventMessage{
 		Type: EventType_EvtNoExitInThatDirection,
+	}, nil
+}
+
+func buildCharacterTakesItem(event model.EvtCharacterTakesItem) (*EventMessage, error) {
+	payload, err := proto.Marshal(&CharacterTakesItemEvent{
+		Character: buildCharacterDesciption(event.Character),
+		Item: &ItemDescription{
+			Id:   int64(event.Item.ID),
+			Name: event.Item.Name,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &EventMessage{
+		Type:    EventType_EvtCharacterTakesItem,
+		Payload: payload,
 	}, nil
 }
 

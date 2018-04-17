@@ -19,12 +19,12 @@ type EvtCharacterSpeaks struct {
 
 type EvtCharacterTakesItem struct {
 	Character *Character
-	Item      Item
+	Item      *Item
 }
 
 type EvtCharacterDropsItem struct {
 	Character *Character
-	Item      Item
+	Item      *Item
 }
 
 type EvtCharacterLeaves struct {

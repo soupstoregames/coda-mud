@@ -64,7 +64,7 @@ func (s *Simulation) LinkRoom(origin model.RoomID, direction model.Direction, de
 	return nil
 }
 
-func (s *Simulation) SpawnItem(item model.Item, containerID model.ContainerID) error {
+func (s *Simulation) SpawnItem(item *model.Item, containerID model.ContainerID) error {
 	container, ok := s.containers[containerID]
 	if !ok {
 		return ErrContainerNotFound

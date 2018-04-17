@@ -44,6 +44,7 @@ enum EventType {
   EvtCharacterLeaves = 5;
   EvtNoExitInThatDirection = 6;
   EvtItemNotHere = 7;
+  EvtCharacterTakesItem = 8;
 }
 
 message EventMessage {
@@ -106,4 +107,9 @@ message CharacterArrivesEvent {
 message CharacterLeavesEvent {
   CharacterDescription character = 1;
   Direction direction = 2;
+}
+
+message CharacterTakesItemEvent {
+  CharacterDescription character = 1;
+  ItemDescription item = 2;
 }
