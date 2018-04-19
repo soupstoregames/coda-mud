@@ -18,6 +18,7 @@ clean:
 	$(GOCLEAN)
 	rm -rdf bin
 run:
+	$(GOGENERATE) ./...
 	$(GOBUILD) -o bin/$(BINARY_NAME) -v
 	bin/$(BINARY_NAME)
 deps:

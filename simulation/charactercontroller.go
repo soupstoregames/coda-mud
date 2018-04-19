@@ -14,6 +14,7 @@ type CharacterController interface {
 	Say(model.CharacterID, string) error
 	Move(model.CharacterID, model.Direction) error
 	TakeItem(id model.CharacterID, alias string) error
+	DropItem(id model.CharacterID, alias string) error
 	EquipItem(id model.CharacterID, itemID model.ItemID) error
 }
 
@@ -156,6 +157,32 @@ func (s *Simulation) TakeItem(id model.CharacterID, alias string) error {
 			actor.Backpack.Container.PutItem(item)
 			actor.Room.Container.RemoveItem(itemID)
 			event := model.EvtCharacterTakesItem{
+				Character: actor,
+				Item:      item,
+			}
+			for _, ch := range actor.Room.GetCharacters() {
+				ch.Dispatch(event)
+			}
+			return nil
+		}
+	}
+
+	actor.Dispatch(model.EvtItemNotHere{})
+
+	return nil
+}
+
+func (s *Simulation) DropItem(id model.CharacterID, alias string) error {
+	actor, err := s.findAwakeCharacter(id)
+	if err != nil {
+		return err
+	}
+
+	for itemID, item := range actor.Backpack.Container.Items {
+		if item.KnownAs(alias) {
+			actor.Room.Container.PutItem(item)
+			actor.Backpack.Container.RemoveItem(itemID)
+			event := model.EvtCharacterDropsItem{
 				Character: actor,
 				Item:      item,
 			}

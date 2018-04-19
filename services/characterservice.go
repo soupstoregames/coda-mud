@@ -227,6 +227,18 @@ func (s *CharacterService) handleCommand(characterID model.CharacterID, cmd *Com
 		if err != nil {
 			return err
 		}
+
+	case CommandType_CmdDrop:
+		var msg DropCommand
+		err := proto.Unmarshal(cmd.Payload, &msg)
+		if err != nil {
+			return err
+		}
+		err = s.controller.DropItem(characterID, msg.Alias)
+		if err != nil {
+			return err
+		}
 	}
+
 	return nil
 }

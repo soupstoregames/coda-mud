@@ -45,6 +45,10 @@ func buildEventMessage(event interface{}) (*EventMessage, error) {
 		if eventMessage, err = buildCharacterTakesItem(v); err != nil {
 			return nil, err
 		}
+	case model.EvtCharacterDropsItem:
+		if eventMessage, err = buildCharacterDropsItem(v); err != nil {
+			return nil, err
+		}
 	default:
 		// TODO: log warning
 	}
@@ -194,6 +198,24 @@ func buildCharacterTakesItem(event model.EvtCharacterTakesItem) (*EventMessage, 
 
 	return &EventMessage{
 		Type:    EventType_EvtCharacterTakesItem,
+		Payload: payload,
+	}, nil
+}
+
+func buildCharacterDropsItem(event model.EvtCharacterDropsItem) (*EventMessage, error) {
+	payload, err := proto.Marshal(&CharacterDropsItemEvent{
+		Character: buildCharacterDesciption(event.Character),
+		Item: &ItemDescription{
+			Id:   int64(event.Item.ID),
+			Name: event.Item.Name,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &EventMessage{
+		Type:    EventType_EvtCharacterDropsItem,
 		Payload: payload,
 	}, nil
 }
