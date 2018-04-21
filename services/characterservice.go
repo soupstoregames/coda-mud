@@ -9,7 +9,6 @@ import (
 	"github.com/soupstore/coda-world/log"
 	"github.com/soupstore/coda-world/simulation"
 	"github.com/soupstore/coda-world/simulation/model"
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -55,13 +54,9 @@ func (s *CharacterService) Subscribe(stream Character_SubscribeServer) error {
 	}
 	defer s.controller.SleepCharacter(characterID)
 
-	// start listening for commands and events
-	quit := make(chan struct{})
-	var g errgroup.Group
-	g.Go(s.listenForCommands(stream, characterID, quit))
-	g.Go(s.sendEvents(stream, events, quit))
-	g.Go(s.listenForStreamDone(stream, quit))
-	err = g.Wait()
+	commands := make(chan *CommandMessage)
+	go s.listenForCommands(stream, commands)
+	err = s.loop(stream, events, commands, characterID)
 	if err != nil && err != errConnectionEnded {
 		log.Logger().Error(err.Error())
 	}
@@ -91,81 +86,68 @@ func (s *CharacterService) extractCharacterID(stream Character_SubscribeServer) 
 	return model.CharacterID(characterIDint), nil
 }
 
-func (s *CharacterService) listenForStreamDone(stream Character_SubscribeServer, quit chan<- struct{}) func() error {
+func (s *CharacterService) loop(stream Character_SubscribeServer, events <-chan interface{}, commands <-chan *CommandMessage, characterID model.CharacterID) error {
 	for {
 		select {
 		case <-stream.Context().Done():
-			quit <- struct{}{}
-		}
-	}
-}
-
-func (s *CharacterService) listenForCommands(stream Character_SubscribeServer, characterID model.CharacterID, quit chan struct{}) func() error {
-	return func() error {
-		for {
-			select {
-			case <-quit:
+			return nil
+		case command, more := <-commands:
+			if !more {
 				return nil
-			default:
-				command, err := stream.Recv()
+			}
+			err := s.handleCommand(characterID, command)
+			if err != nil {
+				return err
+			}
+		case event, more := <-events:
+			if !more {
+				// TODO: log warning
+				return nil
+			}
 
-				// client disconnected
-				if err == io.EOF {
-					quit <- struct{}{}
-					return errConnectionEnded
-				}
+			// parse event
+			eventMessage, err := buildEventMessage(event)
+			if err != nil {
+				return err
+			}
+			if eventMessage == nil {
+				continue
+			}
 
-				grpcStatus, ok := status.FromError(err)
-				if ok {
-					switch grpcStatus.Code() {
-					case codes.Canceled:
-						quit <- struct{}{}
-						return errConnectionEnded
-					}
-				}
-
-				// unknown error
-				if err != nil {
-					quit <- struct{}{}
-					return err
-				}
-
-				err = s.handleCommand(characterID, command)
-				if err != nil {
-					return err
-				}
+			// post the event over the stream
+			if err = stream.Send(eventMessage); err != nil {
+				return err
 			}
 		}
 	}
 }
 
-func (s *CharacterService) sendEvents(stream Character_SubscribeServer, events <-chan interface{}, quit <-chan struct{}) func() error {
-	return func() error {
-		for {
-			select {
-			case <-quit:
-				return nil
-			case event, more := <-events:
-				if !more {
-					// TODO: log warning
-					return nil
-				}
+func (s *CharacterService) listenForCommands(stream Character_SubscribeServer, commands chan *CommandMessage) error {
+	for {
+		command, err := stream.Recv()
 
-				// parse event
-				eventMessage, err := buildEventMessage(event)
-				if err != nil {
-					return err
-				}
-				if eventMessage == nil {
-					continue
-				}
+		// client disconnected
+		if err == io.EOF {
+			close(commands)
+			return errConnectionEnded
+		}
 
-				// post the event over the stream
-				if err = stream.Send(eventMessage); err != nil {
-					return err
-				}
+		grpcStatus, ok := status.FromError(err)
+		if ok {
+			switch grpcStatus.Code() {
+			case codes.Canceled:
+				close(commands)
+				return errConnectionEnded
 			}
 		}
+
+		// unknown error
+		if err != nil {
+			close(commands)
+			return err
+		}
+
+		commands <- command
 	}
 }
 
