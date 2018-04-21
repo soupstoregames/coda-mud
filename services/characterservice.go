@@ -60,6 +60,7 @@ func (s *CharacterService) Subscribe(stream Character_SubscribeServer) error {
 	var g errgroup.Group
 	g.Go(s.listenForCommands(stream, characterID, quit))
 	g.Go(s.sendEvents(stream, events, quit))
+	g.Go(s.listenForStreamDone(stream, quit))
 	err = g.Wait()
 	if err != nil && err != errConnectionEnded {
 		log.Logger().Error(err.Error())
@@ -90,38 +91,51 @@ func (s *CharacterService) extractCharacterID(stream Character_SubscribeServer) 
 	return model.CharacterID(characterIDint), nil
 }
 
-func (s *CharacterService) listenForCommands(stream Character_SubscribeServer, characterID model.CharacterID, quit chan<- struct{}) func() error {
+func (s *CharacterService) listenForStreamDone(stream Character_SubscribeServer, quit chan<- struct{}) func() error {
+	for {
+		select {
+		case <-stream.Context().Done():
+			quit <- struct{}{}
+		}
+	}
+}
+
+func (s *CharacterService) listenForCommands(stream Character_SubscribeServer, characterID model.CharacterID, quit chan struct{}) func() error {
 	return func() error {
 		for {
-			command, err := stream.Recv()
+			select {
+			case <-quit:
+				return nil
+			default:
+				command, err := stream.Recv()
 
-			// client disconnected
-			if err == io.EOF {
-				quit <- struct{}{}
-				return errConnectionEnded
-			}
-
-			grpcStatus, ok := status.FromError(err)
-			if ok {
-				switch grpcStatus.Code() {
-				case codes.Canceled:
+				// client disconnected
+				if err == io.EOF {
 					quit <- struct{}{}
 					return errConnectionEnded
 				}
-			}
 
-			// unknown error
-			if err != nil {
-				quit <- struct{}{}
-				return err
-			}
+				grpcStatus, ok := status.FromError(err)
+				if ok {
+					switch grpcStatus.Code() {
+					case codes.Canceled:
+						quit <- struct{}{}
+						return errConnectionEnded
+					}
+				}
 
-			err = s.handleCommand(characterID, command)
-			if err != nil {
-				return err
+				// unknown error
+				if err != nil {
+					quit <- struct{}{}
+					return err
+				}
+
+				err = s.handleCommand(characterID, command)
+				if err != nil {
+					return err
+				}
 			}
 		}
-
 	}
 }
 
