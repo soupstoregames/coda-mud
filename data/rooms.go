@@ -10,12 +10,12 @@ import (
 )
 
 type Room struct {
-	Name        string `toml:"name"`
-	Description string `toml:"description"`
+	Name        string
+	Description string
 
 	Exits map[string]Exit
 
-	Script string `toml:"script"`
+	Script string
 }
 
 type Exit struct {
