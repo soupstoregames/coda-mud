@@ -34,10 +34,6 @@ ignored=["google.golang.org/grpc" , "google.golang.org/grpc/*"]
   branch = "master"
   name = "golang.org/x/net"
 
-[[constraint]]
-  branch = "master"
-  name = "golang.org/x/sync"
-
 [prune]
   go-tests = true
   unused-packages = true
