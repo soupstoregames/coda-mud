@@ -30,7 +30,7 @@ func main() {
 	sim.LoadData(data)
 
 	// temporary
-	sim.SetSpawnRoom(1)
+	sim.SetSpawnRoom("admin", 1)
 
 	_ = sim.MakeCharacter("Rinse")
 	sim.MakeCharacter("Claw")

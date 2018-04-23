@@ -25,8 +25,13 @@ func TestWakingAndSleepingCharacter(t *testing.T) {
 		},
 	}
 	sim := simulation.NewSimulation()
-	roomID := sim.LoadData(data)
-	sim.SetSpawnRoom(0)
+	if err := sim.LoadData(data); err != nil {
+		t.Error(err)
+	}
+	if err := sim.SetSpawnRoom("admin", 0); err != nil {
+		t.Error(err)
+	}
+
 	sleepyID := sim.MakeCharacter("Sleepy")
 	grumpyID := sim.MakeCharacter("Grumpy")
 	target := simulation.CharacterController(sim)
@@ -44,7 +49,7 @@ func TestWakingAndSleepingCharacter(t *testing.T) {
 		t.Error("Event not of type EvtRoomDescription")
 	}
 	if roomDescriptionEvent.Room.ID != 0 {
-		t.Errorf("Expected room description event to contain room %d, but got room %d", roomID, roomDescriptionEvent.Room.ID)
+		t.Errorf("Expected room description event to contain room %d, but got room %d", 0, roomDescriptionEvent.Room.ID)
 	}
 
 	// wake up grumpy
@@ -70,7 +75,7 @@ func TestWakingAndSleepingCharacter(t *testing.T) {
 		t.Error("Event not of type EvtRoomDescription")
 	}
 	if roomDescriptionEvent.Room.ID != 0 {
-		t.Errorf("Expected room description event to contain room %d, but got room %d", roomID, roomDescriptionEvent.Room.ID)
+		t.Errorf("Expected room description event to contain room %d, but got room %d", 0, roomDescriptionEvent.Room.ID)
 	}
 
 	// send grumpy to sleep
@@ -122,7 +127,9 @@ func TestWakeUpWithAwakeCharacter(t *testing.T) {
 	}
 	sim := simulation.NewSimulation()
 	sim.LoadData(data)
-	sim.SetSpawnRoom(0)
+	if err := sim.SetSpawnRoom("admin", 0); err != nil {
+		t.Error(err)
+	}
 	sleepyID := sim.MakeCharacter("Sleepy")
 	sim.WakeUpCharacter(sleepyID)
 	_, err := sim.WakeUpCharacter(sleepyID)
@@ -146,7 +153,9 @@ func TestSleepWithSleepingCharacter(t *testing.T) {
 	}
 	sim := simulation.NewSimulation()
 	sim.LoadData(data)
-	sim.SetSpawnRoom(0)
+	if err := sim.SetSpawnRoom("admin", 0); err != nil {
+		t.Error(err)
+	}
 	sleepyID := sim.MakeCharacter("Sleepy")
 	err := sim.SleepCharacter(sleepyID)
 	if err != simulation.ErrCharacterAsleep {

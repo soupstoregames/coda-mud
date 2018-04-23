@@ -11,6 +11,8 @@ var (
 	ErrCharacterAsleep = errors.New("character is asleep")
 	// ErrRoomNotFound means that an attempt was made to act on a room that does not exist
 	ErrRoomNotFound = errors.New("room not found")
+	// ErrWorldNotFound means that an attempt was made to act on a world that does not exist
+	ErrWorldNotFound = errors.New("world not found")
 	// ErrContainerNotFound means that an attempt was made to act on a container that does not exist
 	ErrContainerNotFound = errors.New("container not found")
 	// ErrItemNotFound means that an attempt was made to act on an item that is not available to the character

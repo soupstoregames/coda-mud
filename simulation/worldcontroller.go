@@ -13,32 +13,54 @@ type WorldController interface {
 	SpawnItem(*model.Item, model.ContainerID) error
 }
 
-func (s *Simulation) GetRoom(id model.RoomID) (*model.Room, error) {
-	spawnRoom, ok := s.rooms[id]
+func (s *Simulation) GetRoom(worldName string, roomID model.RoomID) (*model.Room, error) {
+	world, ok := s.worlds[worldName]
+	if !ok {
+		return nil, ErrWorldNotFound
+	}
+
+	spawnRoom, ok := world.Rooms[roomID]
 	if !ok {
 		return nil, ErrRoomNotFound
 	}
 	return spawnRoom, nil
 }
 
+func (s *Simulation) AddWorld(worldName string) error {
+	s.worlds[worldName] = model.NewWorld(worldName)
+	return nil
+}
+
 // MakeRoom creates a new room at the next available ID
-func (s *Simulation) LoadRoom(id int, r *data.Room) {
-	roomID := model.RoomID(id)
+func (s *Simulation) loadRoom(worldName string, roomID model.RoomID, r *data.Room) error {
 	containerID := s.getNextContainerID()
 
+	world, ok := s.worlds[worldName]
+	if !ok {
+		return ErrWorldNotFound
+	}
+
 	room := model.NewRoom(roomID, containerID, r.Name, r.Description)
-	s.rooms[roomID] = room
+	world.Rooms[roomID] = room
 
 	container := room.Container
 	s.containers[container.ID] = container
+
+	return nil
 }
 
 // SetSpawnRoom sets the room that all new characters will start in
-func (s *Simulation) SetSpawnRoom(id model.RoomID) error {
-	spawnRoom, ok := s.rooms[id]
+func (s *Simulation) SetSpawnRoom(worldName string, id model.RoomID) error {
+	world, ok := s.worlds[worldName]
+	if !ok {
+		return ErrWorldNotFound
+	}
+
+	spawnRoom, ok := world.Rooms[id]
 	if !ok {
 		return ErrRoomNotFound
 	}
+
 	s.spawnRoom = spawnRoom
 
 	return nil
@@ -46,13 +68,23 @@ func (s *Simulation) SetSpawnRoom(id model.RoomID) error {
 
 // LinkRoom creates an exit from the origin room to the destination room in the direction specified.
 // If the link is bidirectional then an exit is created from the destination room to the origin room in the opposite direction.
-func (s *Simulation) LinkRoom(origin model.RoomID, direction model.Direction, destination model.RoomID, bidirectional bool) error {
-	originRoom, ok := s.rooms[origin]
+func (s *Simulation) LinkRoom(originWorldName string, origin model.RoomID, direction model.Direction, destinationWorldName string, destination model.RoomID, bidirectional bool) error {
+	originWorld, ok := s.worlds[originWorldName]
+	if !ok {
+		return ErrWorldNotFound
+	}
+
+	originRoom, ok := originWorld.Rooms[origin]
 	if !ok {
 		return ErrRoomNotFound
 	}
 
-	destinationRoom, ok := s.rooms[destination]
+	destinationWorld, ok := s.worlds[destinationWorldName]
+	if !ok {
+		return ErrWorldNotFound
+	}
+
+	destinationRoom, ok := destinationWorld.Rooms[destination]
 	if !ok {
 		return ErrRoomNotFound
 	}
