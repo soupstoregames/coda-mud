@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"github.com/soupstore/coda-world/data"
 	"github.com/soupstore/coda-world/simulation/model"
 )
 
@@ -21,14 +22,15 @@ func (s *Simulation) GetRoom(id model.RoomID) (*model.Room, error) {
 }
 
 // MakeRoom creates a new room at the next available ID
-func (s *Simulation) MakeRoom(name, description string) model.RoomID {
-	roomID := s.getNextRoomID()
+func (s *Simulation) LoadRoom(id int, r *data.Room) {
+	roomID := model.RoomID(id)
 	containerID := s.getNextContainerID()
-	room := model.NewRoom(roomID, containerID, name, description)
+
+	room := model.NewRoom(roomID, containerID, r.Name, r.Description)
 	s.rooms[roomID] = room
+
 	container := room.Container
 	s.containers[container.ID] = container
-	return roomID
 }
 
 // SetSpawnRoom sets the room that all new characters will start in

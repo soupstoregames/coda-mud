@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"github.com/soupstore/coda-world/data"
 	"github.com/soupstore/coda-world/simulation/model"
 )
 
@@ -30,6 +31,28 @@ func NewSimulation() *Simulation {
 		characters:      make(map[model.CharacterID]*model.Character),
 		containers:      make(map[model.ContainerID]*model.Container),
 	}
+}
+
+func (s *Simulation) LoadData(d *data.Data) error {
+	adminWorld := d.Worlds["admin"]
+
+	// load all worlds
+	for roomID, room := range adminWorld {
+		s.LoadRoom(roomID, room)
+	}
+
+	// load all exits
+	for roomID, room := range adminWorld {
+		for direction, exit := range room.Exits {
+			d, err := model.StringToDirection(direction)
+			if err != nil {
+				return err
+			}
+			s.LinkRoom(model.RoomID(roomID), d, model.RoomID(exit.RoomID), false)
+		}
+	}
+
+	return nil
 }
 
 func (s *Simulation) getNextRoomID() model.RoomID {

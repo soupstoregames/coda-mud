@@ -5,10 +5,10 @@ import (
 	"net"
 
 	"github.com/soupstore/coda-world/config"
+	"github.com/soupstore/coda-world/data"
 	"github.com/soupstore/coda-world/log"
 	"github.com/soupstore/coda-world/services"
 	"github.com/soupstore/coda-world/simulation"
-	"github.com/soupstore/coda-world/simulation/model"
 	"google.golang.org/grpc"
 )
 
@@ -20,21 +20,21 @@ func main() {
 		panic(err)
 	}
 
+	// load static data
+	data, err := data.Load(conf.DataPath)
+	if err != nil {
+		panic(err)
+	}
+
 	sim := simulation.NewSimulation()
+	sim.LoadData(data)
 
 	// temporary
-	voidID := sim.MakeRoom("Void", "Blackness. Silence. There is nothing here.")
-	sim.SetSpawnRoom(voidID)
-	constructID := sim.MakeRoom("The Construct", "This is the Construct. It's our loading program. We can load anything... From clothing to equipment, weapons, training simulations; anything we need.")
-	sim.LinkRoom(voidID, model.East, constructID, true)
+	sim.SetSpawnRoom(1)
+
 	_ = sim.MakeCharacter("Rinse")
 	sim.MakeCharacter("Claw")
 	sim.MakeCharacter("Gesau")
-	voidRoom, _ := sim.GetRoom(voidID)
-	backpack := model.NewItem(0, 100, "CODA Recon Pack", []string{"backpack", "pack", "recon pack", "coda recon pack", "coda recon"}, model.RigSlotBackpack)
-	sim.SpawnItem(backpack, voidRoom.Container.ID)
-	somePoo := model.NewItem(1, 0, "pile of poo", []string{"poo", "pile", "stool"}, model.RigSlotNone)
-	sim.SpawnItem(somePoo, voidRoom.Container.ID)
 
 	listenAddr := fmt.Sprintf("%s:%s", conf.Address, conf.Port)
 	characterService := services.NewCharacterService(sim)
