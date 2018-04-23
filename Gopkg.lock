@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/BurntSushi/toml"
+  packages = ["."]
+  revision = "b26d9c308763d68093482582cea63d69be07a0f0"
+  version = "v0.3.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/codingconcepts/env"
   packages = ["."]
@@ -50,15 +56,9 @@
   packages = ["context"]
   revision = "b68f30494add4df6bd8ef5e82803f308e7f7c59c"
 
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/sync"
-  packages = ["errgroup"]
-  revision = "1d60e4601c6fd243af51cc01ddf169918a5407ca"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "66e9eea23ad3b4ff49513318cbef424e84469af2fa1c60cadc1aabacf6e4bc7c"
+  inputs-digest = "33eda9b71d181ad4e29a3b3449dac11d753a2539b2ae2d3e849e312714a636ed"
   solver-name = "gps-cdcl"
   solver-version = 1

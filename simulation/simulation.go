@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"github.com/soupstore/coda-world/data"
 	"github.com/soupstore/coda-world/simulation/model"
 )
 
@@ -8,11 +9,10 @@ import (
 // It holds rooms, characters, items etc...
 // It exposes a number of interfaces to manipulate the simulation.
 type Simulation struct {
-	nextRoomID      model.RoomID
 	nextCharacterID model.CharacterID
 	nextContainerID model.ContainerID
 	spawnRoom       *model.Room
-	rooms           map[model.RoomID]*model.Room
+	worlds          map[string]*model.World
 	items           map[model.ItemID]*model.Item
 	characters      map[model.CharacterID]*model.Character
 	containers      map[model.ContainerID]*model.Container
@@ -21,21 +21,41 @@ type Simulation struct {
 // NewSimulation returns a Simulation with default params.
 func NewSimulation() *Simulation {
 	return &Simulation{
-		nextRoomID:      0,
 		nextCharacterID: 0,
 		nextContainerID: 0,
 		spawnRoom:       nil,
-		rooms:           make(map[model.RoomID]*model.Room),
+		worlds:          make(map[string]*model.World),
 		items:           make(map[model.ItemID]*model.Item),
 		characters:      make(map[model.CharacterID]*model.Character),
 		containers:      make(map[model.ContainerID]*model.Container),
 	}
 }
 
-func (s *Simulation) getNextRoomID() model.RoomID {
-	roomID := s.nextRoomID
-	s.nextRoomID = roomID + 1
-	return roomID
+func (s *Simulation) LoadData(d *data.Data) error {
+	adminWorld := d.Worlds["admin"]
+	if err := s.AddWorld("admin"); err != nil {
+		return err
+	}
+
+	// load all worlds
+	for roomID, room := range adminWorld {
+		if err := s.loadRoom("admin", model.RoomID(roomID), room); err != nil {
+			return err
+		}
+	}
+
+	// load all exits
+	for roomID, room := range adminWorld {
+		for direction, exit := range room.Exits {
+			d, err := model.StringToDirection(direction)
+			if err != nil {
+				return err
+			}
+			s.LinkRoom("admin", model.RoomID(roomID), d, "admin", model.RoomID(exit.RoomID), false)
+		}
+	}
+
+	return nil
 }
 
 func (s *Simulation) getNextCharacterID() model.CharacterID {

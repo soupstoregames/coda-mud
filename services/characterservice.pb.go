@@ -86,6 +86,7 @@ func (x Direction) String() string {
 }
 func (Direction) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
+// Commands
 type CommandType int32
 
 const (
@@ -137,6 +138,7 @@ func (x CommandType) String() string {
 }
 func (CommandType) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
+// Events
 type EventType int32
 
 const (
@@ -230,7 +232,6 @@ func (m *EventMessage) GetPayload() []byte {
 	return nil
 }
 
-// Commands
 type SayCommand struct {
 	Content string `protobuf:"bytes,1,opt,name=content" json:"content,omitempty"`
 }
@@ -279,7 +280,6 @@ func (m *DropCommand) GetAlias() string {
 	return ""
 }
 
-// Events
 type CharacterDescription struct {
 	Id    int64  `protobuf:"varint,1,opt,name=id" json:"id,omitempty"`
 	Name  string `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`

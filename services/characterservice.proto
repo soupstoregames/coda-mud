@@ -16,6 +16,17 @@ enum Direction {
 	NorthWest = 7;
 }
 
+message CommandMessage {
+  CommandType type = 1;
+  bytes payload = 2;
+}
+
+message EventMessage {
+  EventType type = 1;
+  bytes payload = 2;
+}
+
+// Commands
 enum CommandType {
   CmdLook = 0;
   CmdSay = 1;
@@ -31,30 +42,6 @@ enum CommandType {
   CmdDrop = 11;
 }
 
-message CommandMessage {
-  CommandType type = 1;
-  bytes payload = 2;
-}
-
-enum EventType {
-  EvtRoomDescription = 0;
-  EvtCharacterWakesUp = 1;
-  EvtCharacterSleeps = 2;
-  EvtCharacterSpeaks = 3;
-  EvtCharacterArrives = 4;
-  EvtCharacterLeaves = 5;
-  EvtNoExitInThatDirection = 6;
-  EvtItemNotHere = 7;
-  EvtCharacterTakesItem = 8;
-  EvtCharacterDropsItem = 9;
-}
-
-message EventMessage {
-  EventType type = 1;
-  bytes payload = 2;
-}
-
-// Commands
 message SayCommand {
   string content = 1;
 }
@@ -68,6 +55,19 @@ message DropCommand {
 }
 
 // Events
+enum EventType {
+  EvtRoomDescription = 0;
+  EvtCharacterWakesUp = 1;
+  EvtCharacterSleeps = 2;
+  EvtCharacterSpeaks = 3;
+  EvtCharacterArrives = 4;
+  EvtCharacterLeaves = 5;
+  EvtNoExitInThatDirection = 6;
+  EvtItemNotHere = 7;
+  EvtCharacterTakesItem = 8;
+  EvtCharacterDropsItem = 9;
+}
+
 message CharacterDescription {
   int64 id = 1;
   string name = 2;
