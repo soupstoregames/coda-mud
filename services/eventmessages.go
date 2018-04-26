@@ -80,7 +80,7 @@ func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, e
 		}
 		exits = append(exits, &ExitDescription{
 			Direction: mapDirection(k),
-			Name:      v.Name,
+			Name:      "temporarily unknown",
 		})
 	}
 

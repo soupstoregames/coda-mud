@@ -3,6 +3,7 @@ package data
 import (
 	"io/ioutil"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -19,7 +20,8 @@ type Room struct {
 }
 
 type Exit struct {
-	RoomID int `toml:"room_id"`
+	RoomID  int `toml:"room_id"`
+	WorldID int `toml:"world_id"`
 }
 
 // loadRooms will scan through all world folders and load the TOML room files
@@ -64,6 +66,10 @@ func loadWorld(folder string) (map[int]*Room, error) {
 
 	for _, file := range files {
 		if file.IsDir() {
+			continue
+		}
+
+		if filepath.Ext(file.Name()) != ".toml" {
 			continue
 		}
 

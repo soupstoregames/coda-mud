@@ -1,13 +1,17 @@
 package model
 
+type WorldID string
+
 type World struct {
-	Name  string
-	Rooms map[RoomID]*Room
+	WorldID WorldID
+	Name    string
+	Rooms   map[RoomID]*Room
 }
 
-func NewWorld(name string) *World {
+func NewWorld(id WorldID) *World {
 	return &World{
-		Name:  name,
-		Rooms: make(map[RoomID]*Room),
+		WorldID: id,
+		Name:    "",
+		Rooms:   make(map[RoomID]*Room),
 	}
 }

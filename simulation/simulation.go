@@ -12,7 +12,7 @@ type Simulation struct {
 	nextCharacterID model.CharacterID
 	nextContainerID model.ContainerID
 	spawnRoom       *model.Room
-	worlds          map[string]*model.World
+	worlds          map[model.WorldID]*model.World
 	items           map[model.ItemID]*model.Item
 	characters      map[model.CharacterID]*model.Character
 	containers      map[model.ContainerID]*model.Container
@@ -24,7 +24,7 @@ func NewSimulation() *Simulation {
 		nextCharacterID: 0,
 		nextContainerID: 0,
 		spawnRoom:       nil,
-		worlds:          make(map[string]*model.World),
+		worlds:          make(map[model.WorldID]*model.World),
 		items:           make(map[model.ItemID]*model.Item),
 		characters:      make(map[model.CharacterID]*model.Character),
 		containers:      make(map[model.ContainerID]*model.Container),
@@ -51,11 +51,25 @@ func (s *Simulation) LoadData(d *data.Data) error {
 			if err != nil {
 				return err
 			}
-			s.LinkRoom("admin", model.RoomID(roomID), d, "admin", model.RoomID(exit.RoomID), false)
+			s.LinkRoom(model.WorldID("admin"), model.RoomID(roomID), d, model.WorldID("admin"), model.RoomID(exit.RoomID))
 		}
 	}
 
 	return nil
+}
+
+func (s *Simulation) getRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error) {
+	world, ok := s.worlds[worldID]
+	if !ok {
+		return nil, ErrWorldNotFound
+	}
+
+	room, ok := world.Rooms[roomID]
+	if !ok {
+		return nil, ErrRoomNotFound
+	}
+
+	return room, nil
 }
 
 func (s *Simulation) getNextCharacterID() model.CharacterID {

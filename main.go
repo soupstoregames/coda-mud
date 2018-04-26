@@ -21,13 +21,13 @@ func main() {
 	}
 
 	// load static data
-	data, err := data.Load(conf.DataPath)
+	d, err := data.Load(conf.DataPath)
 	if err != nil {
 		panic(err)
 	}
 
 	sim := simulation.NewSimulation()
-	sim.LoadData(data)
+	sim.LoadData(d)
 
 	// temporary
 	sim.SetSpawnRoom("admin", 1)
