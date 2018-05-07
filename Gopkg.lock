@@ -20,6 +20,12 @@
   version = "v1.1.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/nicklanng/fsdiff"
+  packages = ["."]
+  revision = "360a36313cf91b666c5b44d583856338242e0b65"
+
+[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
@@ -59,6 +65,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "33eda9b71d181ad4e29a3b3449dac11d753a2539b2ae2d3e849e312714a636ed"
+  inputs-digest = "2da0b9ae24561a8c1d4e60f35d42232787a61fa02677b00e778f010535476ae1"
   solver-name = "gps-cdcl"
   solver-version = 1
