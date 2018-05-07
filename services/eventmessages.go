@@ -2,19 +2,20 @@ package services
 
 import (
 	"github.com/golang/protobuf/proto"
+	"github.com/soupstore/coda-world/simulation"
 	"github.com/soupstore/coda-world/simulation/model"
 )
 
 // buildEventMessage takes an event from a character's event stream and tries to convert it
 // into a protobuf *EventMessage.
 // if the event is an unknown type, it will not error but the *EventMessage will be nil.
-func buildEventMessage(event interface{}) (*EventMessage, error) {
+func buildEventMessage(event interface{}, sim simulation.WorldController) (*EventMessage, error) {
 	var err error
 	var eventMessage *EventMessage
 
 	switch v := event.(type) {
 	case model.EvtRoomDescription:
-		if eventMessage, err = buildEventRoomDescription(v); err != nil {
+		if eventMessage, err = buildEventRoomDescription(v, sim); err != nil {
 			return nil, err
 		}
 	case model.EvtCharacterWakesUp:
@@ -56,7 +57,7 @@ func buildEventMessage(event interface{}) (*EventMessage, error) {
 	return eventMessage, nil
 }
 
-func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, error) {
+func buildEventRoomDescription(event model.EvtRoomDescription, sim simulation.WorldController) (*EventMessage, error) {
 	// build present characters
 	characters := []*CharacterDescription{}
 	for _, ch := range event.Room.GetCharacters() {
@@ -78,9 +79,15 @@ func buildEventRoomDescription(event model.EvtRoomDescription) (*EventMessage, e
 		if v == nil {
 			continue
 		}
+
+		dest, err := sim.GetRoom(v.WorldID, v.RoomID)
+		if err != nil {
+			continue
+		}
+
 		exits = append(exits, &ExitDescription{
 			Direction: mapDirection(k),
-			Name:      "temporarily unknown",
+			Name:      dest.Name,
 		})
 	}
 

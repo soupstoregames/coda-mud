@@ -3,7 +3,6 @@ package simulation_test
 import (
 	"testing"
 
-	"github.com/soupstore/coda-world/data"
 	"github.com/soupstore/coda-world/simulation"
 	"github.com/soupstore/coda-world/simulation/model"
 )
@@ -14,21 +13,11 @@ import (
 // Grump then goes to sleep again, Sleepy gets a character goes to sleep.
 func TestWakingAndSleepingCharacter(t *testing.T) {
 	// set up simulation
-	data := &data.Data{
-		Worlds: map[string]map[int]*data.Room{
-			"admin": {
-				0: &data.Room{
-					Name:        "Void",
-					Description: "Nothing",
-				},
-			},
-		},
-	}
 	sim := simulation.NewSimulation()
-	if err := sim.LoadData(data); err != nil {
-		t.Error(err)
-	}
-	if err := sim.SetSpawnRoom("admin", 0); err != nil {
+	sim.AddWorld(model.WorldID("test"))
+	sim.MakeRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing")
+
+	if err := sim.SetSpawnRoom("test", 0); err != nil {
 		t.Error(err)
 	}
 
@@ -115,19 +104,11 @@ func TestSleepWithUnknownCharacter(t *testing.T) {
 // Waking up an awake character implies that someone is connecting to a character
 // that has already been connected to. This is an error.
 func TestWakeUpWithAwakeCharacter(t *testing.T) {
-	data := &data.Data{
-		Worlds: map[string]map[int]*data.Room{
-			"admin": {
-				0: &data.Room{
-					Name:        "Void",
-					Description: "Nothing",
-				},
-			},
-		},
-	}
 	sim := simulation.NewSimulation()
-	sim.LoadData(data)
-	if err := sim.SetSpawnRoom("admin", 0); err != nil {
+	sim.AddWorld(model.WorldID("test"))
+	sim.MakeRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing")
+
+	if err := sim.SetSpawnRoom("test", 0); err != nil {
 		t.Error(err)
 	}
 	sleepyID := sim.MakeCharacter("Sleepy")
@@ -141,19 +122,11 @@ func TestWakeUpWithAwakeCharacter(t *testing.T) {
 // Sleeping a character that is already asleep means that someone has disconnected
 // from this character twice. This is an error.
 func TestSleepWithSleepingCharacter(t *testing.T) {
-	data := &data.Data{
-		Worlds: map[string]map[int]*data.Room{
-			"admin": {
-				0: &data.Room{
-					Name:        "Void",
-					Description: "Nothing",
-				},
-			},
-		},
-	}
 	sim := simulation.NewSimulation()
-	sim.LoadData(data)
-	if err := sim.SetSpawnRoom("admin", 0); err != nil {
+	sim.AddWorld(model.WorldID("test"))
+	sim.MakeRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing")
+
+	if err := sim.SetSpawnRoom("test", 0); err != nil {
 		t.Error(err)
 	}
 	sleepyID := sim.MakeCharacter("Sleepy")

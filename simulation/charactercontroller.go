@@ -117,7 +117,7 @@ func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error
 		return nil
 	}
 
-	newRoom, err := s.getRoom(exit.WorldID, exit.RoomID)
+	newRoom, err := s.GetRoom(exit.WorldID, exit.RoomID)
 	if err != nil {
 		return err
 	}

@@ -27,12 +27,12 @@ var (
 
 // CharacterService is a GRPC service for controlling characters.
 type CharacterService struct {
-	controller simulation.CharacterController
+	sim *simulation.Simulation
 }
 
 // NewCharacterService returns a pointer to a character service and sets the character controller.
-func NewCharacterService(controller simulation.CharacterController) *CharacterService {
-	return &CharacterService{controller}
+func NewCharacterService(sim *simulation.Simulation) *CharacterService {
+	return &CharacterService{sim}
 }
 
 // Subscribe is the handler for the bidrirectional GRPC stream of commands and events.
@@ -48,11 +48,11 @@ func (s *CharacterService) Subscribe(stream Character_SubscribeServer) error {
 	}
 
 	// wake up the character, and it put it back to sleep when the controller disconnects
-	events, err := s.controller.WakeUpCharacter(characterID)
+	events, err := s.sim.WakeUpCharacter(characterID)
 	if err != nil {
 		return err
 	}
-	defer s.controller.SleepCharacter(characterID)
+	defer s.sim.SleepCharacter(characterID)
 
 	commands := make(chan *CommandMessage)
 	go s.listenForCommands(stream, commands)
@@ -106,7 +106,7 @@ func (s *CharacterService) loop(stream Character_SubscribeServer, events <-chan 
 			}
 
 			// parse event
-			eventMessage, err := buildEventMessage(event)
+			eventMessage, err := buildEventMessage(event, s.sim)
 			if err != nil {
 				return err
 			}
@@ -155,7 +155,7 @@ func (s *CharacterService) handleCommand(characterID model.CharacterID, cmd *Com
 	// TODO: address the concurrency issues with this approach
 	switch cmd.Type {
 	case CommandType_CmdLook:
-		s.controller.Look(characterID)
+		s.sim.Look(characterID)
 
 	case CommandType_CmdSay:
 		var msg SayCommand
@@ -163,52 +163,52 @@ func (s *CharacterService) handleCommand(characterID model.CharacterID, cmd *Com
 		if err != nil {
 			return err
 		}
-		s.controller.Say(characterID, msg.Content)
+		s.sim.Say(characterID, msg.Content)
 
 	case CommandType_CmdNorth:
-		err := s.controller.Move(characterID, model.North)
+		err := s.sim.Move(characterID, model.North)
 		if err != nil {
 			return err
 		}
 
 	case CommandType_CmdNorthEast:
-		err := s.controller.Move(characterID, model.NorthEast)
+		err := s.sim.Move(characterID, model.NorthEast)
 		if err != nil {
 			return err
 		}
 
 	case CommandType_CmdEast:
-		err := s.controller.Move(characterID, model.East)
+		err := s.sim.Move(characterID, model.East)
 		if err != nil {
 			return err
 		}
 
 	case CommandType_CmdSouthEast:
-		err := s.controller.Move(characterID, model.SouthEast)
+		err := s.sim.Move(characterID, model.SouthEast)
 		if err != nil {
 			return err
 		}
 
 	case CommandType_CmdSouth:
-		err := s.controller.Move(characterID, model.South)
+		err := s.sim.Move(characterID, model.South)
 		if err != nil {
 			return err
 		}
 
 	case CommandType_CmdSouthWest:
-		err := s.controller.Move(characterID, model.SouthWest)
+		err := s.sim.Move(characterID, model.SouthWest)
 		if err != nil {
 			return err
 		}
 
 	case CommandType_CmdWest:
-		err := s.controller.Move(characterID, model.West)
+		err := s.sim.Move(characterID, model.West)
 		if err != nil {
 			return err
 		}
 
 	case CommandType_CmdNorthWest:
-		err := s.controller.Move(characterID, model.NorthWest)
+		err := s.sim.Move(characterID, model.NorthWest)
 		if err != nil {
 			return err
 		}
@@ -219,7 +219,7 @@ func (s *CharacterService) handleCommand(characterID model.CharacterID, cmd *Com
 		if err != nil {
 			return err
 		}
-		err = s.controller.TakeItem(characterID, msg.Alias)
+		err = s.sim.TakeItem(characterID, msg.Alias)
 		if err != nil {
 			return err
 		}
@@ -230,7 +230,7 @@ func (s *CharacterService) handleCommand(characterID model.CharacterID, cmd *Com
 		if err != nil {
 			return err
 		}
-		err = s.controller.DropItem(characterID, msg.Alias)
+		err = s.sim.DropItem(characterID, msg.Alias)
 		if err != nil {
 			return err
 		}

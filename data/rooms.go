@@ -20,8 +20,8 @@ type Room struct {
 }
 
 type Exit struct {
-	RoomID  int `toml:"room_id"`
-	WorldID int `toml:"world_id"`
+	RoomID  int    `toml:"room_id"`
+	WorldID string `toml:"world_id"`
 }
 
 // loadRooms will scan through all world folders and load the TOML room files

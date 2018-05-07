@@ -20,14 +20,12 @@ func main() {
 		panic(err)
 	}
 
+	sim := simulation.NewSimulation()
+
 	// load static data
-	d, err := data.Load(conf.DataPath)
-	if err != nil {
+	if err := data.WatchDataFolder(conf.DataPath, sim); err != nil {
 		panic(err)
 	}
-
-	sim := simulation.NewSimulation()
-	sim.LoadData(d)
 
 	// temporary
 	sim.SetSpawnRoom("admin", 1)

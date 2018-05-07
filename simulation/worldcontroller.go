@@ -1,15 +1,16 @@
 package simulation
 
 import (
-	"github.com/soupstore/coda-world/data"
 	"github.com/soupstore/coda-world/simulation/model"
 )
 
 // WorldController is an interface over Simulation for modifying the world itself
 type WorldController interface {
-	MakeRoom(name, description string) model.RoomID
-	SetSpawnRoom(id model.RoomID) error
-	LinkRoom(model.RoomID, model.Direction, model.RoomID, bool) error
+	AddWorld(worldID model.WorldID) error
+	MakeRoom(worldID model.WorldID, roomID model.RoomID, name, description string) error
+	GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error)
+	SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) error
+	LinkRoom(originWorldName model.WorldID, origin model.RoomID, direction model.Direction, destinationWorldID model.WorldID, destination model.RoomID) error
 	SpawnItem(*model.Item, model.ContainerID) error
 }
 
@@ -19,7 +20,7 @@ func (s *Simulation) AddWorld(worldID model.WorldID) error {
 }
 
 // MakeRoom creates a new room at the next available ID
-func (s *Simulation) loadRoom(worldID model.WorldID, roomID model.RoomID, r *data.Room) error {
+func (s *Simulation) MakeRoom(worldID model.WorldID, roomID model.RoomID, name, description string) error {
 	containerID := s.getNextContainerID()
 
 	world, ok := s.worlds[worldID]
@@ -27,7 +28,7 @@ func (s *Simulation) loadRoom(worldID model.WorldID, roomID model.RoomID, r *dat
 		return ErrWorldNotFound
 	}
 
-	room := model.NewRoom(roomID, worldID, containerID, r.Name, r.Description)
+	room := model.NewRoom(roomID, worldID, containerID, name, description)
 	world.Rooms[roomID] = room
 
 	container := room.Container
@@ -36,9 +37,23 @@ func (s *Simulation) loadRoom(worldID model.WorldID, roomID model.RoomID, r *dat
 	return nil
 }
 
+func (s *Simulation) GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error) {
+	world, ok := s.worlds[worldID]
+	if !ok {
+		return nil, ErrWorldNotFound
+	}
+
+	room, ok := world.Rooms[roomID]
+	if !ok {
+		return nil, ErrRoomNotFound
+	}
+
+	return room, nil
+}
+
 // SetSpawnRoom sets the room that all new characters will start in
 func (s *Simulation) SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) error {
-	room, err := s.getRoom(worldID, roomID)
+	room, err := s.GetRoom(worldID, roomID)
 	if err != nil {
 		return ErrRoomNotFound
 	}
@@ -49,7 +64,7 @@ func (s *Simulation) SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) er
 }
 
 // LinkRoom creates an exit from the origin room to the destination room in the direction specified.
-func (s *Simulation) LinkRoom(originWorldName model.WorldID, origin model.RoomID, direction model.Direction, destinationWorldName model.WorldID, destination model.RoomID) error {
+func (s *Simulation) LinkRoom(originWorldName model.WorldID, origin model.RoomID, direction model.Direction, destinationWorldID model.WorldID, destination model.RoomID) error {
 	originWorld, ok := s.worlds[originWorldName]
 	if !ok {
 		return ErrWorldNotFound
@@ -60,19 +75,9 @@ func (s *Simulation) LinkRoom(originWorldName model.WorldID, origin model.RoomID
 		return ErrRoomNotFound
 	}
 
-	destinationWorld, ok := s.worlds[destinationWorldName]
-	if !ok {
-		return ErrWorldNotFound
-	}
-
-	destinationRoom, ok := destinationWorld.Rooms[destination]
-	if !ok {
-		return ErrRoomNotFound
-	}
-
 	originRoom.Exits[direction] = &model.Exit{
-		WorldID: originRoom.WorldID,
-		RoomID:  destinationRoom.ID,
+		WorldID: destinationWorldID,
+		RoomID:  destination,
 	}
 
 	return nil
