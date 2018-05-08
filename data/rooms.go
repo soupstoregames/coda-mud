@@ -2,6 +2,7 @@ package data
 
 import (
 	"io/ioutil"
+	"os"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -25,7 +26,7 @@ type Exit struct {
 }
 
 // loadRooms will scan through all world folders and load the TOML room files
-func loadRooms(roomBaseFolder string) (map[string]map[int]*Room, error) {
+func loadAllWorlds(roomBaseFolder string) (map[string]map[int]*Room, error) {
 	worlds := make(map[string]map[int]*Room)
 
 	// read all of the files in the rooms folder
@@ -41,7 +42,7 @@ func loadRooms(roomBaseFolder string) (map[string]map[int]*Room, error) {
 		}
 
 		// load the world rooms
-		world, err := loadWorld(path.Join(roomBaseFolder, file.Name()))
+		world, err := loadWorldFolder(path.Join(roomBaseFolder, file.Name()))
 		if err != nil {
 			return nil, err
 		}
@@ -55,8 +56,17 @@ func loadRooms(roomBaseFolder string) (map[string]map[int]*Room, error) {
 
 // load world takes a path to a folder full of rooms
 // it will go through each room and load it into a map
-func loadWorld(folder string) (map[int]*Room, error) {
+func loadWorldFolder(folder string) (map[int]*Room, error) {
 	rooms := make(map[int]*Room)
+
+	file, err := os.Stat(folder)
+	if err != nil {
+		return nil, err
+	}
+
+	if !file.IsDir() {
+		return nil, nil
+	}
 
 	// get all of the room files from the world folder
 	files, err := ioutil.ReadDir(folder)

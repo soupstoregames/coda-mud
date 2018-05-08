@@ -7,6 +7,7 @@ import (
 // WorldController is an interface over Simulation for modifying the world itself
 type WorldController interface {
 	AddWorld(worldID model.WorldID) error
+	RemoveWorld(worldID model.WorldID)
 	MakeRoom(worldID model.WorldID, roomID model.RoomID, name, description string) error
 	GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error)
 	SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) error
@@ -17,6 +18,10 @@ type WorldController interface {
 func (s *Simulation) AddWorld(worldID model.WorldID) error {
 	s.worlds[worldID] = model.NewWorld(worldID)
 	return nil
+}
+
+func (s *Simulation) RemoveWorld(worldID model.WorldID) {
+	delete(s.worlds, worldID)
 }
 
 // MakeRoom creates a new room at the next available ID

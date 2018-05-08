@@ -17,15 +17,20 @@ func main() {
 
 	conf, err := config.Load()
 	if err != nil {
-		panic(err)
+		log.Logger().Fatal(err.Error())
 	}
 
 	sim := simulation.NewSimulation()
 
 	// load static data
-	if err := data.WatchDataFolder(conf.DataPath, sim); err != nil {
-		panic(err)
-	}
+	dw := data.NewDataWatcher(conf.DataPath, sim)
+	go func() {
+		for {
+			e := <-dw.Errors
+			log.Logger().Error(e.Error())
+		}
+	}()
+	dw.Watch()
 
 	// temporary
 	sim.SetSpawnRoom("admin", 1)

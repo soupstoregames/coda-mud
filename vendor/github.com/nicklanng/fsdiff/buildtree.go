@@ -38,6 +38,10 @@ func visitNode(path string) (*Node, error) {
 
 		// visit children
 		for _, fileInfo := range children {
+			if fileInfo.Name()[0] == '.' {
+				continue
+			}
+
 			var node *Node
 			if node, err = visitNode(filepath.Join(path, fileInfo.Name())); err != nil {
 				return nil, err

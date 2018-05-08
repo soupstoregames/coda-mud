@@ -23,7 +23,7 @@
   branch = "master"
   name = "github.com/nicklanng/fsdiff"
   packages = ["."]
-  revision = "360a36313cf91b666c5b44d583856338242e0b65"
+  revision = "04d25b0226a201e797270d631b5e1335a5f357b9"
 
 [[projects]]
   name = "github.com/pkg/errors"
