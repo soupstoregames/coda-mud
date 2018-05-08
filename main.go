@@ -15,14 +15,16 @@ import (
 func main() {
 	log.Logger().Info("Starting world server")
 
+	// load config values from env vars
 	conf, err := config.Load()
 	if err != nil {
 		log.Logger().Fatal(err.Error())
 	}
 
+	// create a new simulation
 	sim := simulation.NewSimulation()
 
-	// load static data
+	// load static data and apply changes to simulation
 	dw := data.NewDataWatcher(conf.DataPath, sim)
 	go func() {
 		for {

@@ -8,7 +8,7 @@ import (
 // CharacterController is an interface over the Simulation that exposes all actions a connected
 // player will need to perform
 type CharacterController interface {
-	WakeUpCharacter(model.CharacterID) (<-chan interface{}, error)
+	WakeUpCharacter(model.CharacterID) (characterEvents <-chan interface{}, err error)
 	SleepCharacter(model.CharacterID) error
 	Look(model.CharacterID) error
 	Say(model.CharacterID, string) error
@@ -21,7 +21,7 @@ type CharacterController interface {
 // WakeUpCharacter make a character wake up.
 // It sends a room description to the waking character.
 // It sends a character waking event to the other characters in the room.
-func (s *Simulation) WakeUpCharacter(id model.CharacterID) (<-chan interface{}, error) {
+func (s *Simulation) WakeUpCharacter(id model.CharacterID) (characterEvents <-chan interface{}, err error) {
 	actor, ok := s.characters[id]
 	if !ok {
 		return nil, ErrCharacterNotFound
@@ -104,6 +104,7 @@ func (s *Simulation) Say(id model.CharacterID, content string) error {
 	return nil
 }
 
+// Move tries to move the character through the exit in the specified direction
 func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error {
 	actor, err := s.findAwakeCharacter(id)
 	if err != nil {
@@ -151,6 +152,7 @@ func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error
 	return nil
 }
 
+// TakeItem is how a character picks up and item from the world
 func (s *Simulation) TakeItem(id model.CharacterID, alias string) error {
 	actor, err := s.findAwakeCharacter(id)
 	if err != nil {
@@ -177,6 +179,7 @@ func (s *Simulation) TakeItem(id model.CharacterID, alias string) error {
 	return nil
 }
 
+// DropItem is how a character drops an item in the world
 func (s *Simulation) DropItem(id model.CharacterID, alias string) error {
 	actor, err := s.findAwakeCharacter(id)
 	if err != nil {
@@ -203,6 +206,7 @@ func (s *Simulation) DropItem(id model.CharacterID, alias string) error {
 	return nil
 }
 
+// EquipItem will attempt to equip the item to the character's rig
 func (s *Simulation) EquipItem(id model.CharacterID, itemID model.ItemID) error {
 	actor, err := s.findAwakeCharacter(id)
 	if err != nil {
