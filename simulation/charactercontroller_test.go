@@ -14,8 +14,8 @@ import (
 func TestWakingAndSleepingCharacter(t *testing.T) {
 	// set up simulation
 	sim := simulation.NewSimulation()
-	sim.AddWorld(model.WorldID("test"))
-	sim.MakeRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing")
+	sim.CreateWorld(model.WorldID("test"))
+	sim.CreateRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing")
 
 	if err := sim.SetSpawnRoom("test", 0); err != nil {
 		t.Error(err)
@@ -105,8 +105,8 @@ func TestSleepWithUnknownCharacter(t *testing.T) {
 // that has already been connected to. This is an error.
 func TestWakeUpWithAwakeCharacter(t *testing.T) {
 	sim := simulation.NewSimulation()
-	sim.AddWorld(model.WorldID("test"))
-	sim.MakeRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing")
+	sim.CreateWorld(model.WorldID("test"))
+	sim.CreateRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing")
 
 	if err := sim.SetSpawnRoom("test", 0); err != nil {
 		t.Error(err)
@@ -123,8 +123,8 @@ func TestWakeUpWithAwakeCharacter(t *testing.T) {
 // from this character twice. This is an error.
 func TestSleepWithSleepingCharacter(t *testing.T) {
 	sim := simulation.NewSimulation()
-	sim.AddWorld(model.WorldID("test"))
-	sim.MakeRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing")
+	sim.CreateWorld(model.WorldID("test"))
+	sim.CreateRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing")
 
 	if err := sim.SetSpawnRoom("test", 0); err != nil {
 		t.Error(err)

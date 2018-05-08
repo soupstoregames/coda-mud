@@ -127,7 +127,7 @@ func (dw *DataWatcher) applyWorldDiffs(diff *fsdiff.Diff) {
 
 		// the world has been added - load all rooms into the sim
 		if world.DiffType == fsdiff.DiffTypeRemoved {
-			dw.sim.RemoveWorld(worldID)
+			dw.sim.DestroyWorld(worldID)
 
 			log.Logger().Info(fmt.Sprintf("Removed world '%s'", worldID))
 		}
@@ -159,7 +159,7 @@ func (dw *DataWatcher) applyWorldDiffs(diff *fsdiff.Diff) {
 						continue
 					}
 
-					dw.sim.RemoveRoom(worldID, model.RoomID(roomID))
+					dw.sim.DestroyRoom(worldID, model.RoomID(roomID))
 					log.Logger().Info(fmt.Sprintf("Removed room %d in world '%s'", roomID, worldID))
 
 				case fsdiff.DiffTypeChanged:
@@ -184,7 +184,7 @@ func (dw *DataWatcher) applyWorldDiffs(diff *fsdiff.Diff) {
 }
 
 func (dw *DataWatcher) addWorldToSim(worldID model.WorldID, rooms map[int]*Room) {
-	dw.sim.AddWorld(worldID)
+	dw.sim.CreateWorld(worldID)
 
 	// load rooms
 	for roomID, room := range rooms {
@@ -197,7 +197,10 @@ func (dw *DataWatcher) addWorldToSim(worldID model.WorldID, rooms map[int]*Room)
 }
 
 func (dw *DataWatcher) addRoomToSim(worldID model.WorldID, roomID model.RoomID, room *Room) error {
-	dw.sim.MakeRoom(worldID, roomID, room.Name, room.Description)
+	r, err := dw.sim.CreateRoom(worldID, roomID, room.Name, room.Description)
+	if err != nil {
+		return err
+	}
 
 	// load room exits
 	for direction, exit := range room.Exits {
@@ -211,7 +214,10 @@ func (dw *DataWatcher) addRoomToSim(worldID model.WorldID, roomID model.RoomID, 
 			exit.WorldID = string(worldID)
 		}
 
-		dw.sim.LinkRoom(worldID, roomID, d, model.WorldID(exit.WorldID), model.RoomID(exit.RoomID))
+		r.Exits[d] = &model.Exit{
+			WorldID: model.WorldID(exit.WorldID),
+			RoomID:  model.RoomID(exit.RoomID),
+		}
 	}
 
 	return nil
@@ -239,7 +245,10 @@ func (dw *DataWatcher) updateRoomInSim(worldID model.WorldID, roomID model.RoomI
 			exit.WorldID = string(worldID)
 		}
 
-		dw.sim.LinkRoom(worldID, roomID, d, model.WorldID(exit.WorldID), model.RoomID(exit.RoomID))
+		r.Exits[d] = &model.Exit{
+			WorldID: model.WorldID(exit.WorldID),
+			RoomID:  model.RoomID(exit.RoomID),
+		}
 	}
 
 	return nil

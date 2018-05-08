@@ -6,33 +6,39 @@ import (
 
 // WorldController is an interface over Simulation for modifying the world itself
 type WorldController interface {
-	AddWorld(worldID model.WorldID) error
-	RemoveWorld(worldID model.WorldID)
-	MakeRoom(worldID model.WorldID, roomID model.RoomID, name, description string) error
+	CreateWorld(worldID model.WorldID) error
+	DestroyWorld(worldID model.WorldID)
+	CreateRoom(worldID model.WorldID, roomID model.RoomID, name, description string) (*model.Room, error)
 	GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error)
-	RemoveRoom(worldID model.WorldID, roomID model.RoomID) error
+	DestroyRoom(worldID model.WorldID, roomID model.RoomID) error
 	SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) error
-	LinkRoom(originWorldName model.WorldID, origin model.RoomID, direction model.Direction, destinationWorldID model.WorldID, destination model.RoomID) error
 	SpawnItem(*model.Item, model.ContainerID) error
 }
 
-func (s *Simulation) AddWorld(worldID model.WorldID) error {
+// CreateWorld creates a new world in the simulation.
+// Every world must have a unique WorldID, which is a type aliased sting.
+func (s *Simulation) CreateWorld(worldID model.WorldID) error {
+	// TODO: check for uniqueness
 	s.worlds[worldID] = model.NewWorld(worldID)
 	return nil
 }
 
-func (s *Simulation) RemoveWorld(worldID model.WorldID) {
+// DestroyWorld unloads a world and all of its rooms from the simulation.
+func (s *Simulation) DestroyWorld(worldID model.WorldID) {
+	// TODO: Move all characters in this world to a safe location
 	delete(s.worlds, worldID)
 }
 
-// MakeRoom creates a new room at the next available ID
-func (s *Simulation) MakeRoom(worldID model.WorldID, roomID model.RoomID, name, description string) error {
+// CreateRoom creates a new room in the specified world with the specified room ID
+func (s *Simulation) CreateRoom(worldID model.WorldID, roomID model.RoomID, name, description string) (*model.Room, error) {
 	containerID := s.getNextContainerID()
 
 	world, ok := s.worlds[worldID]
 	if !ok {
-		return ErrWorldNotFound
+		return nil, ErrWorldNotFound
 	}
+
+	// TODO: Check that room with ID does not already exist
 
 	room := model.NewRoom(roomID, worldID, containerID, name, description)
 	world.Rooms[roomID] = room
@@ -40,9 +46,10 @@ func (s *Simulation) MakeRoom(worldID model.WorldID, roomID model.RoomID, name, 
 	container := room.Container
 	s.containers[container.ID] = container
 
-	return nil
+	return room, nil
 }
 
+// GetRoom returns the room object as the specified world ID and room ID
 func (s *Simulation) GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error) {
 	world, ok := s.worlds[worldID]
 	if !ok {
@@ -57,11 +64,14 @@ func (s *Simulation) GetRoom(worldID model.WorldID, roomID model.RoomID) (*model
 	return room, nil
 }
 
-func (s *Simulation) RemoveRoom(worldID model.WorldID, roomID model.RoomID) error {
+// DestroyRoom removes a room from a world.
+func (s *Simulation) DestroyRoom(worldID model.WorldID, roomID model.RoomID) error {
 	world, ok := s.worlds[worldID]
 	if !ok {
 		return ErrWorldNotFound
 	}
+
+	// TODO: Clean up broken exits in the rest of the sim.
 
 	delete(world.Rooms, roomID)
 
@@ -80,26 +90,7 @@ func (s *Simulation) SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) er
 	return nil
 }
 
-// LinkRoom creates an exit from the origin room to the destination room in the direction specified.
-func (s *Simulation) LinkRoom(originWorldName model.WorldID, origin model.RoomID, direction model.Direction, destinationWorldID model.WorldID, destination model.RoomID) error {
-	originWorld, ok := s.worlds[originWorldName]
-	if !ok {
-		return ErrWorldNotFound
-	}
-
-	originRoom, ok := originWorld.Rooms[origin]
-	if !ok {
-		return ErrRoomNotFound
-	}
-
-	originRoom.Exits[direction] = &model.Exit{
-		WorldID: destinationWorldID,
-		RoomID:  destination,
-	}
-
-	return nil
-}
-
+// TODO: Clean up this, its messy
 func (s *Simulation) SpawnItem(item *model.Item, containerID model.ContainerID) error {
 	container, ok := s.containers[containerID]
 	if !ok {
