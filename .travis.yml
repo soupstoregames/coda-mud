@@ -19,12 +19,13 @@ script:
 after_success:
   # Discord notification
   - curl -sL https://git.io/ss-notify-discord-travis | bash -s success $WEBHOOK_URL
-  
+
   # push to docker
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker push $TRAVIS_REPO_SLUG:dev;
     curl -sL https://git.io/ss-notify-discord-docker | bash -s $TRAVIS_REPO_SLUG:dev $DOCKERHUB_WEBHOOK;
+    curl -sL https://raw.githubusercontent.com/soupstore/build-scripts/master/trigger-travis-build.sh | bash -s soupstore coda-infrastructure development;
     fi
   - if [ $TRAVIS_TAG ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
