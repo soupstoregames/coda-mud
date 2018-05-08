@@ -10,6 +10,7 @@ type WorldController interface {
 	RemoveWorld(worldID model.WorldID)
 	MakeRoom(worldID model.WorldID, roomID model.RoomID, name, description string) error
 	GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error)
+	RemoveRoom(worldID model.WorldID, roomID model.RoomID) error
 	SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) error
 	LinkRoom(originWorldName model.WorldID, origin model.RoomID, direction model.Direction, destinationWorldID model.WorldID, destination model.RoomID) error
 	SpawnItem(*model.Item, model.ContainerID) error
@@ -54,6 +55,17 @@ func (s *Simulation) GetRoom(worldID model.WorldID, roomID model.RoomID) (*model
 	}
 
 	return room, nil
+}
+
+func (s *Simulation) RemoveRoom(worldID model.WorldID, roomID model.RoomID) error {
+	world, ok := s.worlds[worldID]
+	if !ok {
+		return ErrWorldNotFound
+	}
+
+	delete(world.Rooms, roomID)
+
+	return nil
 }
 
 // SetSpawnRoom sets the room that all new characters will start in

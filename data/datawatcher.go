@@ -50,8 +50,8 @@ func (dw *DataWatcher) Watch() {
 			// find the diffed files
 			diff := fsdiff.Compare(dw.lastDataState, newState)
 
-			// find changes to data folder
-			dw.walkDiff(diff)
+			// apply diffs to simulation
+			dw.applyDiff(diff)
 
 			// save state for next time
 			dw.lastDataState = newState
@@ -79,7 +79,7 @@ func (dw *DataWatcher) initialLoad() (*fsdiff.Node, error) {
 	return state, nil
 }
 
-func (dw *DataWatcher) walkDiff(diff *fsdiff.Diff) {
+func (dw *DataWatcher) applyDiff(diff *fsdiff.Diff) {
 	if diff.DiffType == fsdiff.DiffTypeNone {
 		return
 	}
@@ -91,12 +91,12 @@ func (dw *DataWatcher) walkDiff(diff *fsdiff.Diff) {
 		return
 	}
 
-	dw.walkWorlds(rooms)
+	dw.applyWorldDiffs(rooms)
 
 	return
 }
 
-func (dw *DataWatcher) walkWorlds(diff *fsdiff.Diff) {
+func (dw *DataWatcher) applyWorldDiffs(diff *fsdiff.Diff) {
 	// has room folder changed?
 	if diff.DiffType != fsdiff.DiffTypeChanged {
 		return
@@ -108,9 +108,10 @@ func (dw *DataWatcher) walkWorlds(diff *fsdiff.Diff) {
 			continue
 		}
 
+		worldID := model.WorldID(filepath.Base(world.Path))
+
 		// the world has been added - load all rooms into the sim
 		if world.DiffType == fsdiff.DiffTypeAdded {
-			worldID := model.WorldID(filepath.Base(world.Path))
 			rooms, err := loadWorldFolder(world.Path)
 			if err != nil {
 				dw.Errors <- errors.New("failed to load world")
@@ -126,7 +127,6 @@ func (dw *DataWatcher) walkWorlds(diff *fsdiff.Diff) {
 
 		// the world has been added - load all rooms into the sim
 		if world.DiffType == fsdiff.DiffTypeRemoved {
-			worldID := model.WorldID(filepath.Base(world.Path))
 			dw.sim.RemoveWorld(worldID)
 
 			log.Logger().Info(fmt.Sprintf("Removed world '%s'", worldID))
@@ -134,7 +134,51 @@ func (dw *DataWatcher) walkWorlds(diff *fsdiff.Diff) {
 
 		// the world have been changed, move down to the room level
 		if world.DiffType == fsdiff.DiffTypeChanged {
-			// TODO: test rooms
+			for _, room := range world.Children {
+				switch room.DiffType {
+				case fsdiff.DiffTypeAdded:
+					roomID, err := getRoomID(filepath.Base(room.Path))
+					if err != nil {
+						dw.Errors <- err
+						continue
+					}
+
+					room, err := loadRoom(room.Path)
+					if err != nil {
+						dw.Errors <- err
+						continue
+					}
+
+					dw.addRoomToSim(worldID, model.RoomID(roomID), room)
+					log.Logger().Info(fmt.Sprintf("Added room %d to world '%s'", roomID, worldID))
+
+				case fsdiff.DiffTypeRemoved:
+					roomID, err := getRoomID(filepath.Base(room.Path))
+					if err != nil {
+						dw.Errors <- err
+						continue
+					}
+
+					dw.sim.RemoveRoom(worldID, model.RoomID(roomID))
+					log.Logger().Info(fmt.Sprintf("Removed room %d in world '%s'", roomID, worldID))
+
+				case fsdiff.DiffTypeChanged:
+					roomID, err := getRoomID(filepath.Base(room.Path))
+					if err != nil {
+						dw.Errors <- err
+						continue
+					}
+
+					room, err := loadRoom(room.Path)
+					if err != nil {
+						dw.Errors <- err
+						continue
+					}
+
+					dw.updateRoomInSim(worldID, model.RoomID(roomID), room)
+					log.Logger().Info(fmt.Sprintf("Updated room %d in world '%s'", roomID, worldID))
+				}
+			}
 		}
 	}
 }
@@ -154,6 +198,34 @@ func (dw *DataWatcher) addWorldToSim(worldID model.WorldID, rooms map[int]*Room)
 
 func (dw *DataWatcher) addRoomToSim(worldID model.WorldID, roomID model.RoomID, room *Room) error {
 	dw.sim.MakeRoom(worldID, roomID, room.Name, room.Description)
+
+	// load room exits
+	for direction, exit := range room.Exits {
+		d, err := model.StringToDirection(direction)
+		if err != nil {
+			return err
+		}
+
+		// if no worldID is provided, it defaults to the same as the room lives in
+		if exit.WorldID == "" {
+			exit.WorldID = string(worldID)
+		}
+
+		dw.sim.LinkRoom(worldID, roomID, d, model.WorldID(exit.WorldID), model.RoomID(exit.RoomID))
+	}
+
+	return nil
+}
+
+func (dw *DataWatcher) updateRoomInSim(worldID model.WorldID, roomID model.RoomID, room *Room) error {
+	r, err := dw.sim.GetRoom(worldID, roomID)
+	if err != nil {
+		return err
+	}
+
+	r.Name = room.Name
+	r.Description = room.Description
+	r.Exits = make(map[model.Direction]*model.Exit)
 
 	// load room exits
 	for direction, exit := range room.Exits {
