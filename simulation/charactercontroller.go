@@ -15,7 +15,7 @@ type CharacterController interface {
 	Move(model.CharacterID, model.Direction) error
 	TakeItem(id model.CharacterID, alias string) error
 	DropItem(id model.CharacterID, alias string) error
-	EquipItem(id model.CharacterID, itemID model.ItemID) error
+	EquipItem(id model.CharacterID, alias string) error
 }
 
 // WakeUpCharacter make a character wake up.
@@ -207,22 +207,24 @@ func (s *Simulation) DropItem(id model.CharacterID, alias string) error {
 }
 
 // EquipItem will attempt to equip the item to the character's rig
-func (s *Simulation) EquipItem(id model.CharacterID, itemID model.ItemID) error {
+func (s *Simulation) EquipItem(id model.CharacterID, alias string) error {
 	actor, err := s.findAwakeCharacter(id)
 	if err != nil {
 		return err
 	}
 
-	item, ok := actor.Room.Container.Items[itemID]
-	if !ok {
-		return ErrItemNotFound
+	for _, item := range actor.Room.Container.Items {
+		if item.KnownAs(alias) {
+			_, err = actor.Equip(item)
+			if err == model.ErrNotEquipable {
+				return ErrCannotEquipItem
+			}
+			actor.Room.Container.RemoveItem(item.ID)
+			return nil
+		}
 	}
 
-	_, err = actor.Equip(item)
-	if err == model.ErrNotEquipable {
-		return ErrCannotEquipItem
-	}
-	actor.Room.Container.RemoveItem(item.ID)
+	actor.Dispatch(model.EvtItemNotHere{})
 
 	return nil
 }

@@ -26,13 +26,7 @@ func main() {
 
 	// load static data and apply changes to simulation
 	dw := data.NewDataWatcher(conf.DataPath, sim)
-	go func() {
-		for {
-			e := <-dw.Errors
-			log.Logger().Error(e.Error())
-		}
-	}()
-	dw.Watch()
+	log.SubscribeToErrorChan(dw.Errors)
 
 	// temporary
 	sim.SetSpawnRoom("admin", 1)
@@ -41,10 +35,13 @@ func main() {
 	sim.MakeCharacter("Claw")
 	sim.MakeCharacter("Gesau")
 
+	nexus, _ := sim.GetRoom("admin", 1)
+	sim.SpawnItem(1, nexus.Container.ID)
+	sim.SpawnItem(2, nexus.Container.ID)
+
+	// create grpc server
 	listenAddr := fmt.Sprintf("%s:%s", conf.Address, conf.Port)
 	characterService := services.NewCharacterService(sim)
-
-	// LISTEN TO GRPC
 	lis, err := net.Listen("tcp", listenAddr)
 	if err != nil {
 		log.Logger().Fatal(fmt.Sprintf("failed to listen: %v", err))
@@ -54,5 +51,4 @@ func main() {
 	if err := s.Serve(lis); err != nil {
 		log.Logger().Fatal(fmt.Sprintf("failed to serve: %v", err))
 	}
-
 }

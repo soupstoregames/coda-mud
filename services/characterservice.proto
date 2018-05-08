@@ -40,6 +40,7 @@ enum CommandType {
   CmdNorthWest = 9;
   CmdTake = 10;
   CmdDrop = 11;
+  CmdEquip = 12;
 }
 
 message SayCommand {
@@ -51,6 +52,10 @@ message TakeCommand {
 }
 
 message DropCommand {
+  string alias = 1;
+}
+
+message EquipCommand {
   string alias = 1;
 }
 

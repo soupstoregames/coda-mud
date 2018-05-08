@@ -12,13 +12,12 @@ type Item struct {
 	Container *Container
 }
 
-func NewItem(id ItemID, containerID ContainerID, name string, aliases []string, RigSlot RigSlot) *Item {
+func NewItem(id ItemID, name string, aliases []string, RigSlot RigSlot) *Item {
 	return &Item{
-		ID:        id,
-		Name:      name,
-		Aliases:   append(aliases, name),
-		RigSlot:   RigSlot,
-		Container: newFiniteContainer(containerID),
+		ID:      id,
+		Name:    name,
+		Aliases: append(aliases, name),
+		RigSlot: RigSlot,
 	}
 }
 

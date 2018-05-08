@@ -16,9 +16,7 @@ func NewCharacter(id CharacterID, name string, room *Room) *Character {
 		ID:   id,
 		Name: name,
 		Room: room,
-		Rig: Rig{
-			Backpack: NewItem(0, 99, "CODA Recon Pack", []string{"backpack", "pack", "recon pack", "coda recon pack", "coda recon"}, RigSlotBackpack),
-		},
+		Rig:  Rig{},
 	}
 }
 

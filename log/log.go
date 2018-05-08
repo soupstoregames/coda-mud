@@ -1,6 +1,8 @@
 package log
 
-import "go.uber.org/zap"
+import (
+	"go.uber.org/zap"
+)
 
 var logger *zap.Logger
 
@@ -14,4 +16,13 @@ func init() {
 
 func Logger() *zap.Logger {
 	return logger
+}
+
+func SubscribeToErrorChan(errors <-chan error) {
+	go func() {
+		for {
+			e := <-errors
+			logger.Error(e.Error())
+		}
+	}()
 }

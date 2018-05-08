@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/golang/protobuf/proto"
+	"github.com/soupstore/coda-world/log"
 	"github.com/soupstore/coda-world/simulation"
 	"github.com/soupstore/coda-world/simulation/model"
 )
@@ -51,7 +52,7 @@ func buildEventMessage(event interface{}, sim simulation.WorldController) (*Even
 			return nil, err
 		}
 	default:
-		// TODO: log warning
+		log.Logger().Warn("Attempt to build event message for unknown message type")
 	}
 
 	return eventMessage, nil

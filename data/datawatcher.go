@@ -21,14 +21,18 @@ type DataWatcher struct {
 }
 
 func NewDataWatcher(rootPath string, sim simulation.WorldController) *DataWatcher {
-	return &DataWatcher{
+	dw := &DataWatcher{
 		Errors:     make(chan error, 1),
 		dataFolder: rootPath,
 		sim:        sim,
 	}
+
+	dw.watch()
+
+	return dw
 }
 
-func (dw *DataWatcher) Watch() {
+func (dw *DataWatcher) watch() {
 	// load initial state
 	dataState, err := dw.initialLoad()
 	if err != nil {
@@ -60,6 +64,11 @@ func (dw *DataWatcher) Watch() {
 }
 
 func (dw *DataWatcher) initialLoad() (*fsdiff.Node, error) {
+	items, err := loadAllItems(path.Join(dw.dataFolder, "items"))
+	if err != nil {
+		return nil, err
+	}
+
 	worlds, err := loadAllWorlds(path.Join(dw.dataFolder, "rooms"))
 	if err != nil {
 		return nil, err
@@ -68,6 +77,12 @@ func (dw *DataWatcher) initialLoad() (*fsdiff.Node, error) {
 	state, err := fsdiff.BuildTree(dw.dataFolder)
 	if err != nil {
 		return nil, err
+	}
+
+	// load items
+	for itemID, item := range items {
+		itemID := model.ItemID(itemID)
+		dw.addItemToSim(itemID, item)
 	}
 
 	// load worlds
@@ -252,6 +267,11 @@ func (dw *DataWatcher) updateRoomInSim(worldID model.WorldID, roomID model.RoomI
 	}
 
 	return nil
+}
+
+func (dw *DataWatcher) addItemToSim(itemID model.ItemID, item *Item) error {
+	_, err := dw.sim.CreateItem(itemID, item.Name, item.Aliases)
+	return err
 }
 
 func searchChildrenForName(parent *fsdiff.Diff, name string) (*fsdiff.Diff, bool) {

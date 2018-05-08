@@ -159,79 +159,76 @@ func (s *CharacterService) handleCommand(characterID model.CharacterID, cmd *Com
 
 	case CommandType_CmdSay:
 		var msg SayCommand
-		err := proto.Unmarshal(cmd.Payload, &msg)
-		if err != nil {
+		if err := proto.Unmarshal(cmd.Payload, &msg); err != nil {
 			return err
 		}
 		s.sim.Say(characterID, msg.Content)
 
 	case CommandType_CmdNorth:
-		err := s.sim.Move(characterID, model.North)
-		if err != nil {
+		if err := s.sim.Move(characterID, model.North); err != nil {
 			return err
 		}
 
 	case CommandType_CmdNorthEast:
-		err := s.sim.Move(characterID, model.NorthEast)
-		if err != nil {
+		if err := s.sim.Move(characterID, model.NorthEast); err != nil {
 			return err
 		}
 
 	case CommandType_CmdEast:
-		err := s.sim.Move(characterID, model.East)
-		if err != nil {
+		if err := s.sim.Move(characterID, model.East); err != nil {
 			return err
 		}
 
 	case CommandType_CmdSouthEast:
-		err := s.sim.Move(characterID, model.SouthEast)
-		if err != nil {
+		if err := s.sim.Move(characterID, model.SouthEast); err != nil {
 			return err
 		}
 
 	case CommandType_CmdSouth:
-		err := s.sim.Move(characterID, model.South)
-		if err != nil {
+		if err := s.sim.Move(characterID, model.South); err != nil {
 			return err
 		}
 
 	case CommandType_CmdSouthWest:
-		err := s.sim.Move(characterID, model.SouthWest)
-		if err != nil {
+		if err := s.sim.Move(characterID, model.SouthWest); err != nil {
 			return err
 		}
 
 	case CommandType_CmdWest:
-		err := s.sim.Move(characterID, model.West)
-		if err != nil {
+		if err := s.sim.Move(characterID, model.West); err != nil {
 			return err
 		}
 
 	case CommandType_CmdNorthWest:
-		err := s.sim.Move(characterID, model.NorthWest)
-		if err != nil {
+		if err := s.sim.Move(characterID, model.NorthWest); err != nil {
 			return err
 		}
 
 	case CommandType_CmdTake:
 		var msg TakeCommand
-		err := proto.Unmarshal(cmd.Payload, &msg)
-		if err != nil {
+		if err := proto.Unmarshal(cmd.Payload, &msg); err != nil {
 			return err
 		}
-		err = s.sim.TakeItem(characterID, msg.Alias)
-		if err != nil {
+		if err := s.sim.TakeItem(characterID, msg.Alias); err != nil {
 			return err
 		}
 
 	case CommandType_CmdDrop:
 		var msg DropCommand
-		err := proto.Unmarshal(cmd.Payload, &msg)
-		if err != nil {
+		if err := proto.Unmarshal(cmd.Payload, &msg); err != nil {
 			return err
 		}
-		err = s.sim.DropItem(characterID, msg.Alias)
-		if err != nil {
+		if err := s.sim.DropItem(characterID, msg.Alias); err != nil {
+			return err
+		}
+
+	case CommandType_CmdEquip:
+		var msg EquipCommand
+		if err := proto.Unmarshal(cmd.Payload, &msg); err != nil {
+			return err
+		}
+
+		if err := s.sim.EquipItem(characterID, msg.Alias); err != nil {
 			return err
 		}
 	}

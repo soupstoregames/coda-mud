@@ -12,7 +12,8 @@ type WorldController interface {
 	GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error)
 	DestroyRoom(worldID model.WorldID, roomID model.RoomID) error
 	SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) error
-	SpawnItem(*model.Item, model.ContainerID) error
+	CreateItem(itemID model.ItemID, name string, aliases []string) (*model.Item, error)
+	SpawnItem(itemID model.ItemID, containerID model.ContainerID) error
 }
 
 // CreateWorld creates a new world in the simulation.
@@ -90,13 +91,23 @@ func (s *Simulation) SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) er
 	return nil
 }
 
+// CreateItem creates a new item archetype
+func (s *Simulation) CreateItem(itemID model.ItemID, name string, aliases []string) (*model.Item, error) {
+	item := model.NewItem(itemID, name, aliases, model.RigSlotNone)
+	s.items[itemID] = item
+	return item, nil
+}
+
 // TODO: Clean up this, its messy
-func (s *Simulation) SpawnItem(item *model.Item, containerID model.ContainerID) error {
+func (s *Simulation) SpawnItem(itemID model.ItemID, containerID model.ContainerID) error {
 	container, ok := s.containers[containerID]
 	if !ok {
 		return ErrContainerNotFound
 	}
 
-	container.PutItem(item)
+	archetype := s.items[itemID]
+	copy := *archetype
+
+	container.PutItem(&copy)
 	return nil
 }
