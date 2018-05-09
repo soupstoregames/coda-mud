@@ -1,6 +1,21 @@
 package model
 
-import "strings"
+import (
+	"strings"
+)
+
+type ItemDefinitionID int64
+
+type ItemDefinition struct {
+	ID        ItemDefinitionID
+	Name      string
+	Aliases   []string
+	RigSlot   RigSlot
+	Container *ContainerDefinition
+}
+
+type ContainerDefinition struct {
+}
 
 type ItemID int64
 
@@ -12,12 +27,28 @@ type Item struct {
 	Container *Container
 }
 
-func NewItem(id ItemID, name string, aliases []string, RigSlot RigSlot) *Item {
+func NewItemDefinition(id ItemDefinitionID, name string, aliases []string, RigSlot RigSlot, container *ContainerDefinition) *ItemDefinition {
+
+	return &ItemDefinition{
+		ID:        id,
+		Name:      name,
+		Aliases:   append(aliases, name),
+		RigSlot:   RigSlot,
+		Container: container,
+	}
+}
+
+func (b *ItemDefinition) Spawn(itemID ItemID) *Item {
+	var container *Container
+	if b.Container != nil {
+		container = newFiniteContainer(0)
+	}
 	return &Item{
-		ID:      id,
-		Name:    name,
-		Aliases: append(aliases, name),
-		RigSlot: RigSlot,
+		ID:        itemID,
+		Name:      b.Name,
+		Aliases:   b.Aliases,
+		RigSlot:   b.RigSlot,
+		Container: container,
 	}
 }
 

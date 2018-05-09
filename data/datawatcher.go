@@ -80,9 +80,9 @@ func (dw *DataWatcher) initialLoad() (*fsdiff.Node, error) {
 	}
 
 	// load items
-	for itemID, item := range items {
-		itemID := model.ItemID(itemID)
-		dw.addItemToSim(itemID, item)
+	for fileID, item := range items {
+		itemDefinitionID := model.ItemDefinitionID(fileID)
+		dw.addItemToSim(itemDefinitionID, item)
 	}
 
 	// load worlds
@@ -269,14 +269,19 @@ func (dw *DataWatcher) updateRoomInSim(worldID model.WorldID, roomID model.RoomI
 	return nil
 }
 
-func (dw *DataWatcher) addItemToSim(itemID model.ItemID, item *Item) error {
+func (dw *DataWatcher) addItemToSim(itemDefinitionID model.ItemDefinitionID, item *Item) error {
 	var rigSlot model.RigSlot
 	switch item.RigSlot {
 	case "backpack":
 		rigSlot = model.RigSlotBackpack
 	}
 
-	_, err := dw.sim.CreateItem(itemID, item.Name, item.Aliases, rigSlot)
+	var container *model.ContainerDefinition
+	if item.Container != nil {
+		container = &model.ContainerDefinition{}
+	}
+
+	_, err := dw.sim.CreateItemDefinition(itemDefinitionID, item.Name, item.Aliases, rigSlot, container)
 	return err
 }
 

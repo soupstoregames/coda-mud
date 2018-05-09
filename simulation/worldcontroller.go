@@ -12,8 +12,8 @@ type WorldController interface {
 	GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error)
 	DestroyRoom(worldID model.WorldID, roomID model.RoomID) error
 	SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) error
-	CreateItem(itemID model.ItemID, name string, aliases []string, rigSlot model.RigSlot) (*model.Item, error)
-	SpawnItem(itemID model.ItemID, containerID model.ContainerID) error
+	CreateItemDefinition(itemID model.ItemDefinitionID, name string, aliases []string, rigSlot model.RigSlot, container *model.ContainerDefinition) (*model.ItemDefinition, error)
+	SpawnItem(itemDefinitionID model.ItemDefinitionID, containerID model.ContainerID) error
 }
 
 // CreateWorld creates a new world in the simulation.
@@ -91,23 +91,27 @@ func (s *Simulation) SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) er
 	return nil
 }
 
-// CreateItem creates a new item archetype
-func (s *Simulation) CreateItem(itemID model.ItemID, name string, aliases []string, rigSlot model.RigSlot) (*model.Item, error) {
-	item := model.NewItem(itemID, name, aliases, rigSlot)
-	s.items[itemID] = item
+// CreateItemDefinition creates a new item definition
+func (s *Simulation) CreateItemDefinition(itemID model.ItemDefinitionID, name string, aliases []string, rigSlot model.RigSlot, container *model.ContainerDefinition) (*model.ItemDefinition, error) {
+	item := model.NewItemDefinition(itemID, name, aliases, rigSlot, container)
+	s.itemDefinitions[itemID] = item
 	return item, nil
 }
 
-// TODO: Clean up this, its messy
-func (s *Simulation) SpawnItem(itemID model.ItemID, containerID model.ContainerID) error {
+func (s *Simulation) SpawnItem(itemDefinitionID model.ItemDefinitionID, containerID model.ContainerID) error {
 	container, ok := s.containers[containerID]
 	if !ok {
 		return ErrContainerNotFound
 	}
 
-	archetype := s.items[itemID]
-	copy := *archetype
+	definition := s.itemDefinitions[itemDefinitionID]
+	id := s.getNextItemID()
+	instance := definition.Spawn(id)
+	if instance.Container != nil {
+		instance.Container.ID = s.getNextContainerID()
+		s.containers[instance.Container.ID] = instance.Container
+	}
+	container.PutItem(instance)
 
-	container.PutItem(&copy)
 	return nil
 }

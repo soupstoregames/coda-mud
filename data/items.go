@@ -68,5 +68,6 @@ func loadItem(filepath string) (*Item, error) {
 	if _, err := toml.Decode(string(data), &item); err != nil {
 		return nil, err
 	}
+
 	return &item, nil
 }
