@@ -3,7 +3,7 @@ package model
 type CharacterID int64
 
 type Character struct {
-	Rig
+	*Rig
 	ID     CharacterID
 	Name   string
 	Awake  bool
@@ -16,7 +16,7 @@ func NewCharacter(id CharacterID, name string, room *Room) *Character {
 		ID:   id,
 		Name: name,
 		Room: room,
-		Rig:  Rig{},
+		Rig:  &Rig{},
 	}
 }
 
