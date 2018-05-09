@@ -55,6 +55,10 @@ func buildEventMessage(event interface{}, sim simulation.WorldController) (*Even
 		if eventMessage, err = buildCharacterEquipsItem(v); err != nil {
 			return nil, err
 		}
+	case model.EvtItemNotHere:
+		if eventMessage, err = buildItemNotHere(); err != nil {
+			return nil, err
+		}
 	default:
 		log.Logger().Warn("Attempt to build event message for unknown message type")
 	}
@@ -247,6 +251,12 @@ func buildCharacterEquipsItem(event model.EvtCharacterEquipsItem) (*EventMessage
 	return &EventMessage{
 		Type:    EventType_EvtCharacterEquipsItem,
 		Payload: payload,
+	}, nil
+}
+
+func buildItemNotHere() (*EventMessage, error) {
+	return &EventMessage{
+		Type: EventType_EvtItemNotHere,
 	}, nil
 }
 
