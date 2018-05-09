@@ -1,7 +1,6 @@
 package model_test
 
 import (
-	"sync"
 	"testing"
 
 	"github.com/soupstore/coda-world/simulation/model"
@@ -10,6 +9,10 @@ import (
 func TestNewCharacter(t *testing.T) {
 	spawnRoom := model.NewRoom(model.RoomID(4433), model.WorldID("test"), 0, "Spawn Room", "")
 	character := model.NewCharacter(model.CharacterID(3453), "Test Name", spawnRoom)
+
+	if character.ID != model.CharacterID(3453) {
+		t.Error("Incorrect ID assigned")
+	}
 
 	if character.Name != "Test Name" {
 		t.Error("Incorrect name set on character")
@@ -35,16 +38,17 @@ func TestNewCharacter(t *testing.T) {
 func TestDispatch(t *testing.T) {
 	spawnRoom := model.NewRoom(model.RoomID(4433), model.WorldID("test"), 0, "Spawn Room", "")
 	character := model.NewCharacter(model.CharacterID(3453), "Test Name", spawnRoom)
+	character.Events = make(chan interface{})
+	character.Awake = true
 
 	expected := model.EvtItemNotHere{}
 	var result interface{}
 
-	var wait sync.WaitGroup
-	wait.Add(1)
 	go func() {
-		result = <-character.Events
-		wait.Done()
+		character.Dispatch(expected)
 	}()
+
+	result = <-character.Events
 
 	if expected != result {
 		t.Error("Correct event did not come through character event channel")
