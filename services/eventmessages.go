@@ -51,6 +51,10 @@ func buildEventMessage(event interface{}, sim simulation.WorldController) (*Even
 		if eventMessage, err = buildCharacterDropsItem(v); err != nil {
 			return nil, err
 		}
+	case model.EvtCharacterEquipsItem:
+		if eventMessage, err = buildCharacterEquipsItem(v); err != nil {
+			return nil, err
+		}
 	default:
 		log.Logger().Warn("Attempt to build event message for unknown message type")
 	}
@@ -224,6 +228,24 @@ func buildCharacterDropsItem(event model.EvtCharacterDropsItem) (*EventMessage, 
 
 	return &EventMessage{
 		Type:    EventType_EvtCharacterDropsItem,
+		Payload: payload,
+	}, nil
+}
+
+func buildCharacterEquipsItem(event model.EvtCharacterEquipsItem) (*EventMessage, error) {
+	payload, err := proto.Marshal(&CharacterDropsItemEvent{
+		Character: buildCharacterDesciption(event.Character),
+		Item: &ItemDescription{
+			Id:   int64(event.Item.ID),
+			Name: event.Item.Name,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &EventMessage{
+		Type:    EventType_EvtCharacterEquipsItem,
 		Payload: payload,
 	}, nil
 }

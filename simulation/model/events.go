@@ -27,6 +27,11 @@ type EvtCharacterDropsItem struct {
 	Item      *Item
 }
 
+type EvtCharacterEquipsItem struct {
+	Character *Character
+	Item      *Item
+}
+
 type EvtCharacterLeaves struct {
 	Character *Character
 	Direction Direction

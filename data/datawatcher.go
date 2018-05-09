@@ -270,7 +270,13 @@ func (dw *DataWatcher) updateRoomInSim(worldID model.WorldID, roomID model.RoomI
 }
 
 func (dw *DataWatcher) addItemToSim(itemID model.ItemID, item *Item) error {
-	_, err := dw.sim.CreateItem(itemID, item.Name, item.Aliases)
+	var rigSlot model.RigSlot
+	switch item.RigSlot {
+	case "backpack":
+		rigSlot = model.RigSlotBackpack
+	}
+
+	_, err := dw.sim.CreateItem(itemID, item.Name, item.Aliases, rigSlot)
 	return err
 }
 

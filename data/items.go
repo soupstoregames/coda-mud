@@ -13,6 +13,7 @@ type Item struct {
 	Name      string
 	Aliases   []string
 	Container *Container
+	RigSlot   string
 }
 
 type Container struct {

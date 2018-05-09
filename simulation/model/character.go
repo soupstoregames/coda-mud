@@ -20,6 +20,16 @@ func NewCharacter(id CharacterID, name string, room *Room) *Character {
 	}
 }
 
+func (c *Character) WakeUp() {
+	c.Events = make(chan interface{}, 1)
+	c.Awake = true
+}
+
+func (c *Character) Sleep() {
+	c.Awake = false
+	close(c.Events)
+}
+
 func (c *Character) Dispatch(event interface{}) {
 	if !c.Awake {
 		return

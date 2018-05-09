@@ -71,6 +71,7 @@ enum EventType {
   EvtItemNotHere = 7;
   EvtCharacterTakesItem = 8;
   EvtCharacterDropsItem = 9;
+  EvtCharacterEquipsItem = 10;
 }
 
 message CharacterDescription {
@@ -126,6 +127,11 @@ message CharacterTakesItemEvent {
 }
 
 message CharacterDropsItemEvent {
+  CharacterDescription character = 1;
+  ItemDescription item = 2;
+}
+
+message CharacterEquipsItemEvent {
   CharacterDescription character = 1;
   ItemDescription item = 2;
 }

@@ -32,8 +32,7 @@ func (s *Simulation) WakeUpCharacter(id model.CharacterID) (characterEvents <-ch
 	}
 
 	// wake character and send description
-	actor.Events = make(chan interface{}, 1)
-	actor.Awake = true
+	actor.WakeUp()
 	actor.Dispatch(model.EvtRoomDescription{Room: actor.Room})
 
 	// send character wakes up
@@ -60,8 +59,7 @@ func (s *Simulation) SleepCharacter(id model.CharacterID) error {
 		return err
 	}
 
-	actor.Awake = false
-	close(actor.Events)
+	actor.Sleep()
 
 	// send character sleeps
 	sleepEvent := model.EvtCharacterFallsAsleep{Character: actor}
@@ -218,6 +216,13 @@ func (s *Simulation) EquipItem(id model.CharacterID, alias string) error {
 			_, err = actor.Equip(item)
 			if err == model.ErrNotEquipable {
 				return ErrCannotEquipItem
+			}
+			event := model.EvtCharacterEquipsItem{
+				Character: actor,
+				Item:      item,
+			}
+			for _, ch := range actor.Room.GetCharacters() {
+				ch.Dispatch(event)
 			}
 			actor.Room.Container.RemoveItem(item.ID)
 			return nil

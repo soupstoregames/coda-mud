@@ -12,7 +12,7 @@ type WorldController interface {
 	GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error)
 	DestroyRoom(worldID model.WorldID, roomID model.RoomID) error
 	SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) error
-	CreateItem(itemID model.ItemID, name string, aliases []string) (*model.Item, error)
+	CreateItem(itemID model.ItemID, name string, aliases []string, rigSlot model.RigSlot) (*model.Item, error)
 	SpawnItem(itemID model.ItemID, containerID model.ContainerID) error
 }
 
@@ -92,8 +92,8 @@ func (s *Simulation) SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) er
 }
 
 // CreateItem creates a new item archetype
-func (s *Simulation) CreateItem(itemID model.ItemID, name string, aliases []string) (*model.Item, error) {
-	item := model.NewItem(itemID, name, aliases, model.RigSlotNone)
+func (s *Simulation) CreateItem(itemID model.ItemID, name string, aliases []string, rigSlot model.RigSlot) (*model.Item, error) {
+	item := model.NewItem(itemID, name, aliases, rigSlot)
 	s.items[itemID] = item
 	return item, nil
 }
