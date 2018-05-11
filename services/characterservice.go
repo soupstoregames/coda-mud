@@ -97,7 +97,14 @@ func (s *CharacterService) loop(stream Character_SubscribeServer, events <-chan 
 			}
 			err := s.handleCommand(characterID, command)
 			if err != nil {
-				return err
+				switch err {
+				case simulation.ErrCannotEquipItem:
+					// TODO: handle error
+					_ = stream.Send(&EventMessage{Type: EventType_EvtCannotPerformAction})
+
+				default:
+					return err
+				}
 			}
 		case event, more := <-events:
 			if !more {
