@@ -47,3 +47,6 @@ type EvtNoExitInThatDirection struct {
 
 type EvtItemNotHere struct {
 }
+
+type EvtNoSpaceToTakeItem struct {
+}

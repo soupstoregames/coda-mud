@@ -159,15 +159,20 @@ func (s *Simulation) TakeItem(id model.CharacterID, alias string) error {
 
 	for itemID, item := range actor.Room.Container.Items {
 		if item.KnownAs(alias) {
-			actor.Backpack.Container.PutItem(item)
-			actor.Room.Container.RemoveItem(itemID)
-			event := model.EvtCharacterTakesItem{
-				Character: actor,
-				Item:      item,
+			ok := actor.TakeItem(item)
+			if ok {
+				actor.Room.Container.RemoveItem(itemID)
+				event := model.EvtCharacterTakesItem{
+					Character: actor,
+					Item:      item,
+				}
+				for _, ch := range actor.Room.GetCharacters() {
+					ch.Dispatch(event)
+				}
+				return nil
 			}
-			for _, ch := range actor.Room.GetCharacters() {
-				ch.Dispatch(event)
-			}
+
+			actor.Dispatch(model.EvtNoSpaceToTakeItem{})
 			return nil
 		}
 	}

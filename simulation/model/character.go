@@ -36,3 +36,12 @@ func (c *Character) Dispatch(event interface{}) {
 	}
 	c.Events <- event
 }
+
+func (c *Character) TakeItem(item *Item) bool {
+	if c.Rig.Backpack != nil {
+		c.Rig.Backpack.Container.PutItem(item)
+		return true
+	}
+
+	return false
+}

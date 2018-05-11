@@ -72,6 +72,7 @@ enum EventType {
   EvtCharacterTakesItem = 8;
   EvtCharacterDropsItem = 9;
   EvtCharacterEquipsItem = 10;
+  EvtNoSpaceToTakeItem = 11;
 
   EvtCannotPerformAction = 255;
 }
