@@ -1,4 +1,4 @@
-package data
+package static
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/nicklanng/fsdiff"
-	"github.com/soupstore/coda-world/log"
+	"github.com/soupstore/coda-world/common/log"
 	"github.com/soupstore/coda-world/simulation"
 	"github.com/soupstore/coda-world/simulation/model"
 )

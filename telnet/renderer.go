@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/aybabtme/rgbterm"
-	"github.com/soupstore/coda-world/log"
+	"github.com/soupstore/coda-world/common/log"
 	"github.com/soupstore/coda-world/simulation/model"
 )
 

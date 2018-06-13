@@ -1,4 +1,4 @@
-package data
+package static
 
 import (
 	"io/ioutil"

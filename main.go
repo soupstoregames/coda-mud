@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/soupstore/coda-world/config"
-	"github.com/soupstore/coda-world/data"
-	"github.com/soupstore/coda-world/log"
+	"github.com/soupstore/coda-world/common/config"
+	"github.com/soupstore/coda-world/common/log"
 	"github.com/soupstore/coda-world/simulation"
+	"github.com/soupstore/coda-world/simulation/data/static"
 	"github.com/soupstore/coda-world/telnet"
 )
 
@@ -23,7 +23,7 @@ func main() {
 	sim := simulation.NewSimulation()
 
 	// load static data and apply changes to simulation
-	dw := data.NewDataWatcher(conf.DataPath, sim)
+	dw := static.NewDataWatcher(conf.DataPath, sim)
 	log.SubscribeToErrorChan(dw.Errors)
 
 	// temporary
