@@ -173,7 +173,7 @@ func (c *connection) listen() error {
 		case charLF:
 			err := c.handleInput()
 			if err != nil {
-				log.Logger().Debug("error handlnginput")
+				// log.Logger().Debug("error handlnginput")
 				c.close()
 				return nil
 			}
