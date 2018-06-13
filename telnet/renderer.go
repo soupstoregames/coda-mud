@@ -21,74 +21,36 @@ func renderEvents(c *connection, events <-chan interface{}) error {
 		case model.EvtCharacterWakesUp:
 			renderCharacterWakesUp(c, v)
 
-		// case services.EventType_EvtCharacterSleeps:
-		// 	var msg services.CharacterSleepsEvent
-		// 	err := proto.Unmarshal(event.Payload, &msg)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// 	renderCharacterFallsAsleep(c, msg)
+		case model.EvtCharacterFallsAsleep:
+			renderCharacterFallsAsleep(c, v)
 
-		// case services.EventType_EvtCharacterSpeaks:
-		// 	var msg services.CharacterSpeaksEvent
-		// 	err := proto.Unmarshal(event.Payload, &msg)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// 	renderCharacterSpeaks(c, msg)
+		case model.EvtCharacterSpeaks:
+			renderCharacterSpeaks(c, v)
 
-		// case services.EventType_EvtCharacterArrives:
-		// 	var msg services.CharacterArrivesEvent
-		// 	err := proto.Unmarshal(event.Payload, &msg)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// 	renderCharacterArrives(c, msg)
+		case model.EvtCharacterArrives:
+			renderCharacterArrives(c, v)
 
-		// case services.EventType_EvtCharacterLeaves:
-		// 	var msg services.CharacterLeavesEvent
-		// 	err := proto.Unmarshal(event.Payload, &msg)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// 	renderCharacterLeaves(c, msg)
+		case model.EvtCharacterLeaves:
+			renderCharacterLeaves(c, v)
 
-		// case services.EventType_EvtNoExitInThatDirection:
-		// 	renderNoExitInThatDirection(c)
-		// 	c.writePrompt()
+		case model.EvtNoExitInThatDirection:
+			renderNoExitInThatDirection(c)
+			c.writePrompt()
 
-		// case services.EventType_EvtCharacterTakesItem:
-		// 	var msg services.CharacterTakesItemEvent
-		// 	err := proto.Unmarshal(event.Payload, &msg)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// 	renderCharacterTakesItem(c, msg)
+		case model.EvtCharacterTakesItem:
+			renderCharacterTakesItem(c, v)
 
-		// case services.EventType_EvtCharacterDropsItem:
-		// 	var msg services.CharacterDropsItemEvent
-		// 	err := proto.Unmarshal(event.Payload, &msg)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// 	renderCharacterDropsItem(c, msg)
+		case model.EvtCharacterDropsItem:
+			renderCharacterDropsItem(c, v)
 
-		// case services.EventType_EvtCharacterEquipsItem:
-		// 	var msg services.CharacterEquipsItemEvent
-		// 	err := proto.Unmarshal(event.Payload, &msg)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// 	renderCharacterEquipsItem(c, msg)
+		case model.EvtCharacterEquipsItem:
+			renderCharacterEquipsItem(c, v)
 
-		// case services.EventType_EvtItemNotHere:
-		// 	renderItemNotHere(c)
+		case model.EvtItemNotHere:
+			renderItemNotHere(c)
 
-		// case services.EventType_EvtNoSpaceToTakeItem:
-		// 	renderNoSpaceToTakeItem(c)
-
-		// case services.EventType_EvtCannotPerformAction:
-		// 	renderCannotPerformAction(c)
+		case model.EvtNoSpaceToTakeItem:
+			renderNoSpaceToTakeItem(c)
 
 		default:
 			fmt.Println("unknown event type")
@@ -161,80 +123,80 @@ func renderCharacterWakesUp(c *connection, evt model.EvtCharacterWakesUp) {
 	c.writelnString(renderCharacter(evt.Character), "has woken up.")
 }
 
-// func renderCharacterFallsAsleep(c *connection, msg services.CharacterSleepsEvent) {
-// 	c.writelnString(renderCharacter(msg.Character), "has fallen asleep.")
-// }
-//
-// func renderCharacterSpeaks(c *connection, msg services.CharacterSpeaksEvent) {
-// 	characterID := CharacterIDFromContext(c.ctx)
-//
-// 	if msg.Character.Id == characterID {
-// 		c.writeString("You say:", `"`+msg.Content+`"`)
-// 		c.writePrompt()
-// 	} else {
-// 		c.writelnString(renderCharacter(msg.Character), "says:", `"`+msg.Content+`"`)
-// 	}
-// }
-//
-// func renderCharacterArrives(c *connection, msg services.CharacterArrivesEvent) {
-// 	c.writelnString(renderCharacter(msg.Character), "arrives from the", msg.Direction.String())
-// }
-//
-// func renderCharacterLeaves(c *connection, msg services.CharacterLeavesEvent) {
-// 	c.writelnString(renderCharacter(msg.Character), "leaves to the", msg.Direction.String())
-// }
-//
-// func renderNoExitInThatDirection(c *connection) {
-// 	c.writelnString("You cannot go that way.")
-// }
-//
-// func renderCharacterTakesItem(c *connection, msg services.CharacterTakesItemEvent) {
-// 	characterID := CharacterIDFromContext(c.ctx)
-//
-// 	if msg.Character.Id == characterID {
-// 		c.writeString("You take", msg.Item.Name)
-// 		c.writePrompt()
-// 	} else {
-// 		c.writelnString(renderCharacter(msg.Character), "takes", msg.Item.Name)
-// 	}
-// }
-//
-// func renderCharacterDropsItem(c *connection, msg services.CharacterDropsItemEvent) {
-// 	characterID := CharacterIDFromContext(c.ctx)
-//
-// 	if msg.Character.Id == characterID {
-// 		c.writeString("You drop", msg.Item.Name)
-// 		c.writePrompt()
-// 	} else {
-// 		c.writelnString(renderCharacter(msg.Character), "drops", msg.Item.Name)
-// 	}
-// }
-//
-// func renderCharacterEquipsItem(c *connection, msg services.CharacterEquipsItemEvent) {
-// 	characterID := CharacterIDFromContext(c.ctx)
-//
-// 	if msg.Character.Id == characterID {
-// 		c.writeString("You equip", msg.Item.Name)
-// 		c.writePrompt()
-// 	} else {
-// 		c.writelnString(renderCharacter(msg.Character), "equips", msg.Item.Name)
-// 	}
-// }
-//
-// func renderItemNotHere(c *connection) {
-// 	c.writeString("There is no item by that name.")
-// 	c.writePrompt()
-// }
-//
-// func renderNoSpaceToTakeItem(c *connection) {
-// 	c.writeString("You have no where to put that item.")
-// 	c.writePrompt()
-// }
-//
-// func renderCannotPerformAction(c *connection) {
-// 	c.writeString("You cannot do that.")
-// 	c.writePrompt()
-// }
+func renderCharacterFallsAsleep(c *connection, evt model.EvtCharacterFallsAsleep) {
+	c.writelnString(renderCharacter(evt.Character), "has fallen asleep.")
+}
+
+func renderCharacterSpeaks(c *connection, evt model.EvtCharacterSpeaks) {
+	characterID := CharacterIDFromContext(c.ctx)
+
+	if evt.Character.ID == characterID {
+		c.writeString("You say:", `"`+evt.Content+`"`)
+		c.writePrompt()
+	} else {
+		c.writelnString(renderCharacter(evt.Character), "says:", `"`+evt.Content+`"`)
+	}
+}
+
+func renderCharacterArrives(c *connection, evt model.EvtCharacterArrives) {
+	c.writelnString(renderCharacter(evt.Character), "arrives from the", evt.Direction.String())
+}
+
+func renderCharacterLeaves(c *connection, evt model.EvtCharacterLeaves) {
+	c.writelnString(renderCharacter(evt.Character), "leaves to the", evt.Direction.String())
+}
+
+func renderNoExitInThatDirection(c *connection) {
+	c.writelnString("You cannot go that way.")
+}
+
+func renderCharacterTakesItem(c *connection, evt model.EvtCharacterTakesItem) {
+	characterID := CharacterIDFromContext(c.ctx)
+
+	if evt.Character.ID == characterID {
+		c.writeString("You take", evt.Item.Name)
+		c.writePrompt()
+	} else {
+		c.writelnString(renderCharacter(evt.Character), "takes", evt.Item.Name)
+	}
+}
+
+func renderCharacterDropsItem(c *connection, evt model.EvtCharacterDropsItem) {
+	characterID := CharacterIDFromContext(c.ctx)
+
+	if evt.Character.ID == characterID {
+		c.writeString("You drop", evt.Item.Name)
+		c.writePrompt()
+	} else {
+		c.writelnString(renderCharacter(evt.Character), "drops", evt.Item.Name)
+	}
+}
+
+func renderCharacterEquipsItem(c *connection, evt model.EvtCharacterEquipsItem) {
+	characterID := CharacterIDFromContext(c.ctx)
+
+	if evt.Character.ID == characterID {
+		c.writeString("You equip", evt.Item.Name)
+		c.writePrompt()
+	} else {
+		c.writelnString(renderCharacter(evt.Character), "equips", evt.Item.Name)
+	}
+}
+
+func renderItemNotHere(c *connection) {
+	c.writeString("There is no item by that name.")
+	c.writePrompt()
+}
+
+func renderNoSpaceToTakeItem(c *connection) {
+	c.writeString("You have no where to put that item.")
+	c.writePrompt()
+}
+
+func renderCannotPerformAction(c *connection) {
+	c.writeString("You cannot do that.")
+	c.writePrompt()
+}
 
 func renderList(items []string) (string, bool) {
 	l := len(items)
