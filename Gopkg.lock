@@ -9,15 +9,15 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/aybabtme/rgbterm"
+  packages = ["."]
+  revision = "cc83f3b3ce5911279513a46d6d3316d67bedaa54"
+
+[[projects]]
+  branch = "master"
   name = "github.com/codingconcepts/env"
   packages = ["."]
   revision = "31f8d99d7765666589f9b44db294011c1d95aed3"
-
-[[projects]]
-  name = "github.com/golang/protobuf"
-  packages = ["proto"]
-  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
-  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
@@ -30,6 +30,12 @@
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
+
+[[projects]]
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
 
 [[projects]]
   name = "go.uber.org/atomic"
@@ -56,15 +62,9 @@
   revision = "eeedf312bc6c57391d84767a4cd413f02a917974"
   version = "v1.8.0"
 
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/net"
-  packages = ["context"]
-  revision = "5f9ae10d9af5b1c89ae6904293b14b064d4ada23"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2da0b9ae24561a8c1d4e60f35d42232787a61fa02677b00e778f010535476ae1"
+  inputs-digest = "a8ed1ee0c1969e9bbf2fecdb960dab32fea2852e76dcf2c584536e8a7f970344"
   solver-name = "gps-cdcl"
   solver-version = 1
