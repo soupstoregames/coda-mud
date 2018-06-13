@@ -8,7 +8,7 @@ type Room struct {
 	Name        string
 	Description string
 	Container   *Container
-	characters  []*Character
+	Characters  []*Character
 	Exits       map[Direction]*Exit
 }
 
@@ -18,7 +18,7 @@ func NewRoom(roomID RoomID, worldID WorldID, containerID ContainerID, name strin
 		WorldID:     worldID,
 		Name:        name,
 		Description: description,
-		characters:  []*Character{},
+		Characters:  []*Character{},
 		Exits: map[Direction]*Exit{
 			North:     nil,
 			NorthEast: nil,
@@ -34,18 +34,14 @@ func NewRoom(roomID RoomID, worldID WorldID, containerID ContainerID, name strin
 }
 
 func (r *Room) AddCharacter(c *Character) {
-	r.characters = append(r.characters, c)
+	r.Characters = append(r.Characters, c)
 }
 
 func (r *Room) RemoveCharacter(c *Character) {
-	for i, ch := range r.characters {
+	for i, ch := range r.Characters {
 		if ch == c {
-			r.characters = append(r.characters[:i], r.characters[i+1:]...)
+			r.Characters = append(r.Characters[:i], r.Characters[i+1:]...)
 			return
 		}
 	}
-}
-
-func (r *Room) GetCharacters() []*Character {
-	return r.characters
 }

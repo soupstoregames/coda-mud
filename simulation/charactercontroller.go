@@ -37,7 +37,7 @@ func (s *Simulation) WakeUpCharacter(id model.CharacterID) (characterEvents <-ch
 
 	// send character wakes up
 	wakeUpEvent := model.EvtCharacterWakesUp{Character: actor}
-	for _, c := range actor.Room.GetCharacters() {
+	for _, c := range actor.Room.Characters {
 		// ignore the character that woke up
 		if c == actor {
 			continue
@@ -63,7 +63,7 @@ func (s *Simulation) SleepCharacter(id model.CharacterID) error {
 
 	// send character sleeps
 	sleepEvent := model.EvtCharacterFallsAsleep{Character: actor}
-	for _, c := range actor.Room.GetCharacters() {
+	for _, c := range actor.Room.Characters {
 		c.Dispatch(sleepEvent)
 	}
 
@@ -95,7 +95,7 @@ func (s *Simulation) Say(id model.CharacterID, content string) error {
 		Content:   content,
 	}
 
-	for _, c := range actor.Room.GetCharacters() {
+	for _, c := range actor.Room.Characters {
 		c.Dispatch(speechEvent)
 	}
 
@@ -129,7 +129,7 @@ func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error
 		Character: actor,
 		Direction: direction,
 	}
-	for _, c := range originalRoom.GetCharacters() {
+	for _, c := range originalRoom.Characters {
 		c.Dispatch(personLeftEvent)
 	}
 
@@ -138,7 +138,7 @@ func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error
 		Character: actor,
 		Direction: direction.Opposite(),
 	}
-	for _, c := range newRoom.GetCharacters() {
+	for _, c := range newRoom.Characters {
 		c.Dispatch(personArrivedEvent)
 	}
 
@@ -166,7 +166,7 @@ func (s *Simulation) TakeItem(id model.CharacterID, alias string) error {
 					Character: actor,
 					Item:      item,
 				}
-				for _, ch := range actor.Room.GetCharacters() {
+				for _, ch := range actor.Room.Characters {
 					ch.Dispatch(event)
 				}
 				return nil
@@ -197,7 +197,7 @@ func (s *Simulation) DropItem(id model.CharacterID, alias string) error {
 				Character: actor,
 				Item:      item,
 			}
-			for _, ch := range actor.Room.GetCharacters() {
+			for _, ch := range actor.Room.Characters {
 				ch.Dispatch(event)
 			}
 			return nil
@@ -226,7 +226,7 @@ func (s *Simulation) EquipItem(id model.CharacterID, alias string) error {
 				Character: actor,
 				Item:      item,
 			}
-			for _, ch := range actor.Room.GetCharacters() {
+			for _, ch := range actor.Room.Characters {
 				ch.Dispatch(event)
 			}
 			actor.Room.Container.RemoveItem(item.ID)
