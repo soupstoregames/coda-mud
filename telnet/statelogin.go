@@ -2,6 +2,7 @@ package telnet
 
 import (
 	"github.com/soupstore/coda-world/common/config"
+	"github.com/soupstore/coda-world/login"
 )
 
 // stateLogin is the scene used for connecting to a character
@@ -56,18 +57,14 @@ func (s *stateLogin) promptPassword() {
 }
 
 func (s *stateLogin) attemptLogin() {
-	s.conn.writelnString("Contacting login servers...")
+	characterID, ok := login.GetCharacter(s.username, s.password)
+	if !ok {
+		s.conn.writelnString("Incorrect login")
+		s.conn.close()
+		return
+	}
 
-	// client := clients.NewLoginClient(s.config.LoginAddress)
-	// characterID, err := client.Login(s.username, s.password)
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	s.conn.writeString("Incorrect login")
-	// 	s.conn.close()
-	// 	return
-	// }
-
-	s.conn.ctx = WithCharacterID(s.conn.ctx, 1)
+	s.conn.ctx = WithCharacterID(s.conn.ctx, characterID)
 
 	s.conn.loadState(&stateWorld{
 		conn:   s.conn,
