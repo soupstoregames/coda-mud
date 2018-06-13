@@ -5,12 +5,7 @@ language: go
 go:
 - '1.10'
 
-env:
-  global:
-  - "PATH=$PATH:$HOME/local/bin"
-
 before_install:
-- curl -sL https://git.io/install-protoc | bash -s 3.5.1
 - make deps
 
 script:
