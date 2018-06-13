@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/aybabtme/rgbterm"
-	"github.com/soupstore/coda-world/common/log"
-	"github.com/soupstore/coda-world/simulation/model"
+	"github.com/soupstore/coda/common/log"
+	"github.com/soupstore/coda/simulation/model"
 )
 
 func renderEvents(c *connection, events <-chan interface{}) error {

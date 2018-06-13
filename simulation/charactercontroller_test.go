@@ -3,8 +3,8 @@ package simulation_test
 import (
 	"testing"
 
-	"github.com/soupstore/coda-world/simulation"
-	"github.com/soupstore/coda-world/simulation/model"
+	"github.com/soupstore/coda/simulation"
+	"github.com/soupstore/coda/simulation/model"
 )
 
 // In this test, we create one room and two characters, Sleepy and Grumpy.

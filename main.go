@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 
-	"github.com/soupstore/coda-world/common/config"
-	"github.com/soupstore/coda-world/common/log"
-	"github.com/soupstore/coda-world/simulation"
-	"github.com/soupstore/coda-world/simulation/data/static"
-	"github.com/soupstore/coda-world/telnet"
+	"github.com/soupstore/coda/common/config"
+	"github.com/soupstore/coda/common/log"
+	"github.com/soupstore/coda/simulation"
+	"github.com/soupstore/coda/simulation/data/static"
+	"github.com/soupstore/coda/telnet"
 )
 
 func main() {

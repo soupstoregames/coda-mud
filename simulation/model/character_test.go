@@ -3,7 +3,7 @@ package model_test
 import (
 	"testing"
 
-	"github.com/soupstore/coda-world/simulation/model"
+	"github.com/soupstore/coda/simulation/model"
 )
 
 func TestNewCharacter(t *testing.T) {

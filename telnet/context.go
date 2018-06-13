@@ -3,7 +3,7 @@ package telnet
 import (
 	"context"
 
-	"github.com/soupstore/coda-world/simulation/model"
+	"github.com/soupstore/coda/simulation/model"
 )
 
 type key int

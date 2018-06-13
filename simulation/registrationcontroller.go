@@ -1,6 +1,6 @@
 package simulation
 
-import "github.com/soupstore/coda-world/simulation/model"
+import "github.com/soupstore/coda/simulation/model"
 
 // RegistrationController is an interface on Simulation that can be used to create
 // new character for new accounts

@@ -5,7 +5,7 @@ GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
-BINARY_NAME=coda-world
+BINARY_NAME=coda
 BINARY_UNIX=$(BINARY_NAME)-linux-amd64
 DOCKER_SLUG=soupstore/$(BINARY_NAME)
 

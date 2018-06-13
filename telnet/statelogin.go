@@ -1,8 +1,8 @@
 package telnet
 
 import (
-	"github.com/soupstore/coda-world/common/config"
-	"github.com/soupstore/coda-world/login"
+	"github.com/soupstore/coda/common/config"
+	"github.com/soupstore/coda/login"
 )
 
 // stateLogin is the scene used for connecting to a character

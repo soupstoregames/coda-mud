@@ -3,8 +3,8 @@ package telnet
 import (
 	"strings"
 
-	"github.com/soupstore/coda-world/simulation"
-	"github.com/soupstore/coda-world/simulation/model"
+	"github.com/soupstore/coda/simulation"
+	"github.com/soupstore/coda/simulation/model"
 )
 
 type Command func(model.CharacterID, simulation.CharacterController, []string) error

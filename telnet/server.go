@@ -5,9 +5,9 @@ import (
 	"net"
 
 	"github.com/satori/go.uuid"
-	"github.com/soupstore/coda-world/common/config"
-	"github.com/soupstore/coda-world/common/log"
-	"github.com/soupstore/coda-world/simulation"
+	"github.com/soupstore/coda/common/config"
+	"github.com/soupstore/coda/common/log"
+	"github.com/soupstore/coda/simulation"
 	"go.uber.org/zap"
 )
 

@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/nicklanng/fsdiff"
-	"github.com/soupstore/coda-world/common/log"
-	"github.com/soupstore/coda-world/simulation"
-	"github.com/soupstore/coda-world/simulation/model"
+	"github.com/soupstore/coda/common/log"
+	"github.com/soupstore/coda/simulation"
+	"github.com/soupstore/coda/simulation/model"
 )
 
 type DataWatcher struct {

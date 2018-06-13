@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/aybabtme/rgbterm"
-	"github.com/soupstore/coda-world/common/config"
-	"github.com/soupstore/coda-world/common/log"
-	"github.com/soupstore/coda-world/simulation/model"
+	"github.com/soupstore/coda/common/config"
+	"github.com/soupstore/coda/common/log"
+	"github.com/soupstore/coda/simulation/model"
 )
 
 // stateWorld is the scene used interacting with the world

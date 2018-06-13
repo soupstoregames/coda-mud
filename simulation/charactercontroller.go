@@ -1,7 +1,7 @@
 package simulation
 
 import (
-	"github.com/soupstore/coda-world/simulation/model"
+	"github.com/soupstore/coda/simulation/model"
 	"go.uber.org/zap"
 )
 

@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/soupstore/coda-world/common/config"
-	"github.com/soupstore/coda-world/common/log"
-	"github.com/soupstore/coda-world/simulation"
+	"github.com/soupstore/coda/common/config"
+	"github.com/soupstore/coda/common/log"
+	"github.com/soupstore/coda/simulation"
 )
 
 // connection is a telnet connection to the MUD

@@ -1,6 +1,6 @@
 package login
 
-import "github.com/soupstore/coda-world/simulation/model"
+import "github.com/soupstore/coda/simulation/model"
 
 func GetCharacter(username, password string) (model.CharacterID, bool) {
 	users := map[string]struct {
