@@ -8,7 +8,7 @@ import (
 type WorldController interface {
 	CreateWorld(worldID model.WorldID) error
 	DestroyWorld(worldID model.WorldID)
-	CreateRoom(worldID model.WorldID, roomID model.RoomID, name, description string) (*model.Room, error)
+	CreateRoom(worldID model.WorldID, roomID model.RoomID, name, description, script string) (*model.Room, error)
 	GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error)
 	DestroyRoom(worldID model.WorldID, roomID model.RoomID) error
 	SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) error
@@ -31,7 +31,7 @@ func (s *Simulation) DestroyWorld(worldID model.WorldID) {
 }
 
 // CreateRoom creates a new room in the specified world with the specified room ID
-func (s *Simulation) CreateRoom(worldID model.WorldID, roomID model.RoomID, name, description string) (*model.Room, error) {
+func (s *Simulation) CreateRoom(worldID model.WorldID, roomID model.RoomID, name, description, script string) (*model.Room, error) {
 	containerID := s.getNextContainerID()
 
 	world, ok := s.worlds[worldID]
@@ -41,7 +41,7 @@ func (s *Simulation) CreateRoom(worldID model.WorldID, roomID model.RoomID, name
 
 	// TODO: Check that room with ID does not already exist
 
-	room := model.NewRoom(roomID, worldID, containerID, name, description)
+	room := model.NewRoom(roomID, worldID, containerID, name, description, script)
 	world.Rooms[roomID] = room
 
 	container := room.Container

@@ -212,7 +212,7 @@ func (dw *DataWatcher) addWorldToSim(worldID model.WorldID, rooms map[int]*Room)
 }
 
 func (dw *DataWatcher) addRoomToSim(worldID model.WorldID, roomID model.RoomID, room *Room) error {
-	r, err := dw.sim.CreateRoom(worldID, roomID, room.Name, room.Description)
+	r, err := dw.sim.CreateRoom(worldID, roomID, room.Name, room.Description, room.Script)
 	if err != nil {
 		return err
 	}

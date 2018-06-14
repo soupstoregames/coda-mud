@@ -38,6 +38,17 @@
   version = "v1.2.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/yuin/gopher-lua"
+  packages = [
+    ".",
+    "ast",
+    "parse",
+    "pm"
+  ]
+  revision = "ca850f594eaafa5468da2bd53b865e4ee55be18b"
+
+[[projects]]
   name = "go.uber.org/atomic"
   packages = ["."]
   revision = "8474b86a5a6f79c443ce4b2992817ff32cf208b8"
@@ -65,6 +76,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a8ed1ee0c1969e9bbf2fecdb960dab32fea2852e76dcf2c584536e8a7f970344"
+  inputs-digest = "ad5b5d01b92c1b6db40e66ed9fe3e1937a3270feb4782e1cdcbaf2b16eacbc87"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -120,5 +120,6 @@ func loadRoom(filepath string) (*Room, error) {
 	if _, err := toml.Decode(string(data), &room); err != nil {
 		return nil, err
 	}
+
 	return &room, nil
 }

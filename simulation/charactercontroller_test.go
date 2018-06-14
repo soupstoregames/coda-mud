@@ -15,7 +15,7 @@ func TestWakingAndSleepingCharacter(t *testing.T) {
 	// set up simulation
 	sim := simulation.NewSimulation()
 	sim.CreateWorld(model.WorldID("test"))
-	sim.CreateRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing")
+	sim.CreateRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing", "")
 
 	if err := sim.SetSpawnRoom("test", 0); err != nil {
 		t.Error(err)
@@ -106,7 +106,7 @@ func TestSleepWithUnknownCharacter(t *testing.T) {
 func TestWakeUpWithAwakeCharacter(t *testing.T) {
 	sim := simulation.NewSimulation()
 	sim.CreateWorld(model.WorldID("test"))
-	sim.CreateRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing")
+	sim.CreateRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing", "")
 
 	if err := sim.SetSpawnRoom("test", 0); err != nil {
 		t.Error(err)
@@ -124,7 +124,7 @@ func TestWakeUpWithAwakeCharacter(t *testing.T) {
 func TestSleepWithSleepingCharacter(t *testing.T) {
 	sim := simulation.NewSimulation()
 	sim.CreateWorld(model.WorldID("test"))
-	sim.CreateRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing")
+	sim.CreateRoom(model.WorldID("test"), model.RoomID(0), "Void", "Nothing", "")
 
 	if err := sim.SetSpawnRoom("test", 0); err != nil {
 		t.Error(err)
