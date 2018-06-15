@@ -21,7 +21,7 @@ func NewCharacter(id CharacterID, name string, room *Room) *Character {
 }
 
 func (c *Character) WakeUp() {
-	c.Events = make(chan interface{}, 1)
+	c.Events = make(chan interface{}, 10)
 	c.Awake = true
 }
 

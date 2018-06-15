@@ -46,7 +46,7 @@ func (s *Simulation) WakeUpCharacter(id model.CharacterID) (characterEvents <-ch
 		c.Dispatch(wakeUpEvent)
 	}
 
-	actor.Room.OnEnter(actor)
+	actor.Room.OnWake(actor)
 
 	zap.L().Debug("Character woke up")
 
@@ -120,6 +120,8 @@ func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error
 		return nil
 	}
 
+	actor.Room.OnExit(actor)
+
 	newRoom, err := s.GetRoom(exit.WorldID, exit.RoomID)
 	if err != nil {
 		return err
@@ -136,8 +138,6 @@ func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error
 	for _, c := range originalRoom.Characters {
 		c.Dispatch(personLeftEvent)
 	}
-
-	actor.Room.OnExit(actor)
 
 	// tell people in the target room that a character has arrived
 	personArrivedEvent := model.EvtCharacterArrives{

@@ -7,6 +7,8 @@ import (
 type RoomID int64
 
 type Room struct {
+	scriptedObject
+
 	ID          RoomID
 	WorldID     WorldID
 	Name        string
@@ -14,9 +16,6 @@ type Room struct {
 	Container   *Container
 	Characters  []*Character
 	Exits       map[Direction]*Exit
-
-	script        string
-	scriptRuntime *lua.LState
 }
 
 func NewRoom(roomID RoomID, worldID WorldID, containerID ContainerID, name string, description string, script string) *Room {
@@ -38,7 +37,9 @@ func NewRoom(roomID RoomID, worldID WorldID, containerID ContainerID, name strin
 		},
 		Container: newRoomContainer(containerID),
 
-		script: script,
+		scriptedObject: scriptedObject{
+			script: script,
+		},
 	}
 }
 
@@ -56,21 +57,21 @@ func (r *Room) RemoveCharacter(c *Character) {
 }
 
 func (r *Room) OnEnter(c *Character) {
-	if r.scriptRuntime == nil {
-		r.loadScriptRuntime()
-	}
+	r.loadScriptRuntime(ScriptContext{r})
 
-	if err := r.scriptRuntime.DoString("if onEnter~=nil then onEnter() end"); err != nil {
-		panic(err)
-	}
+	r.callFunction("onEnter", lua.LNumber(c.ID))
+}
+
+func (r *Room) OnWake(c *Character) {
+	r.loadScriptRuntime(ScriptContext{r})
+
+	r.callFunction("onWake", lua.LNumber(c.ID))
 }
 
 func (r *Room) OnExit(c *Character) {
-	if err := r.scriptRuntime.DoString("if onExit~=nil then onExit() end"); err != nil {
-		panic(err)
-	}
+	r.callFunction("onExit", lua.LNumber(c.ID))
 
-	if r.scriptRuntime != nil && len(r.getAwakeCharacters()) == 0 {
+	if len(r.getAwakeCharacters()) == 0 {
 		r.unloadScriptRuntime()
 	}
 }
@@ -83,16 +84,4 @@ func (r *Room) getAwakeCharacters() []*Character {
 		}
 	}
 	return result
-}
-
-func (r *Room) loadScriptRuntime() {
-	r.scriptRuntime = lua.NewState()
-	if err := r.scriptRuntime.DoString(r.script); err != nil {
-		panic(err)
-	}
-}
-
-func (r *Room) unloadScriptRuntime() {
-	r.scriptRuntime.Close()
-	r.scriptRuntime = nil
 }
