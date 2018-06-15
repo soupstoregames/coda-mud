@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/soupstore/coda/common/log"
 	lua "github.com/yuin/gopher-lua"
 )
@@ -10,46 +12,26 @@ type scriptedObject struct {
 	scriptRuntime *lua.LState
 }
 
-func (s *scriptedObject) loadScriptRuntime(context ScriptContext) {
-	// dont bother loading a VM if there is no script!
-	if s.script == "" {
-		return
-	}
+func (s *scriptedObject) createScriptRuntime(context ScriptContext) *lua.LState {
+	L := lua.NewState()
 
-	// already been loaded, mate. jog on.
-	if s.scriptRuntime != nil {
-		return
-	}
+	L.SetGlobal("sleep", L.NewFunction(context.Sleep))
+	L.SetGlobal("narrate", L.NewFunction(context.Narrate))
 
-	s.scriptRuntime = lua.NewState()
-
-	s.scriptRuntime.SetGlobal("narrate", s.scriptRuntime.NewFunction(context.Narrate))
-
-	if err := s.scriptRuntime.DoString(s.script); err != nil {
+	if err := L.DoString(s.script); err != nil {
 		panic(err)
 	}
+
+	return L
 }
 
-func (s *scriptedObject) unloadScriptRuntime() {
-	if s.scriptRuntime == nil {
+func callFunction(L *lua.LState, name string, params ...lua.LValue) {
+	if L.GetGlobal(name).Type() == lua.LTNil {
 		return
 	}
 
-	s.scriptRuntime.Close()
-	s.scriptRuntime = nil
-}
-
-func (s *scriptedObject) callFunction(name string, params ...lua.LValue) {
-	if s.scriptRuntime == nil {
-		return
-	}
-
-	if s.scriptRuntime.GetGlobal(name).Type() == lua.LTNil {
-		return
-	}
-
-	if err := s.scriptRuntime.CallByParam(lua.P{
-		Fn:      s.scriptRuntime.GetGlobal(name),
+	if err := L.CallByParam(lua.P{
+		Fn:      L.GetGlobal(name),
 		NRet:    1,
 		Protect: true,
 	}, params...); err != nil {
@@ -61,6 +43,14 @@ type ScriptContext struct {
 	Room *Room
 }
 
+func (ctx ScriptContext) Sleep(L *lua.LState) int {
+	seconds := L.ToInt(1)
+
+	time.Sleep(time.Second * time.Duration(seconds))
+
+	return 0
+}
+
 func (ctx ScriptContext) Narrate(L *lua.LState) int {
 	characterID := L.ToInt(1)
 	text := L.ToString(2)
@@ -70,9 +60,8 @@ func (ctx ScriptContext) Narrate(L *lua.LState) int {
 			continue
 		}
 
-		ch.Dispatch(EvtCharacterSpeaks{
-			Character: ch,
-			Content:   text,
+		ch.Dispatch(EvtNarration{
+			Content: text,
 		})
 	}
 

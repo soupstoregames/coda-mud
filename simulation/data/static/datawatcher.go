@@ -13,6 +13,8 @@ import (
 	"github.com/soupstore/coda/simulation/model"
 )
 
+const roomExtension = ".toml"
+
 type DataWatcher struct {
 	Errors        chan error
 	dataFolder    string
@@ -150,6 +152,10 @@ func (dw *DataWatcher) applyWorldDiffs(diff *fsdiff.Diff) {
 		// the world have been changed, move down to the room level
 		if world.DiffType == fsdiff.DiffTypeChanged {
 			for _, room := range world.Children {
+				if filepath.Ext(room.Path) != roomExtension {
+					continue
+				}
+
 				switch room.DiffType {
 				case fsdiff.DiffTypeAdded:
 					roomID, err := getRoomID(filepath.Base(room.Path))

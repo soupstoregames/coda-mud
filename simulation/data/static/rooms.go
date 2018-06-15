@@ -17,7 +17,7 @@ type Room struct {
 
 	Exits map[string]Exit
 
-	Script string
+	Script string `toml:"-"`
 }
 
 type Exit struct {
@@ -79,7 +79,7 @@ func loadWorldFolder(folder string) (map[int]*Room, error) {
 			continue
 		}
 
-		if filepath.Ext(file.Name()) != ".toml" {
+		if filepath.Ext(file.Name()) != roomExtension {
 			continue
 		}
 
@@ -121,5 +121,26 @@ func loadRoom(filepath string) (*Room, error) {
 		return nil, err
 	}
 
+	// check for and load lua file
+	ext := path.Ext(filepath)
+	luaPath := filepath[0:len(filepath)-len(ext)] + ".lua"
+	if fileExists(luaPath) {
+		contents, err := ioutil.ReadFile(luaPath)
+		if err != nil {
+			return nil, err
+		}
+		room.Script = string(contents)
+	}
+
 	return &room, nil
+}
+
+func fileExists(filePath string) (exists bool) {
+	exists = true
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		exists = false
+	}
+
+	return
 }

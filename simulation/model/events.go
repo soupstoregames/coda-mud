@@ -8,6 +8,10 @@ type EvtCharacterFallsAsleep struct {
 	Character *Character
 }
 
+type EvtNarration struct {
+	Content string
+}
+
 type EvtRoomDescription struct {
 	Room *Room
 }

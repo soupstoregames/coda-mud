@@ -24,6 +24,9 @@ func renderEvents(c *connection, events <-chan interface{}) error {
 		case model.EvtCharacterFallsAsleep:
 			renderCharacterFallsAsleep(c, v)
 
+		case model.EvtNarration:
+			renderNarration(c, v)
+
 		case model.EvtCharacterSpeaks:
 			renderCharacterSpeaks(c, v)
 
@@ -125,6 +128,10 @@ func renderCharacterWakesUp(c *connection, evt model.EvtCharacterWakesUp) {
 
 func renderCharacterFallsAsleep(c *connection, evt model.EvtCharacterFallsAsleep) {
 	c.writelnString(renderCharacter(evt.Character), "has fallen asleep.")
+}
+
+func renderNarration(c *connection, evt model.EvtNarration) {
+	c.writeln(rgbterm.FgBytes([]byte(evt.Content), 0, 255, 255))
 }
 
 func renderCharacterSpeaks(c *connection, evt model.EvtCharacterSpeaks) {

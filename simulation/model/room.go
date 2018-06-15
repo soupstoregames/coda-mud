@@ -18,8 +18,8 @@ type Room struct {
 	Exits       map[Direction]*Exit
 }
 
-func NewRoom(roomID RoomID, worldID WorldID, containerID ContainerID, name string, description string, script string) *Room {
-	return &Room{
+func NewRoom(roomID RoomID, worldID WorldID, containerID ContainerID, name string, description string, script string) (r *Room) {
+	r = &Room{
 		ID:          roomID,
 		WorldID:     worldID,
 		Name:        name,
@@ -41,6 +41,8 @@ func NewRoom(roomID RoomID, worldID WorldID, containerID ContainerID, name strin
 			script: script,
 		},
 	}
+
+	return
 }
 
 func (r *Room) AddCharacter(c *Character) {
@@ -57,23 +59,16 @@ func (r *Room) RemoveCharacter(c *Character) {
 }
 
 func (r *Room) OnEnter(c *Character) {
-	r.loadScriptRuntime(ScriptContext{r})
-
-	r.callFunction("onEnter", lua.LNumber(c.ID))
+	L := r.createScriptRuntime(ScriptContext{r})
+	callFunction(L, "onEnter", lua.LNumber(c.ID))
 }
 
 func (r *Room) OnWake(c *Character) {
-	r.loadScriptRuntime(ScriptContext{r})
-
-	r.callFunction("onWake", lua.LNumber(c.ID))
+	// r.callFunction("onWake", lua.LNumber(c.ID))
 }
 
 func (r *Room) OnExit(c *Character) {
-	r.callFunction("onExit", lua.LNumber(c.ID))
-
-	if len(r.getAwakeCharacters()) == 0 {
-		r.unloadScriptRuntime()
-	}
+	// r.callFunction("onExit", lua.LNumber(c.ID))
 }
 
 func (r *Room) getAwakeCharacters() []*Character {
