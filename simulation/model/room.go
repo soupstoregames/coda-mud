@@ -60,15 +60,20 @@ func (r *Room) RemoveCharacter(c *Character) {
 
 func (r *Room) OnEnter(c *Character) {
 	L := r.createScriptRuntime(ScriptContext{r})
+	defer L.Close()
 	callFunction(L, "onEnter", lua.LNumber(c.ID))
 }
 
 func (r *Room) OnWake(c *Character) {
-	// r.callFunction("onWake", lua.LNumber(c.ID))
+	L := r.createScriptRuntime(ScriptContext{r})
+	defer L.Close()
+	callFunction(L, "onWake", lua.LNumber(c.ID))
 }
 
 func (r *Room) OnExit(c *Character) {
-	// r.callFunction("onExit", lua.LNumber(c.ID))
+	L := r.createScriptRuntime(ScriptContext{r})
+	defer L.Close()
+	callFunction(L, "onExit", lua.LNumber(c.ID))
 }
 
 func (r *Room) getAwakeCharacters() []*Character {
