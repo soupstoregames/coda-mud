@@ -1,6 +1,8 @@
 package simulation
 
 import (
+	"github.com/soupstore/coda/common/log"
+	"github.com/soupstore/coda/simulation/data/state"
 	"github.com/soupstore/coda/simulation/model"
 	"go.uber.org/zap"
 )
@@ -70,8 +72,6 @@ func (s *Simulation) SleepCharacter(id model.CharacterID) error {
 	}
 
 	actor.Room.OnExit(actor)
-
-	zap.L().Debug("Character fell asleep")
 
 	return nil
 }
@@ -152,6 +152,11 @@ func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error
 	actor.Room = newRoom
 	newRoom.AddCharacter(actor)
 	actor.Dispatch(model.EvtRoomDescription{Room: actor.Room})
+
+	// update character position in DB
+	if err = state.UpdateCharacterLocation(s.db, actor.ID, actor.Room.ID, actor.Room.WorldID); err != nil {
+		log.Logger().Error(err.Error())
+	}
 
 	actor.Room.OnEnter(actor)
 

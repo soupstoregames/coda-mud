@@ -12,17 +12,19 @@ type Room struct {
 	ID          RoomID
 	WorldID     WorldID
 	Name        string
+	Region      string
 	Description string
 	Container   *Container
 	Characters  []*Character
 	Exits       map[Direction]*Exit
 }
 
-func NewRoom(roomID RoomID, worldID WorldID, containerID ContainerID, name string, description string, script string) (r *Room) {
+func NewRoom(roomID RoomID, worldID WorldID, containerID ContainerID, name, region, description, script string) (r *Room) {
 	r = &Room{
 		ID:          roomID,
 		WorldID:     worldID,
 		Name:        name,
+		Region:      region,
 		Description: description,
 		Characters:  []*Character{},
 		Exits: map[Direction]*Exit{

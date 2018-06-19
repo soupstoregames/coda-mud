@@ -11,17 +11,17 @@ func GetCharacter(username, password string) (model.CharacterID, bool) {
 		"rinse": {
 			Username:    "rinse",
 			Password:    "bums",
-			CharacterID: 0,
+			CharacterID: 1,
 		},
 		"claw": {
 			Username:    "claw",
 			Password:    "alsobums",
-			CharacterID: 1,
+			CharacterID: 2,
 		},
 		"gesau": {
 			Username:    "gesau",
 			Password:    "floof",
-			CharacterID: 2,
+			CharacterID: 3,
 		},
 	}
 

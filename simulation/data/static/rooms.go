@@ -13,6 +13,7 @@ import (
 
 type Room struct {
 	Name        string
+	Region      string
 	Description string
 
 	Exits map[string]Exit

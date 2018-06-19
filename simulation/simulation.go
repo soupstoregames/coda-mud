@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"github.com/go-pg/pg"
 	"github.com/soupstore/coda/simulation/model"
 )
 
@@ -8,6 +9,7 @@ import (
 // It holds rooms, characters, items etc...
 // It exposes a number of interfaces to manipulate the simulation.
 type Simulation struct {
+	db              *pg.DB
 	nextItemID      model.ItemID
 	nextCharacterID model.CharacterID
 	nextContainerID model.ContainerID
@@ -20,8 +22,9 @@ type Simulation struct {
 }
 
 // NewSimulation returns a Simulation with default params.
-func NewSimulation() *Simulation {
+func NewSimulation(db *pg.DB) *Simulation {
 	return &Simulation{
+		db:              db,
 		nextItemID:      0,
 		nextCharacterID: 0,
 		nextContainerID: 0,

@@ -1,6 +1,10 @@
 package simulation
 
 import (
+	"fmt"
+
+	"github.com/soupstore/coda/common/log"
+	"github.com/soupstore/coda/simulation/data/state"
 	"github.com/soupstore/coda/simulation/model"
 )
 
@@ -8,7 +12,7 @@ import (
 type WorldController interface {
 	CreateWorld(worldID model.WorldID) error
 	DestroyWorld(worldID model.WorldID)
-	CreateRoom(worldID model.WorldID, roomID model.RoomID, name, description, script string) (*model.Room, error)
+	CreateRoom(worldID model.WorldID, roomID model.RoomID, name, region, description, script string) (*model.Room, error)
 	GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error)
 	DestroyRoom(worldID model.WorldID, roomID model.RoomID) error
 	SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) error
@@ -31,7 +35,7 @@ func (s *Simulation) DestroyWorld(worldID model.WorldID) {
 }
 
 // CreateRoom creates a new room in the specified world with the specified room ID
-func (s *Simulation) CreateRoom(worldID model.WorldID, roomID model.RoomID, name, description, script string) (*model.Room, error) {
+func (s *Simulation) CreateRoom(worldID model.WorldID, roomID model.RoomID, name, region, description, script string) (*model.Room, error) {
 	containerID := s.getNextContainerID()
 
 	world, ok := s.worlds[worldID]
@@ -41,7 +45,7 @@ func (s *Simulation) CreateRoom(worldID model.WorldID, roomID model.RoomID, name
 
 	// TODO: Check that room with ID does not already exist
 
-	room := model.NewRoom(roomID, worldID, containerID, name, description, script)
+	room := model.NewRoom(roomID, worldID, containerID, name, region, description, script)
 	world.Rooms[roomID] = room
 
 	container := room.Container
@@ -114,4 +118,22 @@ func (s *Simulation) SpawnItem(itemDefinitionID model.ItemDefinitionID, containe
 	container.PutItem(instance)
 
 	return nil
+}
+
+func (s *Simulation) LoadCharacters(characters []*state.Character) {
+	loaded := 0
+	for _, ch := range characters {
+		room, err := s.GetRoom(ch.World, ch.Room)
+		if err != nil {
+			log.Logger().Error("failed to load character")
+		}
+		character := model.NewCharacter(ch.ID, ch.Name, room)
+		s.characters[ch.ID] = character
+
+		// add character to room
+		room.AddCharacter(character)
+
+		loaded++
+	}
+	log.Logger().Info(fmt.Sprintf("Loaded %d characters", loaded))
 }

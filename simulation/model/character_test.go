@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewCharacter(t *testing.T) {
-	spawnRoom := model.NewRoom(model.RoomID(4433), model.WorldID("test"), 0, "Spawn Room", "", "")
+	spawnRoom := model.NewRoom(model.RoomID(4433), model.WorldID("test"), 0, "Spawn Room", "", "", "")
 	character := model.NewCharacter(model.CharacterID(3453), "Test Name", spawnRoom)
 
 	if character.ID != model.CharacterID(3453) {
@@ -36,7 +36,7 @@ func TestNewCharacter(t *testing.T) {
 }
 
 func TestDispatch(t *testing.T) {
-	spawnRoom := model.NewRoom(model.RoomID(4433), model.WorldID("test"), 0, "Spawn Room", "", "")
+	spawnRoom := model.NewRoom(model.RoomID(4433), model.WorldID("test"), 0, "Spawn Room", "", "", "")
 	character := model.NewCharacter(model.CharacterID(3453), "Test Name", spawnRoom)
 	character.Events = make(chan interface{})
 	character.Awake = true

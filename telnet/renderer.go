@@ -64,7 +64,12 @@ func renderEvents(c *connection, events <-chan interface{}) error {
 }
 
 func renderRoomDescription(c *connection, characterID model.CharacterID, room *model.Room) {
-	c.writeln(rgbterm.FgBytes([]byte(room.Name), 100, 255, 100))
+	c.write(rgbterm.FgBytes([]byte(room.Name), 100, 255, 100))
+	if room.Region != "" {
+		c.writeString(" - ")
+		c.write(rgbterm.FgBytes([]byte(room.Region), 100, 255, 100))
+	}
+	c.writeln([]byte{})
 	c.writeln(rgbterm.FgBytes([]byte(room.Description), 200, 200, 200))
 	awakeCharacters := []string{}
 	asleepCharacters := []string{}
@@ -117,6 +122,7 @@ func renderRoomDescription(c *connection, characterID model.CharacterID, room *m
 		target, err := c.sim.GetRoom(exit.WorldID, exit.RoomID)
 		if err != nil {
 			log.Logger().Error("Room not found")
+			continue
 		}
 		c.writelnString(direction.String(), "-", target.Name)
 	}
