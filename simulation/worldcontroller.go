@@ -3,8 +3,8 @@ package simulation
 import (
 	"fmt"
 
-	"github.com/soupstore/coda/common/log"
-	"github.com/soupstore/coda/simulation/data/state"
+	"github.com/soupstore/coda/common/logging"
+	"github.com/soupstore/coda/database"
 	"github.com/soupstore/coda/simulation/model"
 )
 
@@ -120,12 +120,12 @@ func (s *Simulation) SpawnItem(itemDefinitionID model.ItemDefinitionID, containe
 	return nil
 }
 
-func (s *Simulation) LoadCharacters(characters []*state.Character) {
+func (s *Simulation) LoadCharacters(characters []*database.Character) {
 	loaded := 0
 	for _, ch := range characters {
 		room, err := s.GetRoom(ch.World, ch.Room)
 		if err != nil {
-			log.Logger().Error("failed to load character")
+			logging.Logger().Error("failed to load character")
 		}
 		character := model.NewCharacter(ch.ID, ch.Name, room)
 		s.characters[ch.ID] = character
@@ -135,5 +135,5 @@ func (s *Simulation) LoadCharacters(characters []*state.Character) {
 
 		loaded++
 	}
-	log.Logger().Info(fmt.Sprintf("Loaded %d characters", loaded))
+	logging.Logger().Info(fmt.Sprintf("Loaded %d characters", loaded))
 }

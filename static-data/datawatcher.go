@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/nicklanng/fsdiff"
-	"github.com/soupstore/coda/common/log"
+	"github.com/soupstore/coda/common/logging"
 	"github.com/soupstore/coda/simulation"
 	"github.com/soupstore/coda/simulation/model"
 )
@@ -139,14 +139,14 @@ func (dw *DataWatcher) applyWorldDiffs(diff *fsdiff.Diff) {
 				dw.addRoomToSim(worldID, rID, room)
 			}
 
-			log.Logger().Info(fmt.Sprintf("Loaded world '%s' with %d rooms", worldID, len(rooms)))
+			logging.Logger().Info(fmt.Sprintf("Loaded world '%s' with %d rooms", worldID, len(rooms)))
 		}
 
 		// the world has been added - load all rooms into the sim
 		if world.DiffType == fsdiff.DiffTypeRemoved {
 			dw.sim.DestroyWorld(worldID)
 
-			log.Logger().Info(fmt.Sprintf("Removed world '%s'", worldID))
+			logging.Logger().Info(fmt.Sprintf("Removed world '%s'", worldID))
 		}
 
 		// the world have been changed, move down to the room level
@@ -171,7 +171,7 @@ func (dw *DataWatcher) applyWorldDiffs(diff *fsdiff.Diff) {
 					}
 
 					dw.addRoomToSim(worldID, model.RoomID(roomID), room)
-					log.Logger().Info(fmt.Sprintf("Added room %d to world '%s'", roomID, worldID))
+					logging.Logger().Info(fmt.Sprintf("Added room %d to world '%s'", roomID, worldID))
 
 				case fsdiff.DiffTypeRemoved:
 					roomID, err := getRoomID(filepath.Base(room.Path))
@@ -181,7 +181,7 @@ func (dw *DataWatcher) applyWorldDiffs(diff *fsdiff.Diff) {
 					}
 
 					dw.sim.DestroyRoom(worldID, model.RoomID(roomID))
-					log.Logger().Info(fmt.Sprintf("Removed room %d in world '%s'", roomID, worldID))
+					logging.Logger().Info(fmt.Sprintf("Removed room %d in world '%s'", roomID, worldID))
 
 				case fsdiff.DiffTypeChanged:
 					roomID, err := getRoomID(filepath.Base(room.Path))
@@ -197,7 +197,7 @@ func (dw *DataWatcher) applyWorldDiffs(diff *fsdiff.Diff) {
 					}
 
 					dw.updateRoomInSim(worldID, model.RoomID(roomID), room)
-					log.Logger().Info(fmt.Sprintf("Updated room %d in world '%s'", roomID, worldID))
+					logging.Logger().Info(fmt.Sprintf("Updated room %d in world '%s'", roomID, worldID))
 				}
 			}
 		}
@@ -214,7 +214,7 @@ func (dw *DataWatcher) addWorldToSim(worldID model.WorldID, rooms map[int]*Room)
 		dw.addRoomToSim(worldID, rID, room)
 	}
 
-	log.Logger().Info(fmt.Sprintf("Loaded world '%s' with %d rooms", worldID, len(rooms)))
+	logging.Logger().Info(fmt.Sprintf("Loaded world '%s' with %d rooms", worldID, len(rooms)))
 }
 
 func (dw *DataWatcher) addRoomToSim(worldID model.WorldID, roomID model.RoomID, room *Room) error {

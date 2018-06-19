@@ -23,6 +23,7 @@ run:
 	bin/$(BINARY_NAME)
 deps:
 	$(GOGET) golang.org/x/tools/cmd/stringer
+	$(GOGET) github.com/go-bindata/go-bindata/...
 
 # Cross compilation
 build-docker:

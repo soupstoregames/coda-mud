@@ -40,6 +40,27 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/lib/pq"
+  packages = [
+    ".",
+    "oid"
+  ]
+  revision = "90697d60dd844d5ef6ff15135d0203f65d2f53b8"
+
+[[projects]]
+  name = "github.com/mattes/migrate"
+  packages = [
+    ".",
+    "database",
+    "database/postgres",
+    "source",
+    "source/go-bindata"
+  ]
+  revision = "035c07716cd373d88456ec4d701402df52584cb4"
+  version = "v3.0.1"
+
+[[projects]]
+  branch = "master"
   name = "github.com/nicklanng/fsdiff"
   packages = ["."]
   revision = "04d25b0226a201e797270d631b5e1335a5f357b9"
@@ -95,6 +116,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e842aafcbb37df8834fe9d1d51ed0ded1e830b6aaa2efbb0f490882625b14c47"
+  inputs-digest = "37a45a6430e7dc66f99333bc92cac79f73c0e1d325ab11c6f540dcdc96c3b506"
   solver-name = "gps-cdcl"
   solver-version = 1

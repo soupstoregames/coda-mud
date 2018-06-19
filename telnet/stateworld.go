@@ -6,7 +6,7 @@ import (
 
 	"github.com/aybabtme/rgbterm"
 	"github.com/soupstore/coda/common/config"
-	"github.com/soupstore/coda/common/log"
+	"github.com/soupstore/coda/common/logging"
 	"github.com/soupstore/coda/simulation/model"
 )
 
@@ -61,9 +61,9 @@ func (s *stateWorld) onEnter() error {
 }
 
 func (s *stateWorld) onExit() error {
-	log.Logger().Debug("Disconnecting from world server")
+	logging.Logger().Debug("Disconnecting from world server")
 	// err := s.cc.Close()
-	log.Logger().Debug("Disconnected from world server")
+	logging.Logger().Debug("Disconnected from world server")
 	return nil
 }
 

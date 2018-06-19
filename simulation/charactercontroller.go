@@ -1,8 +1,8 @@
 package simulation
 
 import (
-	"github.com/soupstore/coda/common/log"
-	"github.com/soupstore/coda/simulation/data/state"
+	"github.com/soupstore/coda/common/logging"
+	"github.com/soupstore/coda/database"
 	"github.com/soupstore/coda/simulation/model"
 	"go.uber.org/zap"
 )
@@ -154,8 +154,8 @@ func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error
 	actor.Dispatch(model.EvtRoomDescription{Room: actor.Room})
 
 	// update character position in DB
-	if err = state.UpdateCharacterLocation(s.db, actor.ID, actor.Room.ID, actor.Room.WorldID); err != nil {
-		log.Logger().Error(err.Error())
+	if err = database.UpdateCharacterLocation(s.db, actor.ID, actor.Room.ID, actor.Room.WorldID); err != nil {
+		logging.Logger().Error(err.Error())
 	}
 
 	actor.Room.OnEnter(actor)

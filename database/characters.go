@@ -1,4 +1,4 @@
-package state
+package database
 
 import (
 	"github.com/go-pg/pg"

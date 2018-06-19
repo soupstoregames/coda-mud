@@ -2,27 +2,39 @@ package main
 
 import (
 	"fmt"
+	"log"
 
+	"github.com/go-pg/pg"
 	"github.com/soupstore/coda/common/config"
-	"github.com/soupstore/coda/common/log"
+	"github.com/soupstore/coda/common/logging"
+	"github.com/soupstore/coda/database"
+	"github.com/soupstore/coda/database/migrations"
 	"github.com/soupstore/coda/simulation"
-	"github.com/soupstore/coda/simulation/data/state"
-	"github.com/soupstore/coda/simulation/data/static"
+	static "github.com/soupstore/coda/static-data"
 	"github.com/soupstore/coda/telnet"
 )
 
 func main() {
-	log.Logger().Info("Starting world server")
+	logging.Logger().Info("Starting world server")
 
 	// load config values from env vars
 	conf, err := config.Load()
 	if err != nil {
-		log.Logger().Fatal(err.Error())
+		logging.Logger().Fatal(err.Error())
 	}
 
-	db, err := state.OpenConnection("Nick", "", "coda", "")
+	// connect to DB
+	db := pg.Connect(&pg.Options{
+		User:     "Nick",
+		Password: "",
+		Database: "coda",
+	})
+
+	// run database migrations
+	migrationAsset := database.MakeBinDataMigration(migrations.AssetNames(), migrations.Asset)
+	err = database.PerformMigration(migrationAsset)
 	if err != nil {
-		log.Logger().Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	// create a new simulation
@@ -30,12 +42,12 @@ func main() {
 
 	// load static data and apply changes to simulation
 	dw := static.NewDataWatcher(conf.DataPath, sim)
-	log.SubscribeToErrorChan(dw.Errors)
+	logging.SubscribeToErrorChan(dw.Errors)
 
 	// load state data and apply to the simulation
-	characters, err := state.GetCharacters(db)
+	characters, err := database.GetCharacters(db)
 	if err != nil {
-		log.Logger().Fatal(err.Error())
+		logging.Logger().Fatal(err.Error())
 	}
 	sim.LoadCharacters(characters)
 

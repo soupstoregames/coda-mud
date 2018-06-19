@@ -6,7 +6,7 @@ import (
 
 	"github.com/satori/go.uuid"
 	"github.com/soupstore/coda/common/config"
-	"github.com/soupstore/coda/common/log"
+	"github.com/soupstore/coda/common/logging"
 	"github.com/soupstore/coda/simulation"
 	"go.uber.org/zap"
 )
@@ -53,7 +53,7 @@ func (server *Server) ListenAndServe() error {
 
 func (server *Server) Serve(listener net.Listener) error {
 	defer listener.Close()
-	log.Logger().Debug(fmt.Sprintf("Listening at %q.", listener.Addr()))
+	logging.Logger().Debug(fmt.Sprintf("Listening at %q.", listener.Addr()))
 
 	for {
 		conn, err := listener.Accept()
@@ -71,20 +71,20 @@ func (server *Server) handle(tcpConn net.Conn) {
 	c := newTelnetConnection(tcpConn, server.Config, server.sim)
 	c.ctx = WithConnectionID(c.ctx, connectionID)
 
-	log.Logger().Info(
+	logging.Logger().Info(
 		fmt.Sprintf("New connection from %q.", tcpConn.RemoteAddr()),
 		zap.String("connectionID", connectionID),
 	)
 
 	err := c.listen()
 	if err != nil {
-		log.Logger().Error(
+		logging.Logger().Error(
 			err.Error(),
 			zap.String("connectionID", connectionID),
 		)
 	}
 
-	log.Logger().Info(
+	logging.Logger().Info(
 		fmt.Sprintf("Connection closed from %q.", tcpConn.RemoteAddr()),
 		zap.String("connectionID", connectionID),
 	)
