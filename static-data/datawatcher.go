@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/nicklanng/fsdiff"
-	"github.com/soupstore/coda/common/logging"
+	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/simulation"
 	"github.com/soupstore/coda/simulation/model"
 )

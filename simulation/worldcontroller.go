@@ -3,7 +3,7 @@ package simulation
 import (
 	"fmt"
 
-	"github.com/soupstore/coda/common/logging"
+	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/database"
 	"github.com/soupstore/coda/simulation/model"
 )

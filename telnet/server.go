@@ -5,8 +5,8 @@ import (
 	"net"
 
 	"github.com/satori/go.uuid"
-	"github.com/soupstore/coda/common/config"
-	"github.com/soupstore/coda/common/logging"
+	"github.com/soupstore/coda/config"
+	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/services"
 	"github.com/soupstore/coda/simulation"
 	"go.uber.org/zap"

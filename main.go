@@ -5,10 +5,10 @@ import (
 	"log"
 
 	"github.com/go-pg/pg"
-	"github.com/soupstore/coda/common/config"
-	"github.com/soupstore/coda/common/logging"
+	"github.com/soupstore/coda/config"
 	"github.com/soupstore/coda/database"
 	"github.com/soupstore/coda/database/migrations"
+	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/services"
 	"github.com/soupstore/coda/simulation"
 	static "github.com/soupstore/coda/static-data"
@@ -21,8 +21,7 @@ func main() {
 		db           *pg.DB
 		sim          *simulation.Simulation
 		usersManager *services.UsersManager
-
-		err error
+		err          error
 	)
 
 	logging.Logger().Info("Starting world server")

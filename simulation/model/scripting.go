@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/soupstore/coda/common/logging"
+	"github.com/soupstore/coda/logging"
 	lua "github.com/yuin/gopher-lua"
 )
 
