@@ -20,3 +20,13 @@ func GetUser(db *pg.DB, username string) (*User, error) {
 	return user, nil
 
 }
+
+func StoreUser(db *pg.DB, username string, hash []byte) error {
+	user := &User{
+		Username:    username,
+		Password:    hash,
+		CharacterID: 1,
+	}
+
+	return db.Insert(user)
+}

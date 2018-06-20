@@ -2,7 +2,6 @@ package telnet
 
 import (
 	"github.com/soupstore/coda/common/config"
-	"github.com/soupstore/coda/login"
 )
 
 // stateLogin is the scene used for connecting to a character
@@ -57,7 +56,7 @@ func (s *stateLogin) promptPassword() {
 }
 
 func (s *stateLogin) attemptLogin() {
-	characterID, ok := login.GetCharacter(s.username, s.password)
+	characterID, ok := s.conn.usersManager.Login(s.username, s.password)
 	if !ok {
 		s.conn.writelnString("Incorrect login")
 		s.conn.close()

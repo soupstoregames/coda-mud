@@ -9,6 +9,10 @@ type Config struct {
 	Port         string `env:"PORT" default:"5555"`
 	DataPath     string `env:"DATA_PATH" default:"/etc/data"`
 	LoginAddress string `env:"LOGIN_ADDRESS" default:"localhost:50051"`
+
+	DatabaseUser     string `env:"DB_USER" default:"Nick"`
+	DatabasePassword string `env:"DB_PASS" default:""`
+	DatabaseName     string `env:"DB_NAME" default:"coda"`
 }
 
 func Load() (config *Config, err error) {

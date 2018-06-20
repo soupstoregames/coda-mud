@@ -11,6 +11,7 @@ import (
 
 	"github.com/soupstore/coda/common/config"
 	"github.com/soupstore/coda/common/logging"
+	"github.com/soupstore/coda/services"
 	"github.com/soupstore/coda/simulation"
 )
 
@@ -18,6 +19,7 @@ import (
 type connection struct {
 	config        *config.Config
 	sim           *simulation.Simulation
+	usersManager  *services.UsersManager
 	input         bytes.Buffer
 	conn          net.Conn
 	ctx           context.Context
@@ -26,12 +28,13 @@ type connection struct {
 	stopHeartbeat chan struct{}
 }
 
-func newTelnetConnection(c net.Conn, conf *config.Config, sim *simulation.Simulation) *connection {
+func newTelnetConnection(c net.Conn, conf *config.Config, sim *simulation.Simulation, usersManager *services.UsersManager) *connection {
 	conn := &connection{
-		config: conf,
-		conn:   c,
-		sim:    sim,
-		ctx:    context.Background(),
+		config:       conf,
+		conn:         c,
+		sim:          sim,
+		usersManager: usersManager,
+		ctx:          context.Background(),
 	}
 
 	conn.createHeartbeat(time.Minute)

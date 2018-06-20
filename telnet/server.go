@@ -7,6 +7,7 @@ import (
 	"github.com/satori/go.uuid"
 	"github.com/soupstore/coda/common/config"
 	"github.com/soupstore/coda/common/logging"
+	"github.com/soupstore/coda/services"
 	"github.com/soupstore/coda/simulation"
 	"go.uber.org/zap"
 )
@@ -24,16 +25,18 @@ const (
 
 // Server listens for incoming telnet connections
 type Server struct {
-	Config *config.Config
-	Addr   string
-	sim    *simulation.Simulation
+	Config       *config.Config
+	Addr         string
+	sim          *simulation.Simulation
+	usersManager *services.UsersManager
 }
 
-func NewServer(c *config.Config, addr string, sim *simulation.Simulation) *Server {
+func NewServer(c *config.Config, addr string, sim *simulation.Simulation, usersManager *services.UsersManager) *Server {
 	return &Server{
-		Addr:   addr,
-		Config: c,
-		sim:    sim,
+		Addr:         addr,
+		Config:       c,
+		sim:          sim,
+		usersManager: usersManager,
 	}
 }
 
@@ -68,7 +71,7 @@ func (server *Server) Serve(listener net.Listener) error {
 func (server *Server) handle(tcpConn net.Conn) {
 	connectionID := uuid.NewV4().String()
 
-	c := newTelnetConnection(tcpConn, server.Config, server.sim)
+	c := newTelnetConnection(tcpConn, server.Config, server.sim, server.usersManager)
 	c.ctx = WithConnectionID(c.ctx, connectionID)
 
 	logging.Logger().Info(
