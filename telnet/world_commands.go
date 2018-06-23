@@ -7,7 +7,7 @@ import (
 	"github.com/soupstore/coda/simulation/model"
 )
 
-type Command func(model.CharacterID, simulation.CharacterController, []string) error
+type WorldCommand func(model.CharacterID, simulation.CharacterController, []string) error
 
 func CmdDrop(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
 	alias := strings.Join(args, " ")

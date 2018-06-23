@@ -11,7 +11,7 @@ import (
 	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/services"
 	"github.com/soupstore/coda/simulation"
-	static "github.com/soupstore/coda/static-data"
+	"github.com/soupstore/coda/static-data"
 	"github.com/soupstore/coda/telnet"
 )
 
@@ -49,33 +49,23 @@ func main() {
 	}
 }
 
-func connectToDatabaseAndMigrate(conf *config.Config) (*pg.DB, error) {
-	db := pg.Connect(&pg.Options{
+func connectToDatabaseAndMigrate(conf *config.Config) (db *pg.DB, err error) {
+	db = pg.Connect(&pg.Options{
 		User:     conf.DatabaseUser,
 		Password: conf.DatabasePassword,
 		Database: conf.DatabaseName,
 	})
-
 	migrationAsset := database.MakeBinDataMigration(migrations.AssetNames(), migrations.Asset)
-	err := database.PerformMigration(migrationAsset)
-
-	return db, err
+	err = database.PerformMigration(migrationAsset)
+	return
 }
 
-func createAndInitializeSimulation(conf *config.Config, db *pg.DB) (*simulation.Simulation, error) {
-	// create a new simulation
-	sim := simulation.NewSimulation(db)
-
-	// load static data and apply changes to simulation
+func createAndInitializeSimulation(conf *config.Config, db *pg.DB) (sim *simulation.Simulation, err error) {
+	sim = simulation.NewSimulation(db)
 	dw := static.NewDataWatcher(conf.DataPath, sim)
 	logging.SubscribeToErrorChan(dw.Errors)
-
-	// load state data and apply to the simulation
-	if err := loadSavedState(db, sim); err != nil {
-		return nil, err
-	}
-
-	return sim, nil
+	err = loadSavedState(db, sim)
+	return
 }
 
 func loadSavedState(db *pg.DB, sim *simulation.Simulation) error {

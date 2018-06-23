@@ -17,7 +17,7 @@ type stateWorld struct {
 	characterID model.CharacterID
 }
 
-var validCommands = map[string]Command{
+var worldCommands = map[string]WorldCommand{
 	"look":      CmdLook,
 	"l":         CmdLook,
 	"say":       CmdSay,
@@ -72,7 +72,7 @@ func (s *stateWorld) handleInput(input string) error {
 	tokens := strings.Split(input, " ")
 	commandText := strings.ToLower(tokens[0])
 
-	command, ok := validCommands[commandText]
+	command, ok := worldCommands[commandText]
 	if !ok {
 		echo := rgbterm.String("Huh?", 255, 100, 100, 0, 0, 0)
 		s.conn.writelnString(echo)

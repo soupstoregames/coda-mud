@@ -17,9 +17,10 @@ import (
 
 // connection is a telnet connection to the MUD
 type connection struct {
-	config        *config.Config
-	sim           *simulation.Simulation
-	usersManager  *services.UsersManager
+	config       *config.Config
+	sim          *simulation.Simulation
+	usersManager *services.UsersManager
+
 	input         bytes.Buffer
 	conn          net.Conn
 	ctx           context.Context
@@ -64,7 +65,7 @@ func (c *connection) close() {
 	// without this you can try to close a closed channel
 	c.closed = true
 
-	// stop the heartbeat NOOP
+	// stop the heartbeat
 	c.stopHeartbeat <- struct{}{}
 
 	// close the client connection
