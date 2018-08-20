@@ -17,34 +17,6 @@ type stateWorld struct {
 	characterID model.CharacterID
 }
 
-var worldCommands = map[string]WorldCommand{
-	"look":      CmdLook,
-	"l":         CmdLook,
-	"say":       CmdSay,
-	"quit":      CmdQuit,
-	"north":     CmdNorth,
-	"n":         CmdNorth,
-	"northeast": CmdNorthEast,
-	"ne":        CmdNorthEast,
-	"east":      CmdEast,
-	"e":         CmdEast,
-	"southeast": CmdSouthEast,
-	"se":        CmdSouthEast,
-	"south":     CmdSouth,
-	"s":         CmdSouth,
-	"southwest": CmdSouthWest,
-	"sw":        CmdSouthWest,
-	"west":      CmdWest,
-	"w":         CmdWest,
-	"northwest": CmdNorthWest,
-	"nw":        CmdNorthWest,
-	"take":      CmdTake,
-	"get":       CmdTake,
-	"drop":      CmdDrop,
-	"equip":     CmdEquip,
-	"wear":      CmdEquip,
-}
-
 // onEnter is called when the scene is first loaded
 func (s *stateWorld) onEnter() error {
 	s.conn.writelnString("You are in the world!\n\r")

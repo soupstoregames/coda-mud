@@ -7,6 +7,34 @@ import (
 	"github.com/soupstore/coda/simulation/model"
 )
 
+var worldCommands = map[string]WorldCommand{
+	"look":      CmdLook,
+	"l":         CmdLook,
+	"say":       CmdSay,
+	"quit":      CmdQuit,
+	"north":     CmdNorth,
+	"n":         CmdNorth,
+	"northeast": CmdNorthEast,
+	"ne":        CmdNorthEast,
+	"east":      CmdEast,
+	"e":         CmdEast,
+	"southeast": CmdSouthEast,
+	"se":        CmdSouthEast,
+	"south":     CmdSouth,
+	"s":         CmdSouth,
+	"southwest": CmdSouthWest,
+	"sw":        CmdSouthWest,
+	"west":      CmdWest,
+	"w":         CmdWest,
+	"northwest": CmdNorthWest,
+	"nw":        CmdNorthWest,
+	"take":      CmdTake,
+	"get":       CmdTake,
+	"drop":      CmdDrop,
+	"equip":     CmdEquip,
+	"wear":      CmdEquip,
+}
+
 type WorldCommand func(model.CharacterID, simulation.CharacterController, []string) error
 
 func CmdDrop(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
