@@ -69,12 +69,24 @@ func createAndInitializeSimulation(conf *config.Config, db *pg.DB) (sim *simulat
 }
 
 func loadSavedState(db *pg.DB, sim *simulation.Simulation) error {
+	items, err := database.GetItems(db)
+	if err != nil {
+		return err
+	}
+	sim.LoadItems(items)
+
+	containers, roomContainerLinks, err := database.GetContainers(db)
+	if err != nil {
+		return err
+	}
+	sim.LoadContainers(containers, roomContainerLinks)
+
 	characters, err := database.GetCharacters(db)
 	if err != nil {
 		return err
 	}
-
 	sim.LoadCharacters(characters)
+
 	return nil
 }
 

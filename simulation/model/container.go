@@ -2,32 +2,89 @@ package model
 
 type ContainerID int64
 
-type Container struct {
-	ID            ContainerID
-	RoomContainer bool
-	Items         map[ItemID]*Item
+type Container interface {
+	PutItem(item *Item)
+	RemoveItem(itemID ItemID)
+	ID() ContainerID
+	Items() map[ItemID]*Item
 }
 
-func newRoomContainer(id ContainerID) *Container {
-	return &Container{
-		ID:            id,
-		RoomContainer: true,
-		Items:         make(map[ItemID]*Item),
+type BaseContainer struct {
+	id    ContainerID
+	items map[ItemID]*Item
+}
+
+func (c *BaseContainer) ID() ContainerID {
+	return c.id
+}
+
+func (c *BaseContainer) Items() map[ItemID]*Item {
+	return c.items
+}
+
+// RoomContainer represents the floor of rooms items are dropped on to
+type RoomContainer struct {
+	BaseContainer
+}
+
+func NewRoomContainer(id ContainerID) Container {
+	return &RoomContainer{
+		BaseContainer: BaseContainer{
+			id:    id,
+			items: make(map[ItemID]*Item),
+		},
 	}
 }
 
-func newFiniteContainer(id ContainerID) *Container {
-	return &Container{
-		ID:            id,
-		RoomContainer: false,
-		Items:         make(map[ItemID]*Item),
+func (c *RoomContainer) PutItem(item *Item) {
+	c.items[item.ID] = item
+}
+
+func (c *RoomContainer) RemoveItem(itemID ItemID) {
+	delete(c.items, itemID)
+}
+
+// ItemContainer is the kind of container used in items like chests, backpacks etc...
+type ItemContainer struct {
+	BaseContainer
+}
+
+func NewItemContainer(id ContainerID) Container {
+	return &ItemContainer{
+		BaseContainer: BaseContainer{
+			id:    id,
+			items: make(map[ItemID]*Item),
+		},
 	}
 }
 
-func (c *Container) PutItem(item *Item) {
-	c.Items[item.ID] = item
+func (c *ItemContainer) PutItem(item *Item) {
+	// check for capacity and stuff
+	c.items[item.ID] = item
 }
 
-func (c *Container) RemoveItem(itemID ItemID) {
-	delete(c.Items, itemID)
+func (c *ItemContainer) RemoveItem(itemID ItemID) {
+	delete(c.items, itemID)
+}
+
+// ItemContainer is the kind of container used in items like chests, backpacks etc...
+type RigContainer struct {
+	BaseContainer
+}
+
+func NewRigContainer(id ContainerID) Container {
+	return &RigContainer{
+		BaseContainer: BaseContainer{
+			id:    id,
+			items: make(map[ItemID]*Item),
+		},
+	}
+}
+
+func (c *RigContainer) PutItem(item *Item) {
+	c.items[item.ID] = item
+}
+
+func (c *RigContainer) RemoveItem(itemID ItemID) {
+	delete(c.items, itemID)
 }

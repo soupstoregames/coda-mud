@@ -18,7 +18,7 @@ type Simulation struct {
 	itemDefinitions map[model.ItemDefinitionID]*model.ItemDefinition
 	items           map[model.ItemID]*model.Item
 	characters      map[model.CharacterID]*model.Character
-	containers      map[model.ContainerID]*model.Container
+	containers      map[model.ContainerID]model.Container
 }
 
 // NewSimulation returns a Simulation with default params.
@@ -33,7 +33,7 @@ func NewSimulation(db *pg.DB) *Simulation {
 		itemDefinitions: make(map[model.ItemDefinitionID]*model.ItemDefinition),
 		items:           make(map[model.ItemID]*model.Item),
 		characters:      make(map[model.CharacterID]*model.Character),
-		containers:      make(map[model.ContainerID]*model.Container),
+		containers:      make(map[model.ContainerID]model.Container),
 	}
 }
 

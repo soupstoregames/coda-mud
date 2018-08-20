@@ -106,7 +106,7 @@ func renderRoomDescription(c *connection, characterID model.CharacterID, room *m
 
 	// print items
 	itemNames := []string{}
-	for _, item := range room.Container.Items {
+	for _, item := range room.Container.Items() {
 		itemNames = append(itemNames, item.Name)
 	}
 	if len(itemNames) > 0 {

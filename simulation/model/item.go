@@ -24,11 +24,10 @@ type Item struct {
 	Name      string
 	Aliases   []string
 	RigSlot   RigSlot
-	Container *Container
+	Container Container
 }
 
 func NewItemDefinition(id ItemDefinitionID, name string, aliases []string, RigSlot RigSlot, container *ContainerDefinition) *ItemDefinition {
-
 	return &ItemDefinition{
 		ID:        id,
 		Name:      name,
@@ -39,9 +38,9 @@ func NewItemDefinition(id ItemDefinitionID, name string, aliases []string, RigSl
 }
 
 func (b *ItemDefinition) Spawn(itemID ItemID) *Item {
-	var container *Container
+	var container Container
 	if b.Container != nil {
-		container = newFiniteContainer(0)
+		container = NewItemContainer(0)
 	}
 	return &Item{
 		ID:        itemID,

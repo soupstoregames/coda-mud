@@ -40,20 +40,6 @@ func (s *stateLogin) onExit() error {
 	return nil
 }
 
-//
-// func (s *stateLogin) handleInput(input string) error {
-// 	switch s.substate {
-// 	case 0: // waiting for username
-// 		s.username = input
-// 		s.promptPassword()
-// 	case 1: // waiting for password
-// 		s.password = input
-// 		s.attemptLogin()
-// 	}
-//
-// 	return nil
-// }
-
 func (s *stateLogin) handleInput(input string) error {
 	tokens := strings.Split(input, " ")
 	commandText := strings.ToLower(tokens[0])

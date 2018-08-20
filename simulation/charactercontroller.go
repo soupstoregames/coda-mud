@@ -1,8 +1,8 @@
 package simulation
 
 import (
-	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/database"
+	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/simulation/model"
 	"go.uber.org/zap"
 )
@@ -170,11 +170,16 @@ func (s *Simulation) TakeItem(id model.CharacterID, alias string) error {
 		return err
 	}
 
-	for itemID, item := range actor.Room.Container.Items {
+	for itemID, item := range actor.Room.Container.Items() {
 		if item.KnownAs(alias) {
 			ok := actor.TakeItem(item)
 			if ok {
 				actor.Room.Container.RemoveItem(itemID)
+				err := database.RemoveItemFromContainer(s.db, actor.Room.Container.ID(), item.ID)
+				if err != nil {
+					panic(err)
+				}
+
 				event := model.EvtCharacterTakesItem{
 					Character: actor,
 					Item:      item,
@@ -202,7 +207,7 @@ func (s *Simulation) DropItem(id model.CharacterID, alias string) error {
 		return err
 	}
 
-	for itemID, item := range actor.Backpack.Container.Items {
+	for itemID, item := range actor.Backpack.Container.Items() {
 		if item.KnownAs(alias) {
 			actor.Room.Container.PutItem(item)
 			actor.Backpack.Container.RemoveItem(itemID)
@@ -229,12 +234,18 @@ func (s *Simulation) EquipItem(id model.CharacterID, alias string) error {
 		return err
 	}
 
-	for _, item := range actor.Room.Container.Items {
+	for _, item := range actor.Room.Container.Items() {
 		if item.KnownAs(alias) {
 			_, err = actor.Equip(item)
 			if err == model.ErrNotEquipable {
 				return ErrCannotEquipItem
 			}
+
+			err := database.RemoveItemFromContainer(s.db, actor.Room.Container.ID(), item.ID)
+			if err != nil {
+				panic(err)
+			}
+
 			event := model.EvtCharacterEquipsItem{
 				Character: actor,
 				Item:      item,

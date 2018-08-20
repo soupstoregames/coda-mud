@@ -1,0 +1,4 @@
+CREATE TABLE items (
+  id BIGSERIAL PRIMARY KEY NOT NULL,
+  item_definition_id BIGINT NOT NULL
+);

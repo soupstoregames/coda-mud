@@ -14,7 +14,7 @@ type Room struct {
 	Name        string
 	Region      string
 	Description string
-	Container   *Container
+	Container   Container
 	Characters  []*Character
 	Exits       map[Direction]*Exit
 }
@@ -37,7 +37,7 @@ func NewRoom(roomID RoomID, worldID WorldID, containerID ContainerID, name, regi
 			West:      nil,
 			NorthWest: nil,
 		},
-		Container: newRoomContainer(containerID),
+		Container: NewRoomContainer(containerID),
 
 		scriptedObject: scriptedObject{
 			script: script,

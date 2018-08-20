@@ -3,8 +3,8 @@ package simulation
 import (
 	"fmt"
 
-	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/database"
+	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/simulation/model"
 )
 
@@ -36,8 +36,6 @@ func (s *Simulation) DestroyWorld(worldID model.WorldID) {
 
 // CreateRoom creates a new room in the specified world with the specified room ID
 func (s *Simulation) CreateRoom(worldID model.WorldID, roomID model.RoomID, name, region, description, script string) (*model.Room, error) {
-	containerID := s.getNextContainerID()
-
 	world, ok := s.worlds[worldID]
 	if !ok {
 		return nil, ErrWorldNotFound
@@ -45,11 +43,11 @@ func (s *Simulation) CreateRoom(worldID model.WorldID, roomID model.RoomID, name
 
 	// TODO: Check that room with ID does not already exist
 
-	room := model.NewRoom(roomID, worldID, containerID, name, region, description, script)
+	room := model.NewRoom(roomID, worldID, 1, name, region, description, script)
 	world.Rooms[roomID] = room
 
 	container := room.Container
-	s.containers[container.ID] = container
+	s.containers[container.ID()] = container
 
 	return room, nil
 }
@@ -103,19 +101,25 @@ func (s *Simulation) CreateItemDefinition(itemID model.ItemDefinitionID, name st
 }
 
 func (s *Simulation) SpawnItem(itemDefinitionID model.ItemDefinitionID, containerID model.ContainerID) error {
-	container, ok := s.containers[containerID]
+	_, ok := s.containers[containerID]
 	if !ok {
 		return ErrContainerNotFound
 	}
 
 	definition := s.itemDefinitions[itemDefinitionID]
-	id := s.getNextItemID()
-	instance := definition.Spawn(id)
-	if instance.Container != nil {
-		instance.Container.ID = s.getNextContainerID()
-		s.containers[instance.Container.ID] = instance.Container
+	id, err := database.StoreItem(s.db, definition.ID)
+	if err != nil {
+		// error!!
 	}
-	container.PutItem(instance)
+
+	instance := definition.Spawn(id)
+	s.items[instance.ID] = instance
+
+	// if instance.Container != nil {
+	// 	instance.Container.ID = s.getNextContainerID()
+	// 	s.containers[instance.Container.ID] = instance.Container
+	// }
+	// container.PutItem(instance)
 
 	return nil
 }
@@ -136,4 +140,46 @@ func (s *Simulation) LoadCharacters(characters []*database.Character) {
 		loaded++
 	}
 	logging.Logger().Info(fmt.Sprintf("Loaded %d characters", loaded))
+}
+
+func (s *Simulation) LoadContainers(containers []*database.Container, roomContainerLinks []*database.RoomContainerLink) {
+	loaded := 0
+	for _, c := range containers {
+		switch c.Type {
+		case "room":
+			s.containers[c.ID] = model.NewRoomContainer(c.ID)
+			for _, i := range c.Items {
+				s.containers[c.ID].PutItem(s.items[i])
+			}
+		}
+
+		loaded++
+	}
+
+	// link containers to rooms
+	for _, l := range roomContainerLinks {
+		room, err := s.GetRoom(l.World, l.Room)
+		if err != nil {
+			fmt.Println("did not find room")
+		}
+		container, ok := s.containers[l.ID]
+		if !ok {
+			fmt.Println("did not find container")
+		}
+
+		room.Container = container
+	}
+
+	logging.Logger().Info(fmt.Sprintf("Loaded %d containers", loaded))
+}
+
+func (s *Simulation) LoadItems(items []*database.Item) {
+	loaded := 0
+	for _, i := range items {
+		definition := s.itemDefinitions[i.ItemDefinitionID]
+		s.items[i.ID] = definition.Spawn(i.ID)
+
+		loaded++
+	}
+	logging.Logger().Info(fmt.Sprintf("Loaded %d items", loaded))
 }

@@ -1,0 +1,11 @@
+CREATE TABLE containers (
+  id BIGSERIAL PRIMARY KEY NOT NULL,
+  type TEXT NOT NULL,
+  items JSONB
+);
+
+CREATE TABLE room_container_links (
+  id BIGSERIAL PRIMARY KEY NOT NULL,
+  world TEXT NOT NULL,
+  room BIGINT NOT NULL
+);

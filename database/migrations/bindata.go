@@ -4,6 +4,10 @@
 // 001_create_users_table.up.sql
 // 002_create_characters_table.down.sql
 // 002_create_characters_table.up.sql
+// 003_create_items_table.down.sql
+// 003_create_items_table.up.sql
+// 004_create_containers_table.down.sql
+// 004_create_containers_table.up.sql
 package migrations
 
 import (
@@ -109,7 +113,7 @@ func _001_create_users_tableUpSql() (*asset, error) {
 	return a, nil
 }
 
-var __002_create_characters_tableDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x0e\x72\x75\x0c\x71\x55\x08\x71\x74\xf2\x71\x55\x28\x2d\x4e\x2d\x2a\x56\xd0\xe0\x52\x50\xc8\x4c\x51\x70\xf2\x74\x0f\x76\x0d\xf2\x74\xf4\x51\x08\x08\xf2\xf4\x75\x0c\x8a\x54\xf0\x76\x8d\x54\xf0\xf3\x0f\x51\xf0\x0b\xf5\xf1\xd1\xe1\x52\x00\x2b\xcf\x4b\xcc\x4d\x55\x08\x71\x8d\x08\x41\x91\x29\x48\x2c\x2e\x2e\xcf\x2f\x4a\x51\x70\x8a\x0c\x71\x75\x44\x91\x4a\xce\x48\x2c\x4a\x4c\x2e\x49\x2d\x8a\x87\xd8\xe1\xe9\x87\xd0\xca\xa5\x69\xcd\x05\x08\x00\x00\xff\xff\x7e\xb0\x5a\xe4\x91\x00\x00\x00")
+var __002_create_characters_tableDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x09\xf2\x0f\x50\x08\x71\x74\xf2\x71\x55\x28\x2d\x4e\x2d\x2a\xb6\xe6\x02\x04\x00\x00\xff\xff\xcf\x0c\x8a\x87\x12\x00\x00\x00")
 
 func _002_create_characters_tableDownSqlBytes() ([]byte, error) {
 	return bindataRead(
@@ -124,7 +128,7 @@ func _002_create_characters_tableDownSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "002_create_characters_table.down.sql", size: 145, mode: os.FileMode(420), modTime: time.Unix(1529449439, 0)}
+	info := bindataFileInfo{name: "002_create_characters_table.down.sql", size: 18, mode: os.FileMode(420), modTime: time.Unix(1529965951, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -145,6 +149,86 @@ func _002_create_characters_tableUpSql() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "002_create_characters_table.up.sql", size: 134, mode: os.FileMode(420), modTime: time.Unix(1529449423, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __003_create_items_tableDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x09\xf2\x0f\x50\x08\x71\x74\xf2\x71\x55\xc8\x2c\x49\xcd\x2d\xb6\xe6\x02\x04\x00\x00\xff\xff\x04\x8d\x8b\x32\x12\x00\x00\x00")
+
+func _003_create_items_tableDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__003_create_items_tableDownSql,
+		"003_create_items_table.down.sql",
+	)
+}
+
+func _003_create_items_tableDownSql() (*asset, error) {
+	bytes, err := _003_create_items_tableDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "003_create_items_table.down.sql", size: 18, mode: os.FileMode(420), modTime: time.Unix(1529968135, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __003_create_items_tableUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x0e\x72\x75\x0c\x71\x55\x08\x71\x74\xf2\x71\x55\xc8\x2c\x49\xcd\x2d\x56\xd0\xe0\x52\x50\xc8\x4c\x51\x70\xf2\x74\x0f\x76\x0d\xf2\x74\xf4\x51\x08\x08\xf2\xf4\x75\x0c\x8a\x54\xf0\x76\x8d\x54\xf0\xf3\x0f\x51\xf0\x0b\xf5\xf1\xd1\x01\x29\x2a\x49\xcd\x8d\x4f\x49\x4d\xcb\xcc\xcb\x2c\xc9\xcc\xcf\x8b\x87\x68\xf2\xf4\x0b\x81\xab\xe2\xd2\xb4\xe6\x02\x04\x00\x00\xff\xff\x7f\x5f\xf9\xff\x62\x00\x00\x00")
+
+func _003_create_items_tableUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__003_create_items_tableUpSql,
+		"003_create_items_table.up.sql",
+	)
+}
+
+func _003_create_items_tableUpSql() (*asset, error) {
+	bytes, err := _003_create_items_tableUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "003_create_items_table.up.sql", size: 98, mode: os.FileMode(420), modTime: time.Unix(1529970187, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __004_create_containers_tableDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x09\xf2\x0f\x50\x08\x71\x74\xf2\x71\x55\x48\xce\xcf\x2b\x49\xcc\xcc\x4b\x2d\x2a\xb6\xe6\x42\x12\x2e\xca\xcf\xcf\x8d\x87\xcb\xc5\xe7\x64\xe6\x65\x5b\x73\x01\x02\x00\x00\xff\xff\x7b\x70\x74\xf1\x37\x00\x00\x00")
+
+func _004_create_containers_tableDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__004_create_containers_tableDownSql,
+		"004_create_containers_table.down.sql",
+	)
+}
+
+func _004_create_containers_tableDownSql() (*asset, error) {
+	bytes, err := _004_create_containers_tableDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "004_create_containers_table.down.sql", size: 55, mode: os.FileMode(420), modTime: time.Unix(1529970562, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __004_create_containers_tableUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x0e\x72\x75\x0c\x71\x55\x08\x71\x74\xf2\x71\x55\x48\xce\xcf\x2b\x49\xcc\xcc\x4b\x2d\x2a\x56\xd0\xe0\x52\x50\xc8\x4c\x51\x70\xf2\x74\x0f\x76\x0d\xf2\x74\xf4\x51\x08\x08\xf2\xf4\x75\x0c\x8a\x54\xf0\x76\x8d\x54\xf0\xf3\x0f\x51\xf0\x0b\xf5\xf1\xd1\xe1\x52\x50\x28\xa9\x2c\x48\x55\x08\x71\x8d\x08\x41\x11\xcd\x2c\x49\xcd\x2d\x56\xf0\x0a\xf6\xf7\x73\xe2\xd2\xb4\xe6\xe2\x42\xb1\xa6\x28\x3f\x3f\x37\x1e\x6e\x57\x7c\x4e\x66\x5e\x36\x09\x16\x96\xe7\x17\xe5\xa4\x60\xda\x08\x32\x14\xa4\xdb\xd3\x0f\x21\x0e\xb2\x1a\x10\x00\x00\xff\xff\xb9\x47\xbb\xfc\xe1\x00\x00\x00")
+
+func _004_create_containers_tableUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__004_create_containers_tableUpSql,
+		"004_create_containers_table.up.sql",
+	)
+}
+
+func _004_create_containers_tableUpSql() (*asset, error) {
+	bytes, err := _004_create_containers_tableUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "004_create_containers_table.up.sql", size: 225, mode: os.FileMode(420), modTime: time.Unix(1530297713, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -205,6 +289,10 @@ var _bindata = map[string]func() (*asset, error){
 	"001_create_users_table.up.sql": _001_create_users_tableUpSql,
 	"002_create_characters_table.down.sql": _002_create_characters_tableDownSql,
 	"002_create_characters_table.up.sql": _002_create_characters_tableUpSql,
+	"003_create_items_table.down.sql": _003_create_items_tableDownSql,
+	"003_create_items_table.up.sql": _003_create_items_tableUpSql,
+	"004_create_containers_table.down.sql": _004_create_containers_tableDownSql,
+	"004_create_containers_table.up.sql": _004_create_containers_tableUpSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -251,6 +339,10 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"001_create_users_table.up.sql": &bintree{_001_create_users_tableUpSql, map[string]*bintree{}},
 	"002_create_characters_table.down.sql": &bintree{_002_create_characters_tableDownSql, map[string]*bintree{}},
 	"002_create_characters_table.up.sql": &bintree{_002_create_characters_tableUpSql, map[string]*bintree{}},
+	"003_create_items_table.down.sql": &bintree{_003_create_items_tableDownSql, map[string]*bintree{}},
+	"003_create_items_table.up.sql": &bintree{_003_create_items_tableUpSql, map[string]*bintree{}},
+	"004_create_containers_table.down.sql": &bintree{_004_create_containers_tableDownSql, map[string]*bintree{}},
+	"004_create_containers_table.up.sql": &bintree{_004_create_containers_tableUpSql, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory
