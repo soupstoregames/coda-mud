@@ -1,8 +1,8 @@
 package simulation
 
 import (
+	"github.com/soupstore/coda/data/state"
 	"github.com/soupstore/coda/simulation/model"
-	state "github.com/soupstore/coda/state-data"
 )
 
 func (s *Simulation) Save() error {

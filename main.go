@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/soupstore/coda/config"
+	"github.com/soupstore/coda/data/state"
+	"github.com/soupstore/coda/data/static"
 	"github.com/soupstore/coda/logging"
+	"github.com/soupstore/coda/servers/telnet"
 	"github.com/soupstore/coda/services"
 	"github.com/soupstore/coda/simulation"
-	state "github.com/soupstore/coda/state-data"
-	"github.com/soupstore/coda/static-data"
-	"github.com/soupstore/coda/telnet"
 )
 
 func main() {
@@ -54,7 +54,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	usersManager.Register("rinse", "bums")
 	id := sim.MakeCharacter("Rinse")
 	if err := sim.SpawnItem(1, room.Container.ID()); err != nil {

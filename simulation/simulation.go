@@ -1,8 +1,8 @@
 package simulation
 
 import (
+	"github.com/soupstore/coda/data/state"
 	"github.com/soupstore/coda/simulation/model"
-	state "github.com/soupstore/coda/state-data"
 )
 
 // Simulation is the engine of the world.
