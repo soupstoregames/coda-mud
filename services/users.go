@@ -1,33 +1,39 @@
 package services
 
 import (
-	"github.com/go-pg/pg"
-	"github.com/soupstore/coda/database"
+	"errors"
+
 	"github.com/soupstore/coda/simulation/model"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UsersManager struct {
-	db *pg.DB
+	users map[string]User
 }
 
-func NewUsersManagers(db *pg.DB) *UsersManager {
+func NewUsersManager() *UsersManager {
 	return &UsersManager{
-		db: db,
+		users: make(map[string]User),
 	}
+}
+
+type User struct {
+	username    string
+	password    []byte
+	characterID model.CharacterID
 }
 
 func (u *UsersManager) Login(username, password string) (model.CharacterID, bool) {
-	user, err := database.GetUser(u.db, username)
-	if err != nil {
-		return 0, false
+	user, ok := u.users[username]
+	if !ok {
+		return "", false
 	}
 
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(password)); err != nil {
-		return 0, false
+	if err := bcrypt.CompareHashAndPassword(user.password, []byte(password)); err != nil {
+		return "", false
 	}
 
-	return user.CharacterID, true
+	return user.characterID, true
 }
 
 func (u *UsersManager) Register(username, password string) error {
@@ -36,5 +42,23 @@ func (u *UsersManager) Register(username, password string) error {
 		return err
 	}
 
-	return database.StoreUser(u.db, username, hash)
+	u.users[username] = User{
+		username: username,
+		password: hash,
+	}
+
+	return nil
+}
+
+func (u *UsersManager) AssociateCharacter(username string, characterID model.CharacterID) error {
+	user, ok := u.users[username]
+	if !ok {
+		return errors.New("cannot find user")
+	}
+
+	user.characterID = characterID
+
+	u.users[username] = user
+
+	return nil
 }

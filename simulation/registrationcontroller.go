@@ -1,6 +1,8 @@
 package simulation
 
-import "github.com/soupstore/coda/simulation/model"
+import (
+	"github.com/soupstore/coda/simulation/model"
+)
 
 // RegistrationController is an interface on Simulation that can be used to create
 // new character for new accounts
@@ -11,15 +13,12 @@ type RegistrationController interface {
 // MakeCharacter creates a new character at the next available ID
 // It returns the new character's ID
 func (s *Simulation) MakeCharacter(name string) model.CharacterID {
-	// get and increment character ID
-	characterID := s.getNextCharacterID()
-
 	// create new character and add to sim
-	character := model.NewCharacter(characterID, name, s.spawnRoom)
-	s.characters[characterID] = character
+	character := model.NewCharacter(name, s.spawnRoom)
+	s.characters[character.ID] = character
 
 	// add character to room
 	s.spawnRoom.AddCharacter(character)
 
-	return characterID
+	return character.ID
 }

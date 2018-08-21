@@ -12,7 +12,7 @@ type Rig struct {
 }
 
 func (r *Rig) Equip(item *Item) (*Item, error) {
-	if item.RigSlot == RigSlotNone {
+	if item.Definition.RigSlot == RigSlotNone {
 		return nil, ErrNotEquipable
 	}
 	oldBackpack := r.Backpack

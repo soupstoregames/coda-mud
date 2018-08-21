@@ -107,7 +107,7 @@ func renderRoomDescription(c *connection, characterID model.CharacterID, room *m
 	// print items
 	itemNames := []string{}
 	for _, item := range room.Container.Items() {
-		itemNames = append(itemNames, item.Name)
+		itemNames = append(itemNames, item.Definition.Name)
 	}
 	if len(itemNames) > 0 {
 		names, _ := renderList(itemNames)
@@ -167,10 +167,10 @@ func renderCharacterTakesItem(c *connection, evt model.EvtCharacterTakesItem) {
 	characterID := CharacterIDFromContext(c.ctx)
 
 	if evt.Character.ID == characterID {
-		c.writeString("You take", evt.Item.Name)
+		c.writeString("You take", evt.Item.Definition.Name)
 		c.writePrompt()
 	} else {
-		c.writelnString(renderCharacter(evt.Character), "takes", evt.Item.Name)
+		c.writelnString(renderCharacter(evt.Character), "takes", evt.Item.Definition.Name)
 	}
 }
 
@@ -178,10 +178,10 @@ func renderCharacterDropsItem(c *connection, evt model.EvtCharacterDropsItem) {
 	characterID := CharacterIDFromContext(c.ctx)
 
 	if evt.Character.ID == characterID {
-		c.writeString("You drop", evt.Item.Name)
+		c.writeString("You drop", evt.Item.Definition.Name)
 		c.writePrompt()
 	} else {
-		c.writelnString(renderCharacter(evt.Character), "drops", evt.Item.Name)
+		c.writelnString(renderCharacter(evt.Character), "drops", evt.Item.Definition.Name)
 	}
 }
 
@@ -189,10 +189,10 @@ func renderCharacterEquipsItem(c *connection, evt model.EvtCharacterEquipsItem) 
 	characterID := CharacterIDFromContext(c.ctx)
 
 	if evt.Character.ID == characterID {
-		c.writeString("You equip", evt.Item.Name)
+		c.writeString("You equip", evt.Item.Definition.Name)
 		c.writePrompt()
 	} else {
-		c.writelnString(renderCharacter(evt.Character), "equips", evt.Item.Name)
+		c.writelnString(renderCharacter(evt.Character), "equips", evt.Item.Definition.Name)
 	}
 }
 

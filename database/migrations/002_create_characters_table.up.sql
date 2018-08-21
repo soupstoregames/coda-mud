@@ -1,6 +1,0 @@
-CREATE TABLE characters (
-  id BIGSERIAL PRIMARY KEY NOT NULL,
-  name TEXT NOT NULL,
-  room BIGINT NOT NULL,
-  world TEXT NOT NULL
-);

@@ -2,6 +2,8 @@ package model
 
 import (
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 type ItemDefinitionID int64
@@ -17,14 +19,12 @@ type ItemDefinition struct {
 type ContainerDefinition struct {
 }
 
-type ItemID int64
+type ItemID string
 
 type Item struct {
-	ID        ItemID
-	Name      string
-	Aliases   []string
-	RigSlot   RigSlot
-	Container Container
+	ID         ItemID
+	Definition *ItemDefinition
+	Container  Container
 }
 
 func NewItemDefinition(id ItemDefinitionID, name string, aliases []string, RigSlot RigSlot, container *ContainerDefinition) *ItemDefinition {
@@ -37,26 +37,24 @@ func NewItemDefinition(id ItemDefinitionID, name string, aliases []string, RigSl
 	}
 }
 
-func (b *ItemDefinition) Spawn(itemID ItemID) *Item {
+func (b *ItemDefinition) Spawn() *Item {
 	var container Container
 	if b.Container != nil {
-		container = NewItemContainer(0)
+		container = NewItemContainer()
 	}
 	return &Item{
-		ID:        itemID,
-		Name:      b.Name,
-		Aliases:   b.Aliases,
-		RigSlot:   b.RigSlot,
-		Container: container,
+		ID:         ItemID(uuid.New().String()),
+		Definition: b,
+		Container:  container,
 	}
 }
 
 func (b *Item) KnownAs(alias string) bool {
-	if strings.ToLower(alias) == strings.ToLower(b.Name) {
+	if strings.ToLower(alias) == strings.ToLower(b.Definition.Name) {
 		return true
 	}
 
-	for _, al := range b.Aliases {
+	for _, al := range b.Definition.Aliases {
 		if strings.ToLower(alias) == strings.ToLower(al) {
 			return true
 		}

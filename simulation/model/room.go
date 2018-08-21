@@ -19,7 +19,7 @@ type Room struct {
 	Exits       map[Direction]*Exit
 }
 
-func NewRoom(roomID RoomID, worldID WorldID, containerID ContainerID, name, region, description, script string) (r *Room) {
+func NewRoom(roomID RoomID, worldID WorldID, name, region, description, script string) (r *Room) {
 	r = &Room{
 		ID:          roomID,
 		WorldID:     worldID,
@@ -37,7 +37,7 @@ func NewRoom(roomID RoomID, worldID WorldID, containerID ContainerID, name, regi
 			West:      nil,
 			NorthWest: nil,
 		},
-		Container: NewRoomContainer(containerID),
+		Container: NewRoomContainer(),
 
 		scriptedObject: scriptedObject{
 			script: script,
@@ -63,19 +63,19 @@ func (r *Room) RemoveCharacter(c *Character) {
 func (r *Room) OnEnter(c *Character) {
 	L := r.createScriptRuntime(ScriptContext{r})
 	defer L.Close()
-	callFunction(L, "onEnter", lua.LNumber(c.ID))
+	callFunction(L, "onEnter", lua.LString(c.ID))
 }
 
 func (r *Room) OnWake(c *Character) {
 	L := r.createScriptRuntime(ScriptContext{r})
 	defer L.Close()
-	callFunction(L, "onWake", lua.LNumber(c.ID))
+	callFunction(L, "onWake", lua.LString(c.ID))
 }
 
 func (r *Room) OnExit(c *Character) {
 	L := r.createScriptRuntime(ScriptContext{r})
 	defer L.Close()
-	callFunction(L, "onExit", lua.LNumber(c.ID))
+	callFunction(L, "onExit", lua.LString(c.ID))
 }
 
 func (r *Room) getAwakeCharacters() []*Character {

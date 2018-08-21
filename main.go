@@ -3,14 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
-	"github.com/go-pg/pg"
 	"github.com/soupstore/coda/config"
-	"github.com/soupstore/coda/database"
-	"github.com/soupstore/coda/database/migrations"
 	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/services"
 	"github.com/soupstore/coda/simulation"
+	state "github.com/soupstore/coda/state-data"
 	"github.com/soupstore/coda/static-data"
 	"github.com/soupstore/coda/telnet"
 )
@@ -18,7 +17,7 @@ import (
 func main() {
 	var (
 		conf         *config.Config
-		db           *pg.DB
+		persister    state.Persister
 		sim          *simulation.Simulation
 		usersManager *services.UsersManager
 		err          error
@@ -30,18 +29,39 @@ func main() {
 		logging.Logger().Fatal(err.Error())
 	}
 
-	if db, err = connectToDatabaseAndMigrate(conf); err != nil {
+	if persister, err = state.NewFileSystemPersister(conf); err != nil {
 		logging.Logger().Fatal(err.Error())
 	}
 
-	if sim, err = createAndInitializeSimulation(conf, db); err != nil {
+	if sim, err = createAndInitializeSimulation(conf, persister); err != nil {
 		logging.Logger().Fatal(err.Error())
 	}
 
-	usersManager = services.NewUsersManagers(db)
+	go func() {
+		for {
+			time.Sleep(3 * time.Second)
+			if err := sim.Save(); err != nil {
+				panic(err)
+			}
+		}
+	}()
+
+	usersManager = services.NewUsersManager()
 
 	// temporary
 	sim.SetSpawnRoom("arrival-city", 1)
+	room, err := sim.GetRoom("arrival-city", 1)
+	if err != nil {
+		panic(err)
+	}
+
+	usersManager.Register("rinse", "bums")
+	id := sim.MakeCharacter("Rinse")
+	if err := sim.SpawnItem(1, room.Container.ID()); err != nil {
+		panic(err)
+	}
+
+	usersManager.AssociateCharacter("rinse", id)
 
 	err = launchTelnetServer(conf, sim, usersManager)
 	if err != nil {
@@ -49,45 +69,11 @@ func main() {
 	}
 }
 
-func connectToDatabaseAndMigrate(conf *config.Config) (db *pg.DB, err error) {
-	db = pg.Connect(&pg.Options{
-		User:     conf.DatabaseUser,
-		Password: conf.DatabasePassword,
-		Database: conf.DatabaseName,
-	})
-	migrationAsset := database.MakeBinDataMigration(migrations.AssetNames(), migrations.Asset)
-	err = database.PerformMigration(migrationAsset)
-	return
-}
-
-func createAndInitializeSimulation(conf *config.Config, db *pg.DB) (sim *simulation.Simulation, err error) {
-	sim = simulation.NewSimulation(db)
+func createAndInitializeSimulation(conf *config.Config, persister state.Persister) (sim *simulation.Simulation, err error) {
+	sim = simulation.NewSimulation(persister)
 	dw := static.NewDataWatcher(conf.DataPath, sim)
 	logging.SubscribeToErrorChan(dw.Errors)
-	err = loadSavedState(db, sim)
 	return
-}
-
-func loadSavedState(db *pg.DB, sim *simulation.Simulation) error {
-	items, err := database.GetItems(db)
-	if err != nil {
-		return err
-	}
-	sim.LoadItems(items)
-
-	containers, roomContainerLinks, err := database.GetContainers(db)
-	if err != nil {
-		return err
-	}
-	sim.LoadContainers(containers, roomContainerLinks)
-
-	characters, err := database.GetCharacters(db)
-	if err != nil {
-		return err
-	}
-	sim.LoadCharacters(characters)
-
-	return nil
 }
 
 func launchTelnetServer(conf *config.Config, sim *simulation.Simulation, usersManager *services.UsersManager) error {

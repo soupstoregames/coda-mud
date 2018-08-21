@@ -1,6 +1,0 @@
-CREATE TABLE users (
-  id BIGSERIAL PRIMARY KEY NOT NULL,
-  username TEXT NOT NULL,
-  password BYTEA NOT NULL,
-  character_id BIGINT NOT NULL
-);

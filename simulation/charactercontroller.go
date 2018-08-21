@@ -1,8 +1,6 @@
 package simulation
 
 import (
-	"github.com/soupstore/coda/database"
-	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/simulation/model"
 	"go.uber.org/zap"
 )
@@ -153,11 +151,6 @@ func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error
 	newRoom.AddCharacter(actor)
 	actor.Dispatch(model.EvtRoomDescription{Room: actor.Room})
 
-	// update character position in DB
-	if err = database.UpdateCharacterLocation(s.db, actor.ID, actor.Room.ID, actor.Room.WorldID); err != nil {
-		logging.Logger().Error(err.Error())
-	}
-
 	actor.Room.OnEnter(actor)
 
 	return nil
@@ -175,10 +168,6 @@ func (s *Simulation) TakeItem(id model.CharacterID, alias string) error {
 			ok := actor.TakeItem(item)
 			if ok {
 				actor.Room.Container.RemoveItem(itemID)
-				err := database.RemoveItemFromContainer(s.db, actor.Room.Container.ID(), item.ID)
-				if err != nil {
-					panic(err)
-				}
 
 				event := model.EvtCharacterTakesItem{
 					Character: actor,
@@ -239,11 +228,6 @@ func (s *Simulation) EquipItem(id model.CharacterID, alias string) error {
 			_, err = actor.Equip(item)
 			if err == model.ErrNotEquipable {
 				return ErrCannotEquipItem
-			}
-
-			err := database.RemoveItemFromContainer(s.db, actor.Room.Container.ID(), item.ID)
-			if err != nil {
-				panic(err)
 			}
 
 			event := model.EvtCharacterEquipsItem{

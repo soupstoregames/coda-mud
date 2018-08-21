@@ -1,3 +1,0 @@
-package migrations
-
-//go:generate go-bindata -ignore=bindata.go -ignore=generate.go -pkg migrations ./...

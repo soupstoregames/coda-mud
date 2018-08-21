@@ -1,6 +1,8 @@
 package model
 
-type ContainerID int64
+import "github.com/google/uuid"
+
+type ContainerID string
 
 type Container interface {
 	PutItem(item *Item)
@@ -27,10 +29,10 @@ type RoomContainer struct {
 	BaseContainer
 }
 
-func NewRoomContainer(id ContainerID) Container {
+func NewRoomContainer() Container {
 	return &RoomContainer{
 		BaseContainer: BaseContainer{
-			id:    id,
+			id:    ContainerID(uuid.New().String()),
 			items: make(map[ItemID]*Item),
 		},
 	}
@@ -49,10 +51,10 @@ type ItemContainer struct {
 	BaseContainer
 }
 
-func NewItemContainer(id ContainerID) Container {
+func NewItemContainer() Container {
 	return &ItemContainer{
 		BaseContainer: BaseContainer{
-			id:    id,
+			id:    ContainerID(uuid.New().String()),
 			items: make(map[ItemID]*Item),
 		},
 	}
@@ -72,10 +74,10 @@ type RigContainer struct {
 	BaseContainer
 }
 
-func NewRigContainer(id ContainerID) Container {
+func NewRigContainer() Container {
 	return &RigContainer{
 		BaseContainer: BaseContainer{
-			id:    id,
+			id:    ContainerID(uuid.New().String()),
 			items: make(map[ItemID]*Item),
 		},
 	}

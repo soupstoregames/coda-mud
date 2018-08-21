@@ -1,18 +1,15 @@
 package simulation
 
 import (
-	"github.com/go-pg/pg"
 	"github.com/soupstore/coda/simulation/model"
+	state "github.com/soupstore/coda/state-data"
 )
 
 // Simulation is the engine of the world.
 // It holds rooms, characters, items etc...
 // It exposes a number of interfaces to manipulate the simulation.
 type Simulation struct {
-	db              *pg.DB
-	nextItemID      model.ItemID
-	nextCharacterID model.CharacterID
-	nextContainerID model.ContainerID
+	persister       state.Persister
 	spawnRoom       *model.Room
 	worlds          map[model.WorldID]*model.World
 	itemDefinitions map[model.ItemDefinitionID]*model.ItemDefinition
@@ -22,12 +19,9 @@ type Simulation struct {
 }
 
 // NewSimulation returns a Simulation with default params.
-func NewSimulation(db *pg.DB) *Simulation {
+func NewSimulation(persister state.Persister) *Simulation {
 	return &Simulation{
-		db:              db,
-		nextItemID:      0,
-		nextCharacterID: 0,
-		nextContainerID: 0,
+		persister:       persister,
 		spawnRoom:       nil,
 		worlds:          make(map[model.WorldID]*model.World),
 		itemDefinitions: make(map[model.ItemDefinitionID]*model.ItemDefinition),
@@ -35,22 +29,4 @@ func NewSimulation(db *pg.DB) *Simulation {
 		characters:      make(map[model.CharacterID]*model.Character),
 		containers:      make(map[model.ContainerID]model.Container),
 	}
-}
-
-func (s *Simulation) getNextItemID() model.ItemID {
-	id := s.nextItemID
-	s.nextItemID = s.nextItemID + 1
-	return id
-}
-
-func (s *Simulation) getNextCharacterID() model.CharacterID {
-	id := s.nextCharacterID
-	s.nextCharacterID = s.nextCharacterID + 1
-	return id
-}
-
-func (s *Simulation) getNextContainerID() model.ContainerID {
-	id := s.nextContainerID
-	s.nextContainerID = s.nextContainerID + 1
-	return id
 }

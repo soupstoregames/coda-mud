@@ -1,6 +1,10 @@
 package model
 
-type CharacterID int64
+import (
+	"github.com/google/uuid"
+)
+
+type CharacterID string
 
 type Character struct {
 	*Rig
@@ -11,9 +15,9 @@ type Character struct {
 	Events chan interface{}
 }
 
-func NewCharacter(id CharacterID, name string, room *Room) *Character {
+func NewCharacter(name string, room *Room) *Character {
 	return &Character{
-		ID:   id,
+		ID:   CharacterID(uuid.New().String()),
 		Name: name,
 		Room: room,
 		Rig:  &Rig{},
