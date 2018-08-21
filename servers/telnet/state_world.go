@@ -6,8 +6,8 @@ import (
 
 	"github.com/aybabtme/rgbterm"
 	"github.com/soupstore/coda/config"
-	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/simulation/model"
+	"github.com/soupstore/go-core/logging"
 )
 
 // stateWorld is the scene used interacting with the world
@@ -33,9 +33,9 @@ func (s *stateWorld) onEnter() error {
 }
 
 func (s *stateWorld) onExit() error {
-	logging.Logger().Debug("Disconnecting from world server")
+	logging.Debug("Disconnecting from world server")
 	// err := s.cc.Close()
-	logging.Logger().Debug("Disconnected from world server")
+	logging.Debug("Disconnected from world server")
 	return nil
 }
 

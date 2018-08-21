@@ -6,10 +6,9 @@ import (
 
 	"github.com/satori/go.uuid"
 	"github.com/soupstore/coda/config"
-	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/services"
 	"github.com/soupstore/coda/simulation"
-	"go.uber.org/zap"
+	"github.com/soupstore/go-core/logging"
 )
 
 const (
@@ -56,7 +55,7 @@ func (server *Server) ListenAndServe() error {
 
 func (server *Server) Serve(listener net.Listener) error {
 	defer listener.Close()
-	logging.Logger().Debug(fmt.Sprintf("Listening at %q.", listener.Addr()))
+	logging.Debug(fmt.Sprintf("Listening at %q.", listener.Addr()))
 
 	for {
 		conn, err := listener.Accept()
@@ -74,21 +73,13 @@ func (server *Server) handle(tcpConn net.Conn) {
 	c := newTelnetConnection(tcpConn, server.Config, server.sim, server.usersManager)
 	c.ctx = WithConnectionID(c.ctx, connectionID)
 
-	logging.Logger().Info(
-		fmt.Sprintf("New connection from %q.", tcpConn.RemoteAddr()),
-		zap.String("connectionID", connectionID),
-	)
+	logger := logging.BuildConnectionLogger(connectionID)
 
-	err := c.listen()
-	if err != nil {
-		logging.Logger().Error(
-			err.Error(),
-			zap.String("connectionID", connectionID),
-		)
+	logging.Info(fmt.Sprintf("New connection from %q.", tcpConn.RemoteAddr()))
+
+	if err := c.listen(); err != nil {
+		logger.Error(err.Error())
 	}
 
-	logging.Logger().Info(
-		fmt.Sprintf("Connection closed from %q.", tcpConn.RemoteAddr()),
-		zap.String("connectionID", connectionID),
-	)
+	logger.Info(fmt.Sprintf("Connection closed from %q.", tcpConn.RemoteAddr()))
 }

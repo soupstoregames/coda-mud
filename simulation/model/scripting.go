@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/soupstore/coda/logging"
+	"github.com/soupstore/go-core/logging"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -35,7 +35,7 @@ func callFunction(L *lua.LState, name string, params ...lua.LValue) {
 		NRet:    1,
 		Protect: true,
 	}, params...); err != nil {
-		logging.Logger().Error(err.Error())
+		logging.Error(err.Error())
 	}
 }
 

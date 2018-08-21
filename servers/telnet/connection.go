@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/soupstore/coda/config"
-	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/services"
 	"github.com/soupstore/coda/simulation"
+	"github.com/soupstore/go-core/logging"
 )
 
 // connection is a telnet connection to the MUD
@@ -48,7 +48,7 @@ func newTelnetConnection(c net.Conn, conf *config.Config, sim *simulation.Simula
 
 	// run the tasks at the start of the login state
 	if err := conn.state.onEnter(); err != nil {
-		logging.Logger().Error(err.Error())
+		logging.Error(err.Error())
 	}
 
 	return conn
@@ -59,7 +59,7 @@ func (c *connection) close() {
 		return
 	}
 
-	logging.Logger().Debug("Closing telnet connection")
+	logging.Debug("Closing telnet connection")
 
 	// set flag to avoid close being called twice
 	// without this you can try to close a closed channel
@@ -70,12 +70,12 @@ func (c *connection) close() {
 
 	// close the client connection
 	if err := c.conn.Close(); err != nil {
-		logging.Logger().Error(err.Error())
+		logging.Error(err.Error())
 	}
 
 	// // run the clean up tasks on the current state and then clear it
 	if err := c.state.onExit(); err != nil {
-		logging.Logger().Error(err.Error())
+		logging.Error(err.Error())
 	}
 	c.state = nil
 }
@@ -153,13 +153,13 @@ func (c *connection) listen() error {
 			default:
 				neterr, ok := err.(net.Error)
 				if ok && neterr.Timeout() {
-					logging.Logger().Debug("Connection timed out")
+					logging.Debug("Connection timed out")
 					c.close()
 					return nil
 				}
 
 				if ok && neterr.Temporary() {
-					logging.Logger().Debug("Temporary Net Error ???")
+					logging.Debug("Temporary Net Error ???")
 					c.close()
 					return nil
 				}
@@ -177,7 +177,7 @@ func (c *connection) listen() error {
 		case charLF:
 			err := c.handleInput()
 			if err != nil {
-				// logging.Logger().Debug("error handlnginput")
+				// logging.Debug("error handlnginput")
 				c.close()
 				return nil
 			}
@@ -220,19 +220,19 @@ func (c *connection) createHeartbeat(d time.Duration) {
 func (c *connection) write(b []byte) {
 	_, err := c.conn.Write(b)
 	if err != nil {
-		logging.Logger().Error(err.Error())
+		logging.Error(err.Error())
 	}
 }
 
 func (c *connection) writeln(b []byte) {
 	_, err := c.conn.Write(b)
 	if err != nil {
-		logging.Logger().Error(err.Error())
+		logging.Error(err.Error())
 	}
 
 	_, err = c.conn.Write([]byte{charLF, charCR})
 	if err != nil {
-		logging.Logger().Error(err.Error())
+		logging.Error(err.Error())
 	}
 }
 
@@ -241,7 +241,7 @@ func (c *connection) writeString(str ...string) {
 
 	_, err := c.conn.Write([]byte(s))
 	if err != nil {
-		logging.Logger().Error(err.Error())
+		logging.Error(err.Error())
 	}
 }
 
@@ -249,21 +249,21 @@ func (c *connection) writelnString(str ...string) {
 	s := strings.Join(str, " ")
 	_, err := c.conn.Write([]byte(s))
 	if err != nil {
-		logging.Logger().Error(err.Error())
+		logging.Error(err.Error())
 	}
 	_, err = c.conn.Write([]byte{charLF, charCR})
 	if err != nil {
-		logging.Logger().Error(err.Error())
+		logging.Error(err.Error())
 	}
 }
 
 func (c *connection) writePrompt() {
 	_, err := c.conn.Write([]byte{charLF, charCR})
 	if err != nil {
-		logging.Logger().Error(err.Error())
+		logging.Error(err.Error())
 	}
 	_, err = c.conn.Write([]byte("> "))
 	if err != nil {
-		logging.Logger().Error(err.Error())
+		logging.Error(err.Error())
 	}
 }

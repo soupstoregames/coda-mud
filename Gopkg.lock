@@ -44,6 +44,18 @@
   version = "v1.2.0"
 
 [[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "3e01752db0189b9157070a0e1668a620f9a85da2"
+  version = "v1.0.6"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/soupstore/go-core"
+  packages = ["logging"]
+  revision = "d6b2dc4eb5dcc5e2f689a8e1ee1aeba0466b75ec"
+
+[[projects]]
   branch = "master"
   name = "github.com/yuin/gopher-lua"
   packages = [
@@ -84,13 +96,23 @@
   name = "golang.org/x/crypto"
   packages = [
     "bcrypt",
-    "blowfish"
+    "blowfish",
+    "ssh/terminal"
   ]
   revision = "7f39a6fea4fe9364fb61e1def6a268a51b4f3a06"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = [
+    "unix",
+    "windows"
+  ]
+  revision = "3b58ed4ad3395d483fc92d5d14123ce2c3581fec"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "09ef81cd1d7c959ac10466cf9f30dba1f5f97b4ea26720eb8500259a9756b725"
+  inputs-digest = "a606b6bbd5a6e9ce5d42f0255f42cc7cda2d7a670a876c553c566a2e002e1162"
   solver-name = "gps-cdcl"
   solver-version = 1

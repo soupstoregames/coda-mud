@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/aybabtme/rgbterm"
-	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/simulation/model"
+	"github.com/soupstore/go-core/logging"
 )
 
 func renderEvents(c *connection, events <-chan interface{}) error {
@@ -121,7 +121,7 @@ func renderRoomDescription(c *connection, characterID model.CharacterID, room *m
 		}
 		target, err := c.sim.GetRoom(exit.WorldID, exit.RoomID)
 		if err != nil {
-			logging.Logger().Error("Room not found")
+			logging.Error("Room not found")
 			continue
 		}
 		c.writelnString(direction.String(), "-", target.Name)

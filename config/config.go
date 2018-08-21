@@ -12,12 +12,11 @@ type Config struct {
 	StatePath    string `env:"STATE_PATH" default:"state"`
 }
 
-func Load() (config *Config, err error) {
-	config = &Config{}
-
-	if err = env.Set(config); err != nil {
+func Load() (*Config, error) {
+	config := &Config{}
+	if err := env.Set(config); err != nil {
 		return nil, err
 	}
 
-	return
+	return config, nil
 }

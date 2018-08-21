@@ -8,10 +8,10 @@ import (
 	"github.com/soupstore/coda/config"
 	"github.com/soupstore/coda/data/state"
 	"github.com/soupstore/coda/data/static"
-	"github.com/soupstore/coda/logging"
 	"github.com/soupstore/coda/servers/telnet"
 	"github.com/soupstore/coda/services"
 	"github.com/soupstore/coda/simulation"
+	"github.com/soupstore/go-core/logging"
 )
 
 func main() {
@@ -23,25 +23,25 @@ func main() {
 		err          error
 	)
 
-	logging.Logger().Info("Starting world server")
+	logging.Info("Starting world server")
 
 	if conf, err = config.Load(); err != nil {
-		logging.Logger().Fatal(err.Error())
+		logging.Fatal(err.Error())
 	}
 
 	if persister, err = state.NewFileSystemPersister(conf); err != nil {
-		logging.Logger().Fatal(err.Error())
+		logging.Fatal(err.Error())
 	}
 
 	if sim, err = createAndInitializeSimulation(conf, persister); err != nil {
-		logging.Logger().Fatal(err.Error())
+		logging.Fatal(err.Error())
 	}
 
 	go func() {
 		for {
 			time.Sleep(3 * time.Second)
 			if err := sim.Save(); err != nil {
-				panic(err)
+				logging.Fatal(err.Error())
 			}
 		}
 	}()
@@ -52,18 +52,17 @@ func main() {
 	sim.SetSpawnRoom("arrival-city", 1)
 	room, err := sim.GetRoom("arrival-city", 1)
 	if err != nil {
-		panic(err)
+		logging.Fatal(err.Error())
 	}
 	usersManager.Register("rinse", "bums")
 	id := sim.MakeCharacter("Rinse")
 	if err := sim.SpawnItem(1, room.Container.ID()); err != nil {
-		panic(err)
+		logging.Fatal(err.Error())
 	}
 
 	usersManager.AssociateCharacter("rinse", id)
 
-	err = launchTelnetServer(conf, sim, usersManager)
-	if err != nil {
+	if err = launchTelnetServer(conf, sim, usersManager); err != nil {
 		log.Fatal(err.Error())
 	}
 }
