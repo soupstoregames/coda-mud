@@ -20,44 +20,10 @@
   revision = "31f8d99d7765666589f9b44db294011c1d95aed3"
 
 [[projects]]
-  name = "github.com/go-pg/pg"
-  packages = [
-    ".",
-    "internal",
-    "internal/parser",
-    "internal/pool",
-    "orm",
-    "types"
-  ]
-  revision = "8c7fa0eed0d9e9d07fca2cc9e08e3171da0521d5"
-  version = "v6.13.5"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/jinzhu/inflection"
+  name = "github.com/google/uuid"
   packages = ["."]
-  revision = "04140366298a54a039076d798123ffa108fff46c"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/lib/pq"
-  packages = [
-    ".",
-    "oid"
-  ]
-  revision = "90697d60dd844d5ef6ff15135d0203f65d2f53b8"
-
-[[projects]]
-  name = "github.com/mattes/migrate"
-  packages = [
-    ".",
-    "database",
-    "database/postgres",
-    "source",
-    "source/go-bindata"
-  ]
-  revision = "035c07716cd373d88456ec4d701402df52584cb4"
-  version = "v3.0.1"
+  revision = "064e2069ce9c359c118179501254f67d7d37ba24"
+  version = "0.2"
 
 [[projects]]
   branch = "master"
@@ -125,6 +91,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a2d133798253bbacf1e4003a153242d20989444dca73d4dac51b588a63b8ce3e"
+  inputs-digest = "09ef81cd1d7c959ac10466cf9f30dba1f5f97b4ea26720eb8500259a9756b725"
   solver-name = "gps-cdcl"
   solver-version = 1
