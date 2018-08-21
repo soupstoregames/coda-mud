@@ -54,7 +54,7 @@ func TestWakingAndSleepingCharacter(t *testing.T) {
 		t.Error("Event not of type EvtCharacterWakesUp")
 	}
 	if wakeupEvent.Character.ID != grumpyID {
-		t.Errorf("Expected wake up event to be about character %d, but got character %d", grumpyID, wakeupEvent.Character.ID)
+		t.Errorf("Expected wake up event to be about character %s, but got character %s", grumpyID, wakeupEvent.Character.ID)
 	}
 
 	// assert grumpy gets rooms description
@@ -77,7 +77,7 @@ func TestWakingAndSleepingCharacter(t *testing.T) {
 		t.Error("Event not of type EvtCharacterFallsAsleep")
 	}
 	if sleepEvent.Character.ID != grumpyID {
-		t.Errorf("Expected sleep event to be about character %d, but got character %d", grumpyID, wakeupEvent.Character.ID)
+		t.Errorf("Expected sleep event to be about character %s, but got character %s", grumpyID, wakeupEvent.Character.ID)
 	}
 }
 
@@ -85,7 +85,7 @@ func TestWakingAndSleepingCharacter(t *testing.T) {
 // That character doesnt exist so we get an error.
 func TestWakeUpWithUnknownCharacter(t *testing.T) {
 	sim := simulation.NewSimulation(nil)
-	_, err := sim.WakeUpCharacter(0)
+	_, err := sim.WakeUpCharacter("")
 	if err != simulation.ErrCharacterNotFound {
 		t.Error("Did not get expected error")
 	}
@@ -95,7 +95,7 @@ func TestWakeUpWithUnknownCharacter(t *testing.T) {
 // That character doesnt exist so we get an error.
 func TestSleepWithUnknownCharacter(t *testing.T) {
 	sim := simulation.NewSimulation(nil)
-	err := sim.SleepCharacter(0)
+	err := sim.SleepCharacter("")
 	if err != simulation.ErrCharacterNotFound {
 		t.Error("Did not get expected error")
 	}

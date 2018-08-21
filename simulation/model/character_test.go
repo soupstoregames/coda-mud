@@ -7,12 +7,8 @@ import (
 )
 
 func TestNewCharacter(t *testing.T) {
-	spawnRoom := model.NewRoom(model.RoomID(4433), model.WorldID("test"), 0, "Spawn Room", "", "", "")
-	character := model.NewCharacter(model.CharacterID(3453), "Test Name", spawnRoom)
-
-	if character.ID != model.CharacterID(3453) {
-		t.Error("Incorrect ID assigned")
-	}
+	spawnRoom := model.NewRoom(model.RoomID(4433), model.WorldID("test"), "Spawn Room", "", "", "")
+	character := model.NewCharacter("Test Name", spawnRoom)
 
 	if character.Name != "Test Name" {
 		t.Error("Incorrect name set on character")
@@ -36,8 +32,8 @@ func TestNewCharacter(t *testing.T) {
 }
 
 func TestDispatch(t *testing.T) {
-	spawnRoom := model.NewRoom(model.RoomID(4433), model.WorldID("test"), 0, "Spawn Room", "", "", "")
-	character := model.NewCharacter(model.CharacterID(3453), "Test Name", spawnRoom)
+	spawnRoom := model.NewRoom(model.RoomID(4433), model.WorldID("test"), "Spawn Room", "", "", "")
+	character := model.NewCharacter("Test Name", spawnRoom)
 	character.Events = make(chan interface{})
 	character.Awake = true
 

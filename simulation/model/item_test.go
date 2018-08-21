@@ -8,24 +8,20 @@ import (
 
 func TestNewItemDefinition(t *testing.T) {
 	itemDef := model.NewItemDefinition(model.ItemDefinitionID(1), "Test Item", []string{"test", "item"}, model.RigSlotBackpack, &model.ContainerDefinition{})
-	item := itemDef.Spawn(model.ItemID(333))
+	item := itemDef.Spawn()
 
-	if item.ID != model.ItemID(333) {
-		t.Error("Item has incorrect ID assigned")
-	}
-
-	if item.Name != "Test Item" {
+	if item.Definition.Name != "Test Item" {
 		t.Error("Item has been given the wrong name")
 	}
 
-	if item.RigSlot != model.RigSlotBackpack {
+	if item.Definition.RigSlot != model.RigSlotBackpack {
 		t.Error("Item does not fit the request rig slot ")
 	}
 }
 
 func TestKnownAs(t *testing.T) {
 	itemDef := model.NewItemDefinition(model.ItemDefinitionID(1), "Test Item", []string{"test", "item"}, model.RigSlotBackpack, &model.ContainerDefinition{})
-	item := itemDef.Spawn(model.ItemID(333))
+	item := itemDef.Spawn()
 
 	if !item.KnownAs("Test Item") {
 		t.Error("Item should be known as its name")
