@@ -2,8 +2,10 @@ package model
 
 import "github.com/google/uuid"
 
+// ContainerID is a type-aliased string, often set to a uuid.
 type ContainerID string
 
+// Container is a common interface for any type of container that can store items in it.
 type Container interface {
 	PutItem(item *Item)
 	RemoveItem(itemID ItemID)
@@ -11,6 +13,7 @@ type Container interface {
 	Items() map[ItemID]*Item
 }
 
+// BaseContainer is provided to be embedded in more complex containers.
 type BaseContainer struct {
 	id    ContainerID
 	items map[ItemID]*Item
@@ -66,27 +69,5 @@ func (c *ItemContainer) PutItem(item *Item) {
 }
 
 func (c *ItemContainer) RemoveItem(itemID ItemID) {
-	delete(c.items, itemID)
-}
-
-// ItemContainer is the kind of container used in items like chests, backpacks etc...
-type RigContainer struct {
-	BaseContainer
-}
-
-func NewRigContainer() Container {
-	return &RigContainer{
-		BaseContainer: BaseContainer{
-			id:    ContainerID(uuid.New().String()),
-			items: make(map[ItemID]*Item),
-		},
-	}
-}
-
-func (c *RigContainer) PutItem(item *Item) {
-	c.items[item.ID] = item
-}
-
-func (c *RigContainer) RemoveItem(itemID ItemID) {
 	delete(c.items, itemID)
 }

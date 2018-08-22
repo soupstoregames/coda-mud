@@ -4,9 +4,9 @@ package model
 
 import "strconv"
 
-const _Direction_name = "NorthNorthEastEastSouthEastSouthSouthWestWestNorthWest"
+const _Direction_name = "DirectionNorthDirectionNorthEastDirectionEastDirectionSouthEastDirectionSouthDirectionSouthWestDirectionWestDirectionNorthWest"
 
-var _Direction_index = [...]uint8{0, 5, 14, 18, 27, 32, 41, 45, 54}
+var _Direction_index = [...]uint8{0, 14, 32, 45, 63, 77, 95, 108, 126}
 
 func (i Direction) String() string {
 	if i >= Direction(len(_Direction_index)-1) {

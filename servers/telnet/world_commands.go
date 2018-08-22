@@ -66,33 +66,33 @@ func CmdTake(characterID model.CharacterID, cc simulation.CharacterController, a
 }
 
 func CmdNorth(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.North)
+	return cc.Move(characterID, model.DirectionNorth)
 }
 
 func CmdNorthEast(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.NorthEast)
+	return cc.Move(characterID, model.DirectionNorthEast)
 }
 
 func CmdEast(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.East)
+	return cc.Move(characterID, model.DirectionEast)
 }
 
 func CmdSouthEast(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.SouthEast)
+	return cc.Move(characterID, model.DirectionSouthEast)
 }
 
 func CmdSouth(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.South)
+	return cc.Move(characterID, model.DirectionSouth)
 }
 
 func CmdSouthWest(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.SouthWest)
+	return cc.Move(characterID, model.DirectionSouthWest)
 }
 
 func CmdWest(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.West)
+	return cc.Move(characterID, model.DirectionWest)
 }
 
 func CmdNorthWest(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.NorthWest)
+	return cc.Move(characterID, model.DirectionNorthWest)
 }
