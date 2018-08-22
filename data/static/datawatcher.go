@@ -45,7 +45,7 @@ func (dw *DataWatcher) watch() {
 	// regularly load data folder and check for differences
 	t := time.NewTicker(time.Minute)
 	go func() {
-		for _ = range t.C {
+		for range t.C {
 			// get current state of data folder
 			newState, err := fsdiff.BuildTree(dw.dataFolder)
 			if err != nil {
