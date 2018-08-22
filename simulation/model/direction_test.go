@@ -11,14 +11,14 @@ func TestOpposite(t *testing.T) {
 		s model.Direction
 		n model.Direction
 	}{
-		{model.North, model.South},
-		{model.NorthEast, model.SouthWest},
-		{model.East, model.West},
-		{model.SouthEast, model.NorthWest},
-		{model.South, model.North},
-		{model.SouthWest, model.NorthEast},
-		{model.West, model.East},
-		{model.NorthWest, model.SouthEast},
+		{model.DirectionNorth, model.DirectionSouth},
+		{model.DirectionNorthEast, model.DirectionSouthWest},
+		{model.DirectionEast, model.DirectionWest},
+		{model.DirectionSouthEast, model.DirectionNorthWest},
+		{model.DirectionSouth, model.DirectionNorth},
+		{model.DirectionSouthWest, model.DirectionNorthEast},
+		{model.DirectionWest, model.DirectionEast},
+		{model.DirectionNorthWest, model.DirectionSouthEast},
 	}
 
 	for _, test := range tests {
@@ -36,14 +36,14 @@ func TestString(t *testing.T) {
 		d model.Direction
 		s string
 	}{
-		{model.North, "North"},
-		{model.NorthEast, "NorthEast"},
-		{model.East, "East"},
-		{model.SouthEast, "SouthEast"},
-		{model.South, "South"},
-		{model.SouthWest, "SouthWest"},
-		{model.West, "West"},
-		{model.NorthWest, "NorthWest"},
+		{model.DirectionNorth, "DirectionNorth"},
+		{model.DirectionNorthEast, "DirectionNorthEast"},
+		{model.DirectionEast, "DirectionEast"},
+		{model.DirectionSouthEast, "DirectionSouthEast"},
+		{model.DirectionSouth, "DirectionSouth"},
+		{model.DirectionSouthWest, "DirectionSouthWest"},
+		{model.DirectionWest, "DirectionWest"},
+		{model.DirectionNorthWest, "DirectionNorthWest"},
 		{9, "Direction(9)"},
 	}
 
