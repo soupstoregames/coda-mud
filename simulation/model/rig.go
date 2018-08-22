@@ -15,7 +15,7 @@ type Rig struct {
 	Backpack *Item
 }
 
-// Equip attemps to place the item on the rig in the item's designated rig slot.
+// Equip attempts to place the item on the rig in the item's designated rig slot.
 // When an item is equipped, you get a reference to the item that was already there returned back. This will be nil if nothing was equipped there.
 // If the item is not equippable for any reason you get an error.
 func (r *Rig) Equip(item *Item) (*Item, error) {
