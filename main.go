@@ -17,35 +17,40 @@ import (
 func main() {
 	var (
 		conf         *config.Config
-		persister    state.Persister
+		staticData   *static.DataWatcher
+		stateData    state.Persister
 		sim          *simulation.Simulation
 		usersManager *services.UsersManager
 		err          error
 	)
 
-	logging.Info("Starting world server")
+	logging.Info("Starting")
 
+	// load the configuration from environmental variables
 	if conf, err = config.Load(); err != nil {
 		logging.Fatal(err.Error())
 	}
 
-	if persister, err = state.NewFileSystemPersister(conf); err != nil {
+	// create the simulation
+	sim = simulation.NewSimulation()
+
+	// create the static data loader
+	staticData = static.NewDataWatcher(conf.DataPath, sim)
+	logging.SubscribeToErrorChan(staticData.Errors)
+
+	// load the static data
+	if err := staticData.InitialLoad(); err != nil {
 		logging.Fatal(err.Error())
 	}
 
-	if sim, err = createAndInitializeSimulation(conf, persister); err != nil {
+	// create a persister to save the simulation state
+	if stateData, err = state.NewFileSystemPersister(conf); err != nil {
 		logging.Fatal(err.Error())
 	}
 
-	go func() {
-		for {
-			time.Sleep(3 * time.Second)
-			if err := sim.Save(); err != nil {
-				logging.Fatal(err.Error())
-			}
-		}
-	}()
+	// load the saved state
 
+	// create the users service for managing login details
 	usersManager = services.NewUsersManager()
 
 	// temporary
@@ -59,23 +64,37 @@ func main() {
 	if err := sim.SpawnItem(1, room.Container.ID()); err != nil {
 		logging.Fatal(err.Error())
 	}
-
+	if err := sim.SpawnItem(2, room.Container.ID()); err != nil {
+		logging.Fatal(err.Error())
+	}
+	if err := sim.SpawnItem(2, room.Container.ID()); err != nil {
+		logging.Fatal(err.Error())
+	}
 	usersManager.AssociateCharacter("rinse", id)
 
-	if err = launchTelnetServer(conf, sim, usersManager); err != nil {
+	// start watching for changes to the static data folder
+	staticData.Watch()
+
+	// set up save timing for simulation state
+	startSaveSimulationTicker(sim, stateData)
+
+	// start the simulation
+
+	// start the telnet server
+	telnetServer := telnet.NewServer(conf, sim, usersManager)
+	if err = telnetServer.ListenAndServe(); err != nil {
 		log.Fatal(err.Error())
 	}
+
 }
 
-func createAndInitializeSimulation(conf *config.Config, persister state.Persister) (sim *simulation.Simulation, err error) {
-	sim = simulation.NewSimulation(persister)
-	dw := static.NewDataWatcher(conf.DataPath, sim)
-	logging.SubscribeToErrorChan(dw.Errors)
-	return
-}
-
-func launchTelnetServer(conf *config.Config, sim *simulation.Simulation, usersManager *services.UsersManager) error {
-	listenAddr := fmt.Sprintf("%s:%s", conf.Address, conf.Port)
-	telnetServer := telnet.NewServer(conf, listenAddr, sim, usersManager)
-	return telnetServer.ListenAndServe()
+func startSaveSimulationTicker(s *simulation.Simulation, p state.Persister) {
+	t := time.NewTicker(time.Minute)
+	go func() {
+		for range t.C {
+			if err := s.Save(p); err != nil {
+				logging.Warn(fmt.Sprintf("Failed to save simulation state: %s", err.Error()))
+			}
+		}
+	}()
 }

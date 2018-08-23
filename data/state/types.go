@@ -15,4 +15,15 @@ type Rig struct {
 type Item struct {
 	ID             string
 	ItemDefinition int64
+	Items          []*Item
+}
+
+type World struct {
+	ID    string
+	Rooms []Room
+}
+
+type Room struct {
+	ID    int64
+	Items []*Item
 }

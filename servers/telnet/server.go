@@ -30,9 +30,9 @@ type Server struct {
 	usersManager *services.UsersManager
 }
 
-func NewServer(c *config.Config, addr string, sim *simulation.Simulation, usersManager *services.UsersManager) *Server {
+func NewServer(c *config.Config, sim *simulation.Simulation, usersManager *services.UsersManager) *Server {
 	return &Server{
-		Addr:         addr,
+		Addr:         fmt.Sprintf("%s:%s", c.Address, c.Port),
 		Config:       c,
 		sim:          sim,
 		usersManager: usersManager,

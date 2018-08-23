@@ -223,8 +223,6 @@ func renderList(items []string) (string, bool) {
 	case 2:
 		return strings.Join(items, " and "), plural
 	default:
-		fmt.Println(items)
-		fmt.Println(items[:l-2])
 		return strings.Join(items[:l-1], ", ") + " and " + items[l-1], plural
 	}
 }

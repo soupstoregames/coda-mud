@@ -5,12 +5,22 @@ import (
 	"github.com/soupstore/coda/simulation/model"
 )
 
-func (s *Simulation) Save() error {
+// PersistenceController is an interface over Simulation for saving and loading the simulation's state.
+type PersistenceController interface {
+	Save() error
+}
+
+// Save copies the game state into the persister and tells it to persist.
+func (s *Simulation) Save(p state.Persister) error {
 	for i := range s.characters {
-		s.persister.QueueCharacter(characterToState(s.characters[i]))
+		p.QueueCharacter(characterToState(s.characters[i]))
 	}
 
-	return s.persister.Persist()
+	for i := range s.worlds {
+		p.QueueWorld(worldToState(s.worlds[i]))
+	}
+
+	return p.Persist()
 }
 
 func characterToState(c *model.Character) state.Character {
@@ -29,6 +39,24 @@ func mapRig(r *model.Rig) state.Rig {
 	}
 }
 
+func worldToState(w *model.World) state.World {
+	return state.World{
+		ID:    string(w.WorldID),
+		Rooms: mapRoomstoState(w.Rooms),
+	}
+}
+
+func mapRoomstoState(r map[model.RoomID]*model.Room) []state.Room {
+	var rooms []state.Room
+	for _, v := range r {
+		rooms = append(rooms, state.Room{
+			ID:    int64(v.ID),
+			Items: mapContents(v.Container),
+		})
+	}
+	return rooms
+}
+
 func mapItem(i *model.Item) *state.Item {
 	if i == nil {
 		return nil
@@ -37,5 +65,17 @@ func mapItem(i *model.Item) *state.Item {
 	return &state.Item{
 		ID:             string(i.ID),
 		ItemDefinition: int64(i.Definition.ID),
+		Items:          mapContents(i.Container),
 	}
+}
+
+func mapContents(c model.Container) []*state.Item {
+	if c == nil {
+		return nil
+	}
+	var items []*state.Item
+	for _, v := range c.Items() {
+		items = append(items, mapItem(v))
+	}
+	return items
 }

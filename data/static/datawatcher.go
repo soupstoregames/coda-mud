@@ -29,19 +29,19 @@ func NewDataWatcher(rootPath string, sim simulation.WorldController) *DataWatche
 		sim:        sim,
 	}
 
-	dw.watch()
-
 	return dw
 }
 
-func (dw *DataWatcher) watch() {
-	// load initial state
+func (dw *DataWatcher) InitialLoad() error {
 	dataState, err := dw.initialLoad()
 	if err != nil {
-		dw.Errors <- err
+		return err
 	}
 	dw.lastDataState = dataState
+	return nil
+}
 
+func (dw *DataWatcher) Watch() {
 	// regularly load data folder and check for differences
 	t := time.NewTicker(time.Minute)
 	go func() {

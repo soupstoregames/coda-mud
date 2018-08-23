@@ -16,11 +16,33 @@ const (
 // Direction is an enum of 8-point compass directions.
 type Direction byte
 
-//go:generate stringer -type=Direction
-
 // Opposite returns the direction that faces the other way. North would give south.
 func (d Direction) Opposite() Direction {
 	return (d + 4) % 8
+}
+
+func (d Direction) String() string {
+	switch d {
+	case DirectionNorth:
+		return "north"
+	case DirectionNorthEast:
+		return "northeast"
+	case DirectionEast:
+		return "east"
+	case DirectionSouthEast:
+		return "southeast"
+	case DirectionSouth:
+		return "south"
+	case DirectionSouthWest:
+		return "southwest"
+	case DirectionWest:
+		return "west"
+	case DirectionNorthWest:
+		return "northwest"
+
+	default:
+		return "Invalid direction"
+	}
 }
 
 // StringToDirection attempts to parse a string into a Direction.
