@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"github.com/soupstore/coda/simulation/data/state"
 
 	"github.com/soupstore/coda/simulation/model"
 	"golang.org/x/crypto/bcrypt"
@@ -60,5 +61,28 @@ func (u *UsersManager) AssociateCharacter(username string, characterID model.Cha
 
 	u.users[username] = user
 
+	return nil
+}
+
+func (u *UsersManager) Save(p state.Persister) error {
+	for _, u := range u.users {
+		p.QueueUser(state.User{
+			Username:    u.username,
+			Password:    u.password,
+			CharacterID: string(u.characterID),
+		})
+	}
+
+	return nil
+}
+
+func (u *UsersManager) Load(users []state.User) error {
+	for _, user := range users {
+		u.users[user.Username] = User{
+			username:    user.Username,
+			password:    user.Password,
+			characterID: model.CharacterID(user.CharacterID),
+		}
+	}
 	return nil
 }

@@ -1,5 +1,11 @@
 package state
 
+type User struct {
+	Username    string
+	Password    []byte
+	CharacterID string
+}
+
 type Character struct {
 	ID    string
 	Name  string

@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/soupstore/coda/config"
-	"github.com/soupstore/coda/data/state"
-	"github.com/soupstore/coda/data/static"
 	"github.com/soupstore/coda/servers/telnet"
 	"github.com/soupstore/coda/services"
 	"github.com/soupstore/coda/simulation"
+	"github.com/soupstore/coda/simulation/data/state"
+	"github.com/soupstore/coda/simulation/data/static"
 	"github.com/soupstore/go-core/logging"
 )
 
@@ -18,7 +18,7 @@ func main() {
 	var (
 		conf         *config.Config
 		staticData   *static.DataWatcher
-		stateData    state.Persister
+		stateData    *state.FileSystem
 		sim          *simulation.Simulation
 		usersManager *services.UsersManager
 		err          error
@@ -44,39 +44,51 @@ func main() {
 	}
 
 	// create a persister to save the simulation state
-	if stateData, err = state.NewFileSystemPersister(conf); err != nil {
+	if stateData, err = state.NewFileSystem(conf); err != nil {
 		logging.Fatal(err.Error())
 	}
-
-	// load the saved state
 
 	// create the users service for managing login details
 	usersManager = services.NewUsersManager()
 
+	// load the saved state
+	var users []state.User
+	var characters []state.Character
+	var worlds []state.World
+	if users, characters, worlds, err = stateData.Load(); err != nil {
+		logging.Fatal(err.Error())
+	}
+	if usersManager.Load(users); err != nil {
+		logging.Fatal(err.Error())
+	}
+	if sim.Load(characters, worlds); err != nil {
+		logging.Fatal(err.Error())
+	}
+
 	// temporary
 	sim.SetSpawnRoom("arrival-city", 1)
-	room, err := sim.GetRoom("arrival-city", 1)
-	if err != nil {
-		logging.Fatal(err.Error())
-	}
-	usersManager.Register("rinse", "bums")
-	id := sim.MakeCharacter("Rinse")
-	if err := sim.SpawnItem(1, room.Container.ID()); err != nil {
-		logging.Fatal(err.Error())
-	}
-	if err := sim.SpawnItem(2, room.Container.ID()); err != nil {
-		logging.Fatal(err.Error())
-	}
-	if err := sim.SpawnItem(2, room.Container.ID()); err != nil {
-		logging.Fatal(err.Error())
-	}
-	usersManager.AssociateCharacter("rinse", id)
+	// room, err := sim.GetRoom("arrival-city", 1)
+	// if err != nil {
+	// 	logging.Fatal(err.Error())
+	// }
+	// usersManager.Register("rinse", "bums")
+	// id := sim.MakeCharacter("Rinse")
+	// if err := sim.SpawnItem(1, room.Container.ID()); err != nil {
+	// 	logging.Fatal(err.Error())
+	// }
+	// if err := sim.SpawnItem(2, room.Container.ID()); err != nil {
+	// 	logging.Fatal(err.Error())
+	// }
+	// if err := sim.SpawnItem(2, room.Container.ID()); err != nil {
+	// 	logging.Fatal(err.Error())
+	// }
+	// usersManager.AssociateCharacter("rinse", id)
 
 	// start watching for changes to the static data folder
 	staticData.Watch()
 
 	// set up save timing for simulation state
-	startSaveSimulationTicker(sim, stateData)
+	startSaveSimulationTicker(usersManager, sim, stateData)
 
 	// start the simulation
 
@@ -88,10 +100,13 @@ func main() {
 
 }
 
-func startSaveSimulationTicker(s *simulation.Simulation, p state.Persister) {
+func startSaveSimulationTicker(u *services.UsersManager, s *simulation.Simulation, p state.Persister) {
 	t := time.NewTicker(time.Minute)
 	go func() {
 		for range t.C {
+			if err := u.Save(p); err != nil {
+				logging.Warn(fmt.Sprintf("Failed to save users: %s", err.Error()))
+			}
 			if err := s.Save(p); err != nil {
 				logging.Warn(fmt.Sprintf("Failed to save simulation state: %s", err.Error()))
 			}
