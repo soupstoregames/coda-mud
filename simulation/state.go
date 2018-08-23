@@ -27,6 +27,9 @@ func (s *Simulation) Save(p state.Persister) error {
 	return p.Persist()
 }
 
+// Load takes in characters and world states and writes them into the simulation.
+// It is naive in that it wont sync the states, simply load the state on top.
+// It is only to be used once, before starting the simulation.
 func (s *Simulation) Load(characters []state.Character, worlds []state.World) error {
 	loaded := 0
 	for _, ch := range characters {

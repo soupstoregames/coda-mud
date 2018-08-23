@@ -96,6 +96,7 @@ func (s *Simulation) CreateItemDefinition(itemID model.ItemDefinitionID, name st
 	return item, nil
 }
 
+// SpawnItem creates a new instance of the item definition in the desired container.
 func (s *Simulation) SpawnItem(itemDefinitionID model.ItemDefinitionID, containerID model.ContainerID) error {
 	container, ok := s.containers[containerID]
 	if !ok {
@@ -111,5 +112,3 @@ func (s *Simulation) SpawnItem(itemDefinitionID model.ItemDefinitionID, containe
 
 	return nil
 }
-
-
