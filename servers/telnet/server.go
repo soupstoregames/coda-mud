@@ -30,6 +30,7 @@ type Server struct {
 	usersManager *services.UsersManager
 }
 
+// NewServer is a helper constructor for building a server.
 func NewServer(c *config.Config, sim *simulation.Simulation, usersManager *services.UsersManager) *Server {
 	return &Server{
 		Addr:         fmt.Sprintf("%s:%s", c.Address, c.Port),
@@ -39,6 +40,7 @@ func NewServer(c *config.Config, sim *simulation.Simulation, usersManager *servi
 	}
 }
 
+// ListenAndServe tells the server to start listening for telnet connections.
 func (server *Server) ListenAndServe() error {
 	addr := server.Addr
 	if "" == addr {
@@ -50,10 +52,10 @@ func (server *Server) ListenAndServe() error {
 		return err
 	}
 
-	return server.Serve(listener)
+	return server.serve(listener)
 }
 
-func (server *Server) Serve(listener net.Listener) error {
+func (server *Server) serve(listener net.Listener) error {
 	defer listener.Close()
 	logging.Debug(fmt.Sprintf("Listening at %q.", listener.Addr()))
 
