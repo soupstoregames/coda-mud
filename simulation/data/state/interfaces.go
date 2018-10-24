@@ -10,5 +10,5 @@ type Persister interface {
 
 // Loader is an object that can load game state.
 type Loader interface {
-	Load() ([]Character, []World, error)
+	Load() ([]User, []Character, []World, error)
 }

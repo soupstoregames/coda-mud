@@ -46,6 +46,11 @@ type EvtCharacterArrives struct {
 	Direction Direction
 }
 
+type EvtAdminSpawnsItem struct {
+	Character *Character
+	Item      *Item
+}
+
 type EvtNoExitInThatDirection struct {
 }
 

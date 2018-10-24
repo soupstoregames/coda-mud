@@ -46,6 +46,9 @@ func renderEvents(c *connection, events <-chan interface{}) error {
 		case model.EvtCharacterDropsItem:
 			renderCharacterDropsItem(c, v)
 
+		case model.EvtAdminSpawnsItem:
+			renderAdminSpawnsItem(c, v)
+
 		case model.EvtCharacterEquipsItem:
 			renderCharacterEquipsItem(c, v)
 
@@ -193,6 +196,17 @@ func renderCharacterEquipsItem(c *connection, evt model.EvtCharacterEquipsItem) 
 		c.writePrompt()
 	} else {
 		c.writelnString(renderCharacter(evt.Character), "equips", evt.Item.Definition.Name)
+	}
+}
+
+func renderAdminSpawnsItem(c *connection, evt model.EvtAdminSpawnsItem) {
+	characterID := CharacterIDFromContext(c.ctx)
+
+	if evt.Character.ID == characterID {
+		c.writeString("You spawn", evt.Item.Definition.Name)
+		c.writePrompt()
+	} else {
+		c.writelnString(renderCharacter(evt.Character), "spawns", evt.Item.Definition.Name)
 	}
 }
 

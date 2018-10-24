@@ -38,11 +38,6 @@ func main() {
 	staticData = static.NewDataWatcher(conf.DataPath, sim)
 	logging.SubscribeToErrorChan(staticData.Errors)
 
-	// load the static data
-	if err := staticData.InitialLoad(); err != nil {
-		logging.Fatal(err.Error())
-	}
-
 	// create a persister to save the simulation state
 	if stateData, err = state.NewFileSystem(conf); err != nil {
 		logging.Fatal(err.Error())
@@ -51,19 +46,16 @@ func main() {
 	// create the users service for managing login details
 	usersManager = services.NewUsersManager()
 
+	// load the static data
+	if err := staticData.InitialLoad(); err != nil {
+		logging.Fatal(err.Error())
+	}
+
+	// start watching for changes to the static data folder
+	staticData.Watch()
+
 	// load the saved state
-	var users []state.User
-	var characters []state.Character
-	var worlds []state.World
-	if users, characters, worlds, err = stateData.Load(); err != nil {
-		logging.Fatal(err.Error())
-	}
-	if usersManager.Load(users); err != nil {
-		logging.Fatal(err.Error())
-	}
-	if sim.Load(characters, worlds); err != nil {
-		logging.Fatal(err.Error())
-	}
+	loadState(stateData, usersManager, sim)
 
 	// temporary
 	sim.SetSpawnRoom("arrival-city", 1)
@@ -73,19 +65,7 @@ func main() {
 	// }
 	// usersManager.Register("rinse", "bums")
 	// id := sim.MakeCharacter("Rinse")
-	// if err := sim.SpawnItem(1, room.Container.ID()); err != nil {
-	// 	logging.Fatal(err.Error())
-	// }
-	// if err := sim.SpawnItem(2, room.Container.ID()); err != nil {
-	// 	logging.Fatal(err.Error())
-	// }
-	// if err := sim.SpawnItem(2, room.Container.ID()); err != nil {
-	// 	logging.Fatal(err.Error())
-	// }
 	// usersManager.AssociateCharacter("rinse", id)
-
-	// start watching for changes to the static data folder
-	staticData.Watch()
 
 	// set up save timing for simulation state
 	startSaveSimulationTicker(usersManager, sim, stateData)
@@ -98,6 +78,25 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
+}
+
+func loadState(loader state.Loader, usersManager *services.UsersManager, sim simulation.StateController) {
+	var (
+		users      []state.User
+		characters []state.Character
+		worlds     []state.World
+		err        error
+	)
+
+	if users, characters, worlds, err = loader.Load(); err != nil {
+		logging.Fatal(err.Error())
+	}
+	if usersManager.Load(users); err != nil {
+		logging.Fatal(err.Error())
+	}
+	if sim.Load(characters, worlds); err != nil {
+		logging.Fatal(err.Error())
+	}
 }
 
 func startSaveSimulationTicker(u *services.UsersManager, s *simulation.Simulation, p state.Persister) {

@@ -38,6 +38,10 @@ func (u *UsersManager) Login(username, password string) (model.CharacterID, bool
 }
 
 func (u *UsersManager) Register(username, password string) error {
+	if _, ok := u.users[username]; ok {
+		return errors.New("username taken")
+	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err

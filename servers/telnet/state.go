@@ -26,10 +26,6 @@ type stateLogin struct {
 	password string
 }
 
-var loginCommands = map[string]LoginCommand{
-	"connect": CmdConnect,
-}
-
 // onEnter is called when the scene is first loaded
 func (s *stateLogin) onEnter() error {
 	s.conn.writelnString(
@@ -40,6 +36,7 @@ func (s *stateLogin) onEnter() error {
 			`  |__|_|  /____/\____ |  ` + "\r\n" +
 			`        \/           \/  `)
 	s.conn.writelnString()
+	s.conn.writelnString("Type 'connect <username> <password>' to log in or create a new account.")
 
 	s.conn.writePrompt()
 
@@ -71,6 +68,41 @@ func (s *stateLogin) handleInput(input string) error {
 	if err != nil {
 		s.conn.writelnString(err.Error())
 		s.conn.writePrompt()
+	}
+
+	return nil
+}
+
+type characterCreationPhase byte
+
+const (
+	characterCreationPhaseName characterCreationPhase = iota
+)
+
+type stateCharacterCreation struct {
+	conn  *connection
+	state characterCreationPhase
+	name  string
+}
+
+func (s *stateCharacterCreation) onEnter() error {
+	s.state = characterCreationPhaseName
+	s.conn.writelnString("CHARACTER CREATION")
+	s.conn.writelnString("What will you be known as?")
+	s.conn.writePrompt()
+
+	return nil
+}
+
+func (s *stateCharacterCreation) onExit() error {
+	return nil
+}
+
+// handleInput parses input from the client and performs any appropriate command
+func (s *stateCharacterCreation) handleInput(input string) error {
+	switch s.state {
+	case characterCreationPhaseName:
+		s.name = input
 	}
 
 	return nil
@@ -110,18 +142,34 @@ func (s *stateWorld) handleInput(input string) error {
 	tokens := strings.Split(input, " ")
 	commandText := strings.ToLower(tokens[0])
 
-	command, ok := worldCommands[commandText]
-	if !ok {
-		echo := rgbterm.String("Huh?", 255, 100, 100, 0, 0, 0)
-		s.conn.writelnString(echo)
-		s.conn.writePrompt()
-		return nil
-	}
+	if commandText[0] == '@' {
+		command, ok := adminCommands[commandText]
+		if !ok {
+			echo := rgbterm.String("Huh?", 255, 100, 100, 0, 0, 0)
+			s.conn.writelnString(echo)
+			s.conn.writePrompt()
+			return nil
+		}
 
-	characterID := CharacterIDFromContext(s.conn.ctx)
-	err := command(characterID, s.conn.sim, tokens[1:])
-	if err != nil {
-		return err
+		characterID := CharacterIDFromContext(s.conn.ctx)
+		err := command(characterID, s.conn.sim, tokens[1:])
+		if err != nil {
+			return err
+		}
+	} else {
+		command, ok := worldCommands[commandText]
+		if !ok {
+			echo := rgbterm.String("Huh?", 255, 100, 100, 0, 0, 0)
+			s.conn.writelnString(echo)
+			s.conn.writePrompt()
+			return nil
+		}
+
+		characterID := CharacterIDFromContext(s.conn.ctx)
+		err := command(characterID, s.conn.sim, tokens[1:])
+		if err != nil {
+			return err
+		}
 	}
 
 	// TODO: I dont like this - need to fix it

@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/soupstore/coda/simulation/data/state"
 	"github.com/soupstore/coda/simulation/model"
@@ -10,12 +11,14 @@ import (
 
 // StateController is an interface over Simulation for saving and loading the simulation's state.
 type StateController interface {
-	Save() error
+	Save(state.Persister) error
 	Load(characters []state.Character, worlds []state.World) error
 }
 
 // Save copies the game state into the persister and tells it to persist.
 func (s *Simulation) Save(p state.Persister) error {
+	start := time.Now()
+
 	for i := range s.characters {
 		p.QueueCharacter(characterToState(s.characters[i]))
 	}
@@ -24,7 +27,11 @@ func (s *Simulation) Save(p state.Persister) error {
 		p.QueueWorld(worldToState(s.worlds[i]))
 	}
 
-	return p.Persist()
+	err := p.Persist()
+
+	logging.Info(fmt.Sprintf("Saved game in %v", time.Since(start)))
+
+	return err
 }
 
 // Load takes in characters and world states and writes them into the simulation.
@@ -42,6 +49,18 @@ func (s *Simulation) Load(characters []state.Character, worlds []state.World) er
 			ID:   model.CharacterID(ch.ID),
 			Name: ch.Name,
 			Room: room,
+			Rig: &model.Rig{
+				Backpack: func() *model.Item {
+					if ch.Rig.Backpack == nil {
+						return nil
+					}
+
+					itemDefinition := s.itemDefinitions[model.ItemDefinitionID(ch.Rig.Backpack.ItemDefinition)]
+					item := itemDefinition.Spawn()
+					item.ID = model.ItemID(ch.Rig.Backpack.ID)
+					return item
+				}(),
+			},
 		}
 
 		s.characters[character.ID] = character

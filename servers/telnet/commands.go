@@ -2,14 +2,39 @@ package telnet
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 
 	"github.com/soupstore/coda/simulation"
 	"github.com/soupstore/coda/simulation/model"
 )
 
+type AdminCommand func(model.CharacterID, simulation.AdminController, []string) error
+
+// all of the commands available to be used in the world state.
+var adminCommands = map[string]AdminCommand{
+	"@spawn": CmdAdminSpawn,
+}
+
+func CmdAdminSpawn(characterID model.CharacterID, ac simulation.AdminController, args []string) error {
+	switch args[0] {
+	case "item":
+		sItemDefinitionID := args[1]
+		itemDefinitionID, err := strconv.ParseInt(sItemDefinitionID, 10, 64)
+		if err != nil {
+			return err
+		}
+		return ac.AdminSpawnItem(characterID, model.ItemDefinitionID(itemDefinitionID))
+	}
+	return nil
+}
+
 // LoginCommand is a function alias for commands to be used in the login state.
 type LoginCommand func(conn *connection, args []string) error
+
+var loginCommands = map[string]LoginCommand{
+	"connect": CmdConnect,
+}
 
 // CmdConnect is the command used to login to the MUD.
 func CmdConnect(conn *connection, args []string) error {
@@ -23,6 +48,14 @@ func CmdConnect(conn *connection, args []string) error {
 	characterID, ok := conn.usersManager.Login(username, password)
 	if !ok {
 		return errors.New("invalid login")
+	}
+
+	if characterID == model.CharacterID(0) {
+		conn.loadState(&stateCharacterCreation{
+			conn: conn,
+		})
+
+		return nil
 	}
 
 	conn.ctx = WithCharacterID(conn.ctx, characterID)
