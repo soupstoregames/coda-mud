@@ -13,6 +13,7 @@ type CharacterController interface {
 	Look(model.CharacterID) error
 	Say(model.CharacterID, string) error
 	Move(model.CharacterID, model.Direction) error
+	Inventory(model.CharacterID) error
 	TakeItem(id model.CharacterID, alias string) error
 	DropItem(id model.CharacterID, alias string) error
 	EquipItem(id model.CharacterID, alias string) error
@@ -153,6 +154,17 @@ func (s *Simulation) Move(id model.CharacterID, direction model.Direction) error
 
 	actor.Room.OnEnter(actor)
 
+	return nil
+}
+
+// Inventory lists the users inventory and items.
+func (s *Simulation) Inventory(id model.CharacterID) error {
+	actor, err := s.findAwakeCharacter(id)
+	if err != nil {
+		return err
+	}
+
+	actor.Dispatch(model.EvtInventoryDescription{Rig: actor.Rig})
 	return nil
 }
 

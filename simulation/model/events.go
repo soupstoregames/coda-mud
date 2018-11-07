@@ -46,6 +46,10 @@ type EvtCharacterArrives struct {
 	Direction Direction
 }
 
+type EvtInventoryDescription struct {
+	Rig *Rig
+}
+
 type EvtAdminSpawnsItem struct {
 	Character *Character
 	Item      *Item

@@ -46,6 +46,9 @@ func renderEvents(c *connection, events <-chan interface{}) error {
 		case model.EvtCharacterDropsItem:
 			renderCharacterDropsItem(c, v)
 
+		case model.EvtInventoryDescription:
+			renderInventoryDescription(c, v.Rig)
+
 		case model.EvtAdminSpawnsItem:
 			renderAdminSpawnsItem(c, v)
 
@@ -147,8 +150,7 @@ func renderCharacterSpeaks(c *connection, evt model.EvtCharacterSpeaks) {
 	characterID := CharacterIDFromContext(c.ctx)
 
 	if evt.Character.ID == characterID {
-		c.writeString("You say:", `"`+evt.Content+`"`)
-		c.writelnString()
+		c.writelnString("You say:", `"`+evt.Content+`"`)
 		c.writePrompt()
 	} else {
 		c.writelnString(renderCharacter(evt.Character), "says:", `"`+evt.Content+`"`)
@@ -171,7 +173,7 @@ func renderCharacterTakesItem(c *connection, evt model.EvtCharacterTakesItem) {
 	characterID := CharacterIDFromContext(c.ctx)
 
 	if evt.Character.ID == characterID {
-		c.writeString("You take", evt.Item.Definition.Name)
+		c.writelnString("You take", evt.Item.Definition.Name)
 		c.writePrompt()
 	} else {
 		c.writelnString(renderCharacter(evt.Character), "takes", evt.Item.Definition.Name)
@@ -182,7 +184,7 @@ func renderCharacterDropsItem(c *connection, evt model.EvtCharacterDropsItem) {
 	characterID := CharacterIDFromContext(c.ctx)
 
 	if evt.Character.ID == characterID {
-		c.writeString("You drop", evt.Item.Definition.Name)
+		c.writelnString("You drop", evt.Item.Definition.Name)
 		c.writePrompt()
 	} else {
 		c.writelnString(renderCharacter(evt.Character), "drops", evt.Item.Definition.Name)
@@ -193,18 +195,33 @@ func renderCharacterEquipsItem(c *connection, evt model.EvtCharacterEquipsItem) 
 	characterID := CharacterIDFromContext(c.ctx)
 
 	if evt.Character.ID == characterID {
-		c.writeString("You equip", evt.Item.Definition.Name)
+		c.writelnString("You equip", evt.Item.Definition.Name)
 		c.writePrompt()
 	} else {
 		c.writelnString(renderCharacter(evt.Character), "equips", evt.Item.Definition.Name)
 	}
 }
 
+func renderInventoryDescription(c *connection, rig *model.Rig) {
+	c.writeString("Backpack: ")
+	if rig.Backpack != nil {
+		c.writelnString(rig.Backpack.Definition.Name)
+		for _, v := range rig.Backpack.Container.Items() {
+			c.writeString("  - ")
+			c.writelnString(v.Definition.Name)
+		}
+	} else {
+		c.writelnString("none")
+	}
+
+	c.writePrompt()
+}
+
 func renderAdminSpawnsItem(c *connection, evt model.EvtAdminSpawnsItem) {
 	characterID := CharacterIDFromContext(c.ctx)
 
 	if evt.Character.ID == characterID {
-		c.writeString("You spawn", evt.Item.Definition.Name)
+		c.writelnString("You spawn", evt.Item.Definition.Name)
 		c.writePrompt()
 	} else {
 		c.writelnString(renderCharacter(evt.Character), "spawns", evt.Item.Definition.Name)
@@ -212,17 +229,17 @@ func renderAdminSpawnsItem(c *connection, evt model.EvtAdminSpawnsItem) {
 }
 
 func renderItemNotHere(c *connection) {
-	c.writeString("There is no item by that name.")
+	c.writelnString("There is no item by that name.")
 	c.writePrompt()
 }
 
 func renderNoSpaceToTakeItem(c *connection) {
-	c.writeString("You have no where to put that item.")
+	c.writelnString("You have no where to put that item.")
 	c.writePrompt()
 }
 
 func renderCannotPerformAction(c *connection) {
-	c.writeString("You cannot do that.")
+	c.writelnString("You cannot do that.")
 	c.writePrompt()
 }
 

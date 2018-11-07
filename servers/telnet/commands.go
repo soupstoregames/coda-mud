@@ -131,6 +131,8 @@ var worldCommands = map[string]WorldCommand{
 	"drop":      CmdDrop,
 	"equip":     CmdEquip,
 	"wear":      CmdEquip,
+	"inventory": CmdInventory,
+	"i":         CmdInventory,
 }
 
 // WorldCommand is a function alias for commands to be used in the world state.
@@ -208,4 +210,9 @@ func CmdWest(characterID model.CharacterID, cc simulation.CharacterController, a
 // CmdNorthWest attempts to move the character through the north west exit.
 func CmdNorthWest(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
 	return cc.Move(characterID, model.DirectionNorthWest)
+}
+
+// CmdInventory lists the character's current equipment and items in containers.
+func CmdInventory(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
+	return cc.Inventory(characterID)
 }
