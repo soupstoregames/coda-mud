@@ -148,6 +148,7 @@ func renderCharacterSpeaks(c *connection, evt model.EvtCharacterSpeaks) {
 
 	if evt.Character.ID == characterID {
 		c.writeString("You say:", `"`+evt.Content+`"`)
+		c.writelnString()
 		c.writePrompt()
 	} else {
 		c.writelnString(renderCharacter(evt.Character), "says:", `"`+evt.Content+`"`)

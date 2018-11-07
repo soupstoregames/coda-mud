@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"github.com/soupstore/coda/simulation/data/state"
-
 	"github.com/soupstore/coda/simulation/model"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -53,6 +52,11 @@ func (u *UsersManager) Register(username, password string) error {
 	}
 
 	return nil
+}
+
+func (u *UsersManager) IsUsernameTaken(username string) bool {
+	_, ok := u.users[username]
+	return ok
 }
 
 func (u *UsersManager) AssociateCharacter(username string, characterID model.CharacterID) error {

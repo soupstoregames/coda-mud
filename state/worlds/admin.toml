@@ -1,0 +1,10 @@
+ID = "admin"
+
+[[Rooms]]
+  ID = 2
+
+[[Rooms]]
+  ID = 3
+
+[[Rooms]]
+  ID = 1

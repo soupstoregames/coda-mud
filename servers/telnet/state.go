@@ -36,7 +36,8 @@ func (s *stateLogin) onEnter() error {
 			`  |__|_|  /____/\____ |  ` + "\r\n" +
 			`        \/           \/  `)
 	s.conn.writelnString()
-	s.conn.writelnString("Type 'connect <username> <password>' to log in or create a new account.")
+	s.conn.writelnString("Type 'connect <username> <password>' to log in.")
+	s.conn.writelnString("Type 'register <username> <password>' to create a new account.")
 
 	s.conn.writePrompt()
 
@@ -80,13 +81,15 @@ const (
 )
 
 type stateCharacterCreation struct {
-	conn  *connection
-	state characterCreationPhase
-	name  string
+	config   *config.Config
+	conn     *connection
+	phase    characterCreationPhase
+	username string
+	name     string
 }
 
 func (s *stateCharacterCreation) onEnter() error {
-	s.state = characterCreationPhaseName
+	s.phase = characterCreationPhaseName
 	s.conn.writelnString("CHARACTER CREATION")
 	s.conn.writelnString("What will you be known as?")
 	s.conn.writePrompt()
@@ -100,9 +103,20 @@ func (s *stateCharacterCreation) onExit() error {
 
 // handleInput parses input from the client and performs any appropriate command
 func (s *stateCharacterCreation) handleInput(input string) error {
-	switch s.state {
+	switch s.phase {
 	case characterCreationPhaseName:
 		s.name = input
+		id := s.conn.sim.MakeCharacter(s.name)
+		if err := s.conn.usersManager.AssociateCharacter(s.username, id); err != nil {
+			return err
+		}
+
+		s.conn.ctx = WithCharacterID(s.conn.ctx, id)
+
+		s.conn.loadState(&stateWorld{
+			conn:   s.conn,
+			config: s.config,
+		})
 	}
 
 	return nil

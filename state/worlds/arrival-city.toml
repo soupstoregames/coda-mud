@@ -1,0 +1,22 @@
+ID = "arrival-city"
+
+[[Rooms]]
+  ID = 5
+
+[[Rooms]]
+  ID = 6
+
+[[Rooms]]
+  ID = 7
+
+[[Rooms]]
+  ID = 1
+
+[[Rooms]]
+  ID = 2
+
+[[Rooms]]
+  ID = 3
+
+[[Rooms]]
+  ID = 4

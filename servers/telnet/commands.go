@@ -2,6 +2,7 @@ package telnet
 
 import (
 	"errors"
+	"github.com/soupstore/go-core/logging"
 	"strconv"
 	"strings"
 
@@ -33,7 +34,8 @@ func CmdAdminSpawn(characterID model.CharacterID, ac simulation.AdminController,
 type LoginCommand func(conn *connection, args []string) error
 
 var loginCommands = map[string]LoginCommand{
-	"connect": CmdConnect,
+	"connect":  CmdConnect,
+	"register": CmdRegister,
 }
 
 // CmdConnect is the command used to login to the MUD.
@@ -50,9 +52,11 @@ func CmdConnect(conn *connection, args []string) error {
 		return errors.New("invalid login")
 	}
 
-	if characterID == model.CharacterID(0) {
+	if characterID == model.CharacterID("") {
 		conn.loadState(&stateCharacterCreation{
-			conn: conn,
+			conn:     conn,
+			config:   conn.config,
+			username: username,
 		})
 
 		return nil
@@ -63,6 +67,36 @@ func CmdConnect(conn *connection, args []string) error {
 	conn.loadState(&stateWorld{
 		conn:   conn,
 		config: conn.config,
+	})
+
+	return nil
+}
+
+// CmdRegister is used to register a new user.
+func CmdRegister(conn *connection, args []string) error {
+	if len(args) != 2 {
+		return errors.New("incorrect number of arguments")
+	}
+
+	username := args[0]
+	password := args[1]
+
+	if conn.usersManager.IsUsernameTaken(username) {
+		conn.writelnString("That username is taken.")
+		conn.writelnString("If this is your account type 'connect " + username + " <password>'.")
+		conn.writelnString()
+		conn.writePrompt()
+		return nil
+	}
+
+	if err := conn.usersManager.Register(username, password); err != nil {
+		logging.Error(err.Error())
+	}
+
+	conn.loadState(&stateCharacterCreation{
+		conn:     conn,
+		config:   conn.config,
+		username: username,
 	})
 
 	return nil
