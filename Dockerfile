@@ -1,6 +1,6 @@
 FROM scratch
 
-EXPOSE 50050/tcp
+EXPOSE 5555/tcp
 
 ADD ./bin/coda-linux-amd64 /coda
 
