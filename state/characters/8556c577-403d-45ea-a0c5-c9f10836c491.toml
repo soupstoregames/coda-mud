@@ -1,9 +1,0 @@
-ID = "8556c577-403d-45ea-a0c5-c9f10836c491"
-Name = "Rinse"
-Room = 1
-World = "arrival-city"
-
-[Rig]
-  [Rig.Backpack]
-    ID = "d30f8c2a-8158-4101-ab34-ab04b94fce4d"
-    ItemDefinition = 1
