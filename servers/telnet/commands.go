@@ -10,6 +10,7 @@ import (
 	"github.com/soupstore/coda/simulation/model"
 )
 
+// AdminCommand is a function alias for commands that only admins can use.
 type AdminCommand func(model.CharacterID, simulation.AdminController, []string) error
 
 // all of the commands available to be used in the world state.
@@ -17,6 +18,7 @@ var adminCommands = map[string]AdminCommand{
 	"@spawn": CmdAdminSpawn,
 }
 
+// CmdAdminSpawn allows admins to spawn in items into the world.
 func CmdAdminSpawn(characterID model.CharacterID, ac simulation.AdminController, args []string) error {
 	switch args[0] {
 	case "item":
