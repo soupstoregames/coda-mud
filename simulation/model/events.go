@@ -36,6 +36,19 @@ type EvtCharacterEquipsItem struct {
 	Item      *Item
 }
 
+type EvtCharacterUnequipsItem struct {
+	Character *Character
+	Item      *Item
+}
+
+type EvtYouAreNotWearing struct {
+	Alias string
+}
+
+type EvtItemPutIntoStorage struct {
+	Item *Item
+}
+
 type EvtCharacterLeaves struct {
 	Character *Character
 	Direction Direction
@@ -62,4 +75,7 @@ type EvtItemNotHere struct {
 }
 
 type EvtNoSpaceToTakeItem struct {
+}
+
+type EvtNoSpaceToStoreItem struct {
 }

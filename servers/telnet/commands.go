@@ -131,6 +131,8 @@ var worldCommands = map[string]WorldCommand{
 	"drop":      CmdDrop,
 	"equip":     CmdEquip,
 	"wear":      CmdEquip,
+	"unequip":   CmdUnequip,
+	"remove":    CmdUnequip,
 	"inventory": CmdInventory,
 	"i":         CmdInventory,
 }
@@ -148,6 +150,12 @@ func CmdDrop(characterID model.CharacterID, cc simulation.CharacterController, a
 func CmdEquip(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
 	alias := strings.Join(args, " ")
 	return cc.EquipItem(characterID, alias)
+}
+
+// CmdUnequip takes an item off the character's rig and stores it.
+func CmdUnequip(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
+	alias := strings.Join(args, " ")
+	return cc.UnequipItem(characterID, alias)
 }
 
 // CmdLook will trigger another description of the room the character is currently in.

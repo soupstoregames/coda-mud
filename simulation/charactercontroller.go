@@ -17,6 +17,7 @@ type CharacterController interface {
 	TakeItem(id model.CharacterID, alias string) error
 	DropItem(id model.CharacterID, alias string) error
 	EquipItem(id model.CharacterID, alias string) error
+	UnequipItem(id model.CharacterID, alias string) error
 }
 
 // WakeUpCharacter make a character wake up.
@@ -237,9 +238,19 @@ func (s *Simulation) EquipItem(id model.CharacterID, alias string) error {
 
 	for _, item := range actor.Room.Container.Items() {
 		if item.KnownAs(alias) {
-			_, err = actor.Equip(item)
+			oldItem, err := actor.Equip(item)
 			if err == model.ErrNotEquipable {
 				return ErrCannotEquipItem
+			}
+
+			if oldItem != nil {
+				event := model.EvtCharacterUnequipsItem{
+					Character: actor,
+					Item:      oldItem,
+				}
+				for _, ch := range actor.Room.Characters {
+					ch.Dispatch(event)
+				}
 			}
 
 			event := model.EvtCharacterEquipsItem{
@@ -250,11 +261,71 @@ func (s *Simulation) EquipItem(id model.CharacterID, alias string) error {
 				ch.Dispatch(event)
 			}
 			actor.Room.Container.RemoveItem(item.ID)
+
+			if oldItem != nil {
+				if ok := actor.TakeItem(oldItem); ok {
+					actor.Dispatch(model.EvtItemPutIntoStorage{
+						Item: oldItem,
+					})
+				} else {
+					actor.Room.Container.PutItem(oldItem)
+					actor.Dispatch(model.EvtNoSpaceToStoreItem{})
+					event := model.EvtCharacterDropsItem{
+						Character: actor,
+						Item:      oldItem,
+					}
+					for _, ch := range actor.Room.Characters {
+						ch.Dispatch(event)
+					}
+				}
+			}
 			return nil
 		}
 	}
 
 	actor.Dispatch(model.EvtItemNotHere{})
+
+	return nil
+}
+
+// UnequipItem will remove an item from the character's rig and place it into their storage.
+func (s *Simulation) UnequipItem(id model.CharacterID, alias string) error {
+	actor, err := s.findAwakeCharacter(id)
+	if err != nil {
+		return err
+	}
+
+	item, err := actor.Rig.Unequip(alias)
+	if err != nil {
+		actor.Dispatch(model.EvtYouAreNotWearing{
+			Alias: alias,
+		})
+		return nil
+	} else {
+		event := model.EvtCharacterUnequipsItem{
+			Character: actor,
+			Item:      item,
+		}
+		for _, ch := range actor.Room.Characters {
+			ch.Dispatch(event)
+		}
+	}
+
+	if ok := actor.TakeItem(item); ok {
+		actor.Dispatch(model.EvtItemPutIntoStorage{
+			Item: item,
+		})
+	} else {
+		actor.Room.Container.PutItem(item)
+		actor.Dispatch(model.EvtNoSpaceToStoreItem{})
+		event := model.EvtCharacterDropsItem{
+			Character: actor,
+			Item:      item,
+		}
+		for _, ch := range actor.Room.Characters {
+			ch.Dispatch(event)
+		}
+	}
 
 	return nil
 }

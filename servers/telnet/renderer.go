@@ -49,17 +49,29 @@ func renderEvents(c *connection, events <-chan interface{}) error {
 		case model.EvtInventoryDescription:
 			renderInventoryDescription(c, v.Rig)
 
+		case model.EvtYouAreNotWearing:
+			renderYouAreNotWearing(c, v.Alias)
+
+		case model.EvtItemPutIntoStorage:
+			renderItemPutIntoStorage(c, v.Item)
+
 		case model.EvtAdminSpawnsItem:
 			renderAdminSpawnsItem(c, v)
 
 		case model.EvtCharacterEquipsItem:
 			renderCharacterEquipsItem(c, v)
 
+		case model.EvtCharacterUnequipsItem:
+			renderCharacterUnequipsItem(c, v)
+
 		case model.EvtItemNotHere:
 			renderItemNotHere(c)
 
 		case model.EvtNoSpaceToTakeItem:
 			renderNoSpaceToTakeItem(c)
+
+		case model.EvtNoSpaceToStoreItem:
+			renderNoSpaceToStoreItem(c)
 
 		default:
 			fmt.Println("unknown event type")
@@ -187,7 +199,7 @@ func renderCharacterDropsItem(c *connection, evt model.EvtCharacterDropsItem) {
 		c.writelnString("You drop", evt.Item.Definition.Name)
 		c.writePrompt()
 	} else {
-		c.writelnString(renderCharacter(evt.Character), "drops", evt.Item.Definition.Name)
+		c.writelnString(renderCharacter(evt.Character), "drops", evt.Item.Definition.Name, "on the ground.")
 	}
 }
 
@@ -198,7 +210,17 @@ func renderCharacterEquipsItem(c *connection, evt model.EvtCharacterEquipsItem) 
 		c.writelnString("You equip", evt.Item.Definition.Name)
 		c.writePrompt()
 	} else {
-		c.writelnString(renderCharacter(evt.Character), "equips", evt.Item.Definition.Name)
+		c.writelnString(renderCharacter(evt.Character), "equips", evt.Item.Definition.Name, ".")
+	}
+}
+
+func renderCharacterUnequipsItem(c *connection, evt model.EvtCharacterUnequipsItem) {
+	characterID := CharacterIDFromContext(c.ctx)
+
+	if evt.Character.ID == characterID {
+		c.writelnString("You remove", evt.Item.Definition.Name)
+	} else {
+		c.writelnString(renderCharacter(evt.Character), "removes", evt.Item.Definition.Name, ".")
 	}
 }
 
@@ -207,13 +229,22 @@ func renderInventoryDescription(c *connection, rig *model.Rig) {
 	if rig.Backpack != nil {
 		c.writelnString(rig.Backpack.Definition.Name)
 		for _, v := range rig.Backpack.Container.Items() {
-			c.writeString("  - ")
-			c.writelnString(v.Definition.Name)
+			c.writelnString("  - ", v.Definition.Name)
 		}
 	} else {
 		c.writelnString("none")
 	}
 
+	c.writePrompt()
+}
+
+func renderYouAreNotWearing(c *connection, alias string) {
+	c.writelnString("You are not wearing ", alias, ".")
+	c.writePrompt()
+}
+
+func renderItemPutIntoStorage(c *connection, item *model.Item) {
+	c.writelnString("You put", item.Definition.Name, "into your inventory.")
 	c.writePrompt()
 }
 
@@ -224,7 +255,7 @@ func renderAdminSpawnsItem(c *connection, evt model.EvtAdminSpawnsItem) {
 		c.writelnString("You spawn", evt.Item.Definition.Name)
 		c.writePrompt()
 	} else {
-		c.writelnString(renderCharacter(evt.Character), "spawns", evt.Item.Definition.Name)
+		c.writelnString(renderCharacter(evt.Character), "spawns", evt.Item.Definition.Name, ".")
 	}
 }
 
@@ -236,6 +267,10 @@ func renderItemNotHere(c *connection) {
 func renderNoSpaceToTakeItem(c *connection) {
 	c.writelnString("You have no where to put that item.")
 	c.writePrompt()
+}
+
+func renderNoSpaceToStoreItem(c *connection) {
+	c.writelnString("You have no where to put that item.")
 }
 
 func renderCannotPerformAction(c *connection) {

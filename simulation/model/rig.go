@@ -26,3 +26,13 @@ func (r *Rig) Equip(item *Item) (*Item, error) {
 	r.Backpack = item
 	return oldBackpack, nil
 }
+
+func (r *Rig) Unequip(alias string) (*Item, error) {
+	if r.Backpack != nil && r.Backpack.KnownAs(alias) {
+		oldBackpack := r.Backpack
+		r.Backpack = nil
+		return oldBackpack, nil
+	}
+
+	return nil, ErrItemNotInRig
+}
