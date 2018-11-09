@@ -85,7 +85,8 @@ func renderRoomDescription(c *connection, characterID model.CharacterID, room *m
 	c.write(styleLocation(room.Name, room.Region))
 	c.writeln([]byte{})
 
-	roomDescription, err := ParseAsset(room.Description)
+	parser := Parser{}
+	roomDescription, err := parser.Parse(room.Description)
 	if err != nil {
 		logging.Error("Failed to parse room description")
 		c.writeln(styleDescription(room.Description))

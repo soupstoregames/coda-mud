@@ -23,31 +23,28 @@ type Section struct {
 	Text string
 }
 
-func ParseAsset(text string) (AssetDescription, error) {
-	var (
-		sectionBuffer    bytes.Buffer
-		sectionTypeStack []SectionType
-		currentType      SectionType
-		output           AssetDescription
-		reader           *bytes.Reader
-	)
+type Parser struct {
+	sectionBuffer    bytes.Buffer
+	sectionTypeStack []SectionType
+	reader           *bytes.Reader
+}
 
-	output = AssetDescription{
+func (p *Parser) Parse(text string) (AssetDescription, error) {
+	output := AssetDescription{
 		Sections: []Section{},
 	}
 
-	sectionTypeStack = []SectionType{SectionTypeDefault}
-
-	reader = bytes.NewReader([]byte(text))
+	p.sectionTypeStack = []SectionType{SectionTypeDefault}
+	p.sectionBuffer = bytes.Buffer{}
+	p.reader = bytes.NewReader([]byte(text))
 
 	for {
-		i, err := reader.ReadByte()
+		i, err := p.reader.ReadByte()
 		if err == io.EOF {
-			if sectionBuffer.Len() > 0 {
-				currentType = sectionTypeStack[len(sectionTypeStack)-1]
+			if p.sectionBuffer.Len() > 0 {
 				output.Sections = append(output.Sections, Section{
-					Type: currentType,
-					Text: sectionBuffer.String(),
+					Type: p.sectionTypeStack[len(p.sectionTypeStack)-1],
+					Text: p.sectionBuffer.String(),
 				})
 				break
 			}
@@ -55,48 +52,40 @@ func ParseAsset(text string) (AssetDescription, error) {
 
 		switch i {
 		case '^':
-			if sectionBuffer.Len() > 0 {
-				output.Sections = append(output.Sections, Section{
-					Type: sectionTypeStack[len(sectionTypeStack)-1],
-					Text: sectionBuffer.String(),
-				})
-				sectionBuffer.Reset()
-			}
-			if sectionTypeStack[len(sectionTypeStack)-1] != SectionTypeCommand {
-				sectionTypeStack = append(sectionTypeStack, SectionTypeCommand)
-			} else {
-				sectionTypeStack = sectionTypeStack[:len(sectionTypeStack)-1]
-			}
+			output.Sections = append(output.Sections, p.flushSectionBuffer())
+			p.transitionSection(SectionTypeCommand)
 		case '"':
-			if sectionBuffer.Len() > 0 {
-				output.Sections = append(output.Sections, Section{
-					Type: sectionTypeStack[len(sectionTypeStack)-1],
-					Text: sectionBuffer.String(),
-				})
-				sectionBuffer.Reset()
-			}
-			if sectionTypeStack[len(sectionTypeStack)-1] != SectionTypeSpeech {
-				sectionTypeStack = append(sectionTypeStack, SectionTypeSpeech)
-			} else {
-				sectionTypeStack = sectionTypeStack[:len(sectionTypeStack)-1]
-			}
+			output.Sections = append(output.Sections, p.flushSectionBuffer())
+			p.transitionSection(SectionTypeSpeech)
 		case '@':
-			if sectionBuffer.Len() > 0 {
-				output.Sections = append(output.Sections, Section{
-					Type: sectionTypeStack[len(sectionTypeStack)-1],
-					Text: sectionBuffer.String(),
-				})
-				sectionBuffer.Reset()
-			}
-			if sectionTypeStack[len(sectionTypeStack)-1] != SectionTypeHint {
-				sectionTypeStack = append(sectionTypeStack, SectionTypeHint)
-			} else {
-				sectionTypeStack = sectionTypeStack[:len(sectionTypeStack)-1]
-			}
+			output.Sections = append(output.Sections, p.flushSectionBuffer())
+			p.transitionSection(SectionTypeHint)
 		default:
-			sectionBuffer.WriteByte(i)
+			p.sectionBuffer.WriteByte(i)
 		}
 	}
 
 	return output, nil
+}
+
+func (p *Parser) flushSectionBuffer() Section {
+	var result Section
+
+	if p.sectionBuffer.Len() > 0 {
+		result = Section{
+			Type: p.sectionTypeStack[len(p.sectionTypeStack)-1],
+			Text: p.sectionBuffer.String(),
+		}
+		p.sectionBuffer.Reset()
+	}
+
+	return result
+}
+
+func (p *Parser) transitionSection(sectionType SectionType) {
+	if p.sectionTypeStack[len(p.sectionTypeStack)-1] != sectionType {
+		p.sectionTypeStack = append(p.sectionTypeStack, sectionType)
+	} else {
+		p.sectionTypeStack = p.sectionTypeStack[:len(p.sectionTypeStack)-1]
+	}
 }
