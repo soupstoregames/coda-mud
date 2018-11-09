@@ -82,13 +82,29 @@ func renderEvents(c *connection, events <-chan interface{}) error {
 }
 
 func renderRoomDescription(c *connection, characterID model.CharacterID, room *model.Room) {
-	c.write(rgbterm.FgBytes([]byte(room.Name), 100, 255, 100))
-	if room.Region != "" {
-		c.writeString(" - ")
-		c.write(rgbterm.FgBytes([]byte(room.Region), 100, 255, 100))
+	c.write(styleLocation(room.Name, room.Region))
+	c.writeln([]byte{})
+
+	roomDescription, err := ParseAsset(room.Description)
+	if err != nil {
+		logging.Error("Failed to parse room description")
+		c.writeln(styleDescription(room.Description))
+	} else {
+		for i := range roomDescription.Sections {
+			switch roomDescription.Sections[i].Type {
+			case SectionTypeCommand:
+				c.write(styleCommand(roomDescription.Sections[i].Text))
+			case SectionTypeSpeech:
+				c.write(styleSpeech(roomDescription.Sections[i].Text))
+			case SectionTypeHint:
+				c.write(styleHint(roomDescription.Sections[i].Text))
+			case SectionTypeDefault:
+				c.write(styleDescription(roomDescription.Sections[i].Text))
+			}
+		}
 	}
 	c.writeln([]byte{})
-	c.writeln(rgbterm.FgBytes([]byte(room.Description), 200, 200, 200))
+
 	awakeCharacters := []string{}
 	asleepCharacters := []string{}
 	for _, ch := range room.Characters {

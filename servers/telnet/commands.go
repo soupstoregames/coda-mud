@@ -118,6 +118,8 @@ var worldCommands = map[string]WorldCommand{
 	"e":         CmdEast,
 	"southeast": CmdSouthEast,
 	"se":        CmdSouthEast,
+	"up":        CmdUp,
+	"u":         CmdUp,
 	"south":     CmdSouth,
 	"s":         CmdSouth,
 	"southwest": CmdSouthWest,
@@ -126,6 +128,8 @@ var worldCommands = map[string]WorldCommand{
 	"w":         CmdWest,
 	"northwest": CmdNorthWest,
 	"nw":        CmdNorthWest,
+	"down":      CmdDown,
+	"d":         CmdDown,
 	"take":      CmdTake,
 	"get":       CmdTake,
 	"drop":      CmdDrop,
@@ -200,6 +204,11 @@ func CmdSouthEast(characterID model.CharacterID, cc simulation.CharacterControll
 	return cc.Move(characterID, model.DirectionSouthEast)
 }
 
+// CmdUp attempts to move the character through the up exit.
+func CmdUp(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
+	return cc.Move(characterID, model.DirectionUp)
+}
+
 // CmdSouth attempts to move the character through the south exit.
 func CmdSouth(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
 	return cc.Move(characterID, model.DirectionSouth)
@@ -218,6 +227,11 @@ func CmdWest(characterID model.CharacterID, cc simulation.CharacterController, a
 // CmdNorthWest attempts to move the character through the north west exit.
 func CmdNorthWest(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
 	return cc.Move(characterID, model.DirectionNorthWest)
+}
+
+// CmdDown attempts to move the character through the down exit.
+func CmdDown(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
+	return cc.Move(characterID, model.DirectionDown)
 }
 
 // CmdInventory lists the character's current equipment and items in containers.

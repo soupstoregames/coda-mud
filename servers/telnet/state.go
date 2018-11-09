@@ -153,6 +153,11 @@ func (s *stateWorld) onExit() error {
 
 // handleInput parses input from the client and performs any appropriate command
 func (s *stateWorld) handleInput(input string) error {
+	input = strings.TrimSpace(input)
+	if input == "" {
+		return nil
+	}
+
 	tokens := strings.Split(input, " ")
 	commandText := strings.ToLower(tokens[0])
 

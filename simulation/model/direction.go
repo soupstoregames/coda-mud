@@ -7,10 +7,12 @@ const (
 	DirectionNorthEast
 	DirectionEast
 	DirectionSouthEast
+	DirectionUp
 	DirectionSouth
 	DirectionSouthWest
 	DirectionWest
 	DirectionNorthWest
+	DirectionDown
 )
 
 // Direction is an enum of 8-point compass directions.
@@ -18,7 +20,7 @@ type Direction byte
 
 // Opposite returns the direction that faces the other way. North would give south.
 func (d Direction) Opposite() Direction {
-	return (d + 4) % 8
+	return (d + 5) % 10
 }
 
 func (d Direction) String() string {
@@ -31,6 +33,8 @@ func (d Direction) String() string {
 		return "east"
 	case DirectionSouthEast:
 		return "southeast"
+	case DirectionUp:
+		return "up"
 	case DirectionSouth:
 		return "south"
 	case DirectionSouthWest:
@@ -39,6 +43,8 @@ func (d Direction) String() string {
 		return "west"
 	case DirectionNorthWest:
 		return "northwest"
+	case DirectionDown:
+		return "down"
 
 	default:
 		return "Invalid direction"
@@ -57,6 +63,8 @@ func StringToDirection(d string) (Direction, error) {
 		return DirectionEast, nil
 	case "southeast":
 		return DirectionSouthEast, nil
+	case "up":
+		return DirectionUp, nil
 	case "south":
 		return DirectionSouth, nil
 	case "southwest":
@@ -65,6 +73,8 @@ func StringToDirection(d string) (Direction, error) {
 		return DirectionWest, nil
 	case "northwest":
 		return DirectionNorthWest, nil
+	case "down":
+		return DirectionDown, nil
 
 	default:
 		return DirectionNorth, errors.New("invalid direction")
