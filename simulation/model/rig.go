@@ -15,6 +15,32 @@ type Rig struct {
 	Backpack *Item
 }
 
+func (r *Rig) FindItem(alias string) *Item {
+	if r.Backpack != nil && r.Backpack.KnownAs(alias) {
+		return r.Backpack
+	}
+
+	return nil
+}
+
+// FindItemInContents searches the inventory for an item with the matching alias.
+func (r *Rig) FindItemInContents(alias string) *Item {
+	if r.Backpack != nil {
+		for _, item := range r.Backpack.Container.Items() {
+			if item.KnownAs(alias) {
+				return item
+			}
+		}
+	}
+
+	return nil
+}
+
+func (r *Rig) RemoveItemFromInventory(item *Item) bool {
+	r.Backpack.Container.RemoveItem(item.ID)
+	return true
+}
+
 // Equip attempts to place the item on the rig in the item's designated rig slot.
 // When an item is equipped, you get a reference to the item that was already there returned back. This will be nil if nothing was equipped there.
 // If the item is not equippable for any reason you get an error.
@@ -27,12 +53,11 @@ func (r *Rig) Equip(item *Item) (*Item, error) {
 	return oldBackpack, nil
 }
 
-func (r *Rig) Unequip(alias string) (*Item, error) {
-	if r.Backpack != nil && r.Backpack.KnownAs(alias) {
-		oldBackpack := r.Backpack
+func (r *Rig) Unequip(Item *Item) bool {
+	if r.Backpack == Item {
 		r.Backpack = nil
-		return oldBackpack, nil
+		return true
 	}
 
-	return nil, ErrItemNotInRig
+	return false
 }

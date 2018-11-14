@@ -173,7 +173,10 @@ func (s *stateWorld) handleInput(input string) error {
 		characterID := CharacterIDFromContext(s.conn.ctx)
 		err := command(characterID, s.conn.sim, tokens[1:])
 		if err != nil {
-			return err
+			echo := rgbterm.String(err.Error(), 255, 100, 100, 0, 0, 0)
+			s.conn.writelnString(echo)
+			s.conn.writePrompt()
+			return nil
 		}
 	} else {
 		command, ok := worldCommands[commandText]
@@ -187,7 +190,10 @@ func (s *stateWorld) handleInput(input string) error {
 		characterID := CharacterIDFromContext(s.conn.ctx)
 		err := command(characterID, s.conn.sim, tokens[1:])
 		if err != nil {
-			return err
+			echo := rgbterm.String(err.Error(), 255, 100, 100, 0, 0, 0)
+			s.conn.writelnString(echo)
+			s.conn.writePrompt()
+			return nil
 		}
 	}
 

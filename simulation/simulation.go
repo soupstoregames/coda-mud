@@ -27,3 +27,40 @@ func NewSimulation() *Simulation {
 		containers:      make(map[model.ContainerID]model.Container),
 	}
 }
+
+func (s *Simulation) Start() {
+	go func() {
+		for {
+			s.processPlayerCommands()
+		}
+	}()
+}
+
+func (s *Simulation) processPlayerCommands() {
+	// iterate through all connected characters to read commands
+	for _, c := range s.characters {
+		if !c.Awake {
+			continue
+		}
+
+		select {
+		case cmd := <-c.Commands:
+			switch v := cmd.(type) {
+			case model.CommandSay:
+				s.say(c, v)
+			case model.CommandMove:
+				s.move(c, v)
+			case model.CommandTake:
+				s.takeItem(c, v)
+			case model.CommandDrop:
+				s.dropItem(c, v)
+			case model.CommandEquip:
+				s.equipItem(c, v)
+			case model.CommandUnequip:
+				s.unequipItem(c, v)
+			}
+		default:
+			continue
+		}
+	}
+}

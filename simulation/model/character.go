@@ -10,11 +10,12 @@ type CharacterID string
 // Character is a player character in the simulation.
 type Character struct {
 	*Rig
-	ID     CharacterID
-	Name   string
-	Awake  bool
-	Room   *Room
-	Events chan interface{}
+	ID       CharacterID
+	Name     string
+	Awake    bool
+	Room     *Room
+	Commands chan interface{}
+	Events   chan interface{}
 }
 
 // NewCharacter is a helper function for creating a new character in the simulation.
@@ -31,6 +32,7 @@ func NewCharacter(name string, room *Room) *Character {
 // WakeUp initializes a buffered channel of simulation events that happen to the character.
 // It also wake it up, which allows the player to control it.
 func (c *Character) WakeUp() {
+	c.Commands = make(chan interface{}, 1)
 	c.Events = make(chan interface{}, 10)
 	c.Awake = true
 }
@@ -39,6 +41,7 @@ func (c *Character) WakeUp() {
 func (c *Character) Sleep() {
 	c.Awake = false
 	close(c.Events)
+	close(c.Commands)
 }
 
 // Dispatch is used by the simulation to send events to the character's event stream.
@@ -58,4 +61,8 @@ func (c *Character) TakeItem(item *Item) bool {
 	}
 
 	return false
+}
+
+func (c *Character) DropItem(item *Item) bool {
+	return c.Rig.RemoveItemFromInventory(item)
 }

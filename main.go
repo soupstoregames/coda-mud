@@ -57,8 +57,9 @@ func main() {
 	// load the saved state
 	loadState(stateData, usersManager, sim)
 
-	// temporary
+	// set the spawn room
 	sim.SetSpawnRoom("spawn", 1)
+
 	// room, err := sim.GetRoom("arrival-city", 1)
 	// if err != nil {
 	// 	logging.Fatal(err.Error())
@@ -71,6 +72,7 @@ func main() {
 	startSaveSimulationTicker(usersManager, sim, stateData)
 
 	// start the simulation
+	sim.Start()
 
 	// start the telnet server
 	telnetServer := telnet.NewServer(conf, sim, usersManager)

@@ -142,99 +142,143 @@ var worldCommands = map[string]WorldCommand{
 }
 
 // WorldCommand is a function alias for commands to be used in the world state.
-type WorldCommand func(model.CharacterID, simulation.CharacterController, []string) error
-
-// CmdDrop allows the character to drop an item from their inventory on to the floor.
-func CmdDrop(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	alias := strings.Join(args, " ")
-	return cc.DropItem(characterID, alias)
-}
-
-// CmdEquip allows the character to equip an item to his rig.
-func CmdEquip(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	alias := strings.Join(args, " ")
-	return cc.EquipItem(characterID, alias)
-}
-
-// CmdUnequip takes an item off the character's rig and stores it.
-func CmdUnequip(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	alias := strings.Join(args, " ")
-	return cc.UnequipItem(characterID, alias)
-}
+type WorldCommand func(model.CharacterID, *simulation.Simulation, []string) error
 
 // CmdLook will trigger another description of the room the character is currently in.
-func CmdLook(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
+func CmdLook(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
 	return cc.Look(characterID)
 }
 
+// CmdInventory lists the character's current equipment and items in containers.
+func CmdInventory(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	return cc.Inventory(characterID)
+}
+
 // CmdQuit sends the character to sleep and disconnects the user.
-func CmdQuit(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
+func CmdQuit(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
 	return cc.SleepCharacter(characterID)
 }
 
 // CmdSay makes the character speak to all other charactes in the same room.
-func CmdSay(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	content := strings.Join(args, " ")
-	return cc.Say(characterID, content)
+func CmdSay(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	return cc.QueueCommand(characterID, model.CommandSay{
+		Content: strings.Join(args, " "),
+	})
 }
 
 // CmdTake has the character pick up an item from the room and put it into their inventory.
-func CmdTake(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	alias := strings.Join(args, " ")
-	return cc.TakeItem(characterID, alias)
+func CmdTake(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	item, err := cc.FindItemInRoom(characterID, strings.Join(args, " "))
+	if err != nil {
+		return err
+	}
+	return cc.QueueCommand(characterID, model.CommandTake{
+		Item: item,
+	})
+}
+
+// CmdDrop allows the character to drop an item from their inventory on to the floor.
+func CmdDrop(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	item, err := cc.FindItemInInventory(characterID, strings.Join(args, " "))
+	if err != nil {
+		return err
+	}
+
+	return cc.QueueCommand(characterID, model.CommandDrop{
+		Item: item,
+	})
+}
+
+// CmdEquip allows the character to equip an item to his rig.
+func CmdEquip(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	item, err := cc.FindItemInInventory(characterID, strings.Join(args, " "))
+	if err != nil {
+		return err
+	}
+
+	return cc.QueueCommand(characterID, model.CommandEquip{
+		Item: item,
+	})
+}
+
+// CmdUnequip takes an item off the character's rig and stores it.
+func CmdUnequip(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	item, err := cc.FindItemInRig(characterID, strings.Join(args, " "))
+	if err != nil {
+		return err
+	}
+
+	return cc.QueueCommand(characterID, model.CommandUnequip{
+		Item: item,
+	})
 }
 
 // CmdNorth attempts to move the character through the north exit.
-func CmdNorth(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.DirectionNorth)
+func CmdNorth(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	return cc.QueueCommand(characterID, model.CommandMove{
+		Direction: model.DirectionNorth,
+	})
 }
 
 // CmdNorthEast attempts to move the character through the north east exit.
-func CmdNorthEast(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.DirectionNorthEast)
+func CmdNorthEast(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	return cc.QueueCommand(characterID, model.CommandMove{
+		Direction: model.DirectionNorthEast,
+	})
 }
 
 // CmdEast attempts to move the character through the east exit.
-func CmdEast(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.DirectionEast)
+func CmdEast(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	return cc.QueueCommand(characterID, model.CommandMove{
+		Direction: model.DirectionEast,
+	})
 }
 
 // CmdSouthEast attempts to move the character through the south east exit.
-func CmdSouthEast(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.DirectionSouthEast)
+func CmdSouthEast(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	return cc.QueueCommand(characterID, model.CommandMove{
+		Direction: model.DirectionSouthEast,
+	})
 }
 
 // CmdUp attempts to move the character through the up exit.
-func CmdUp(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.DirectionUp)
+func CmdUp(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	return cc.QueueCommand(characterID, model.CommandMove{
+		Direction: model.DirectionUp,
+	})
 }
 
 // CmdSouth attempts to move the character through the south exit.
-func CmdSouth(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.DirectionSouth)
+func CmdSouth(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	return cc.QueueCommand(characterID, model.CommandMove{
+		Direction: model.DirectionSouth,
+	})
 }
 
 // CmdSouthWest attempts to move the character through the south west exit.
-func CmdSouthWest(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.DirectionSouthWest)
+func CmdSouthWest(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	return cc.QueueCommand(characterID, model.CommandMove{
+		Direction: model.DirectionSouthWest,
+	})
 }
 
 // CmdWest attempts to move the character through the west exit.
-func CmdWest(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.DirectionWest)
+func CmdWest(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	return cc.QueueCommand(characterID, model.CommandMove{
+		Direction: model.DirectionWest,
+	})
 }
 
 // CmdNorthWest attempts to move the character through the north west exit.
-func CmdNorthWest(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.DirectionNorthWest)
+func CmdNorthWest(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	return cc.QueueCommand(characterID, model.CommandMove{
+		Direction: model.DirectionNorthWest,
+	})
 }
 
 // CmdDown attempts to move the character through the down exit.
-func CmdDown(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Move(characterID, model.DirectionDown)
-}
-
-// CmdInventory lists the character's current equipment and items in containers.
-func CmdInventory(characterID model.CharacterID, cc simulation.CharacterController, args []string) error {
-	return cc.Inventory(characterID)
+func CmdDown(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
+	return cc.QueueCommand(characterID, model.CommandMove{
+		Direction: model.DirectionDown,
+	})
 }

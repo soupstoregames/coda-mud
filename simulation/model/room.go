@@ -60,6 +60,21 @@ func (r *Room) RemoveCharacter(c *Character) {
 	}
 }
 
+func (r *Room) FindItem(alias string) *Item {
+	for _, item := range r.Container.Items() {
+		if item.KnownAs(alias) {
+			return item
+		}
+	}
+	return nil
+}
+
+func (r *Room) Dispatch(event interface{}) {
+	for _, ch := range r.Characters {
+		ch.Dispatch(event)
+	}
+}
+
 func (r *Room) OnEnter(c *Character) {
 	L := r.createScriptRuntime(ScriptContext{r})
 	defer L.Close()
