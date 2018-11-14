@@ -2,7 +2,7 @@ package simulation
 
 import (
 	"github.com/soupstore/coda/simulation/model"
-	"go.uber.org/zap"
+	"github.com/soupstore/go-core/logging"
 )
 
 // CharacterController is an interface over the Simulation that exposes all actions a connected
@@ -13,7 +13,6 @@ type CharacterController interface {
 	QueueCommand(model.CharacterID, interface{}) error
 	Look(model.CharacterID) error
 	Inventory(model.CharacterID) error
-	UnequipItem(id model.CharacterID, alias string) error
 }
 
 func (s *Simulation) QueueCommand(id model.CharacterID, command interface{}) error {
@@ -57,7 +56,7 @@ func (s *Simulation) WakeUpCharacter(id model.CharacterID) (characterEvents <-ch
 
 	actor.Room.OnWake(actor)
 
-	zap.L().Debug("Character woke up")
+	logging.Info("Character woke up")
 
 	return actor.Events, nil
 }
