@@ -60,7 +60,7 @@ type EvtCharacterArrives struct {
 }
 
 type EvtInventoryDescription struct {
-	Rig *Rig
+	Character *Character
 }
 
 type EvtAdminSpawnsItem struct {

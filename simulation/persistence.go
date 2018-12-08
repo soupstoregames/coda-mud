@@ -45,22 +45,29 @@ func (s *Simulation) Load(characters []state.Character, worlds []state.World) er
 			return err
 		}
 
-		character := &model.Character{
-			ID:   model.CharacterID(ch.ID),
-			Name: ch.Name,
-			Room: room,
-			Rig: &model.Rig{
-				Backpack: func() *model.Item {
-					if ch.Rig.Backpack == nil {
-						return nil
-					}
+		// create new character
+		character := model.NewCharacter(ch.Name, room)
+		character.ID = model.CharacterID(ch.ID)
 
-					itemDefinition := s.itemDefinitions[model.ItemDefinitionID(ch.Rig.Backpack.ItemDefinition)]
-					item := itemDefinition.Spawn()
-					item.ID = model.ItemID(ch.Rig.Backpack.ID)
-					return item
-				}(),
-			},
+		// equip character's rig
+		if ch.Rig.Backpack != nil {
+			itemDefinition := s.itemDefinitions[model.ItemDefinitionID(ch.Rig.Backpack.ItemDefinition)]
+			item := itemDefinition.Spawn()
+			item.ID = model.ItemID(ch.Rig.Backpack.ID)
+			character.Rig.Backpack = item
+		}
+
+		// spawn in character's items
+		for _, i := range ch.Items {
+			definition, ok := s.itemDefinitions[model.ItemDefinitionID(i.ItemDefinition)]
+			if !ok {
+				logging.Error("failed to load item for character")
+				continue
+			}
+
+			item := definition.Spawn()
+			item.ID = model.ItemID(i.ID)
+			character.Container.PutItem(item)
 		}
 
 		s.characters[character.ID] = character
@@ -110,6 +117,7 @@ func characterToState(c *model.Character) state.Character {
 		Room:  int64(c.Room.ID),
 		World: string(c.Room.WorldID),
 		Rig:   mapRig(c.Rig),
+		Items: mapContents(c.Container),
 	}
 }
 

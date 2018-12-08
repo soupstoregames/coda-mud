@@ -12,6 +12,7 @@ type Character struct {
 	Room  int64
 	World string
 	Rig   Rig
+	Items []*Item
 }
 
 type Rig struct {

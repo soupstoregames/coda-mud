@@ -47,7 +47,7 @@ func renderEvents(c *connection, events <-chan interface{}) error {
 			renderCharacterDropsItem(c, v)
 
 		case model.EvtInventoryDescription:
-			renderInventoryDescription(c, v.Rig)
+			renderInventoryDescription(c, v)
 
 		case model.EvtYouAreNotWearing:
 			renderYouAreNotWearing(c, v.Alias)
@@ -241,15 +241,18 @@ func renderCharacterUnequipsItem(c *connection, evt model.EvtCharacterUnequipsIt
 	}
 }
 
-func renderInventoryDescription(c *connection, rig *model.Rig) {
+func renderInventoryDescription(c *connection, evt model.EvtInventoryDescription) {
 	c.writeString("Backpack: ")
-	if rig.Backpack != nil {
-		c.writelnString(rig.Backpack.Definition.Name)
-		for _, v := range rig.Backpack.Container.Items() {
-			c.writelnString("  - ", v.Definition.Name)
-		}
+	if evt.Character.Rig.Backpack != nil {
+		c.writelnString(evt.Character.Rig.Backpack.Definition.Name)
 	} else {
 		c.writelnString("none")
+	}
+
+	c.writelnString("")
+
+	for _, v := range evt.Character.Container.Items() {
+		c.writelnString("- ", v.Definition.Name)
 	}
 
 	c.writePrompt()

@@ -49,7 +49,7 @@ func (c *RoomContainer) RemoveItem(itemID ItemID) {
 	delete(c.items, itemID)
 }
 
-// ItemContainer is the kind of container used in items like chests, backpacks etc...
+// ItemContainer is the kind of container used in items like chests, etc...
 type ItemContainer struct {
 	BaseContainer
 }
@@ -69,5 +69,28 @@ func (c *ItemContainer) PutItem(item *Item) {
 }
 
 func (c *ItemContainer) RemoveItem(itemID ItemID) {
+	delete(c.items, itemID)
+}
+
+// CharacterContainer is a player's inventory.
+type CharacterContainer struct {
+	BaseContainer
+}
+
+func NewCharacterContainer() Container {
+	return &CharacterContainer{
+		BaseContainer: BaseContainer{
+			id:    ContainerID(uuid.New().String()),
+			items: make(map[ItemID]*Item),
+		},
+	}
+}
+
+func (c *CharacterContainer) PutItem(item *Item) {
+	// check for capacity and stuff
+	c.items[item.ID] = item
+}
+
+func (c *CharacterContainer) RemoveItem(itemID ItemID) {
 	delete(c.items, itemID)
 }

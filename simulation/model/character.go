@@ -10,22 +10,24 @@ type CharacterID string
 // Character is a player character in the simulation.
 type Character struct {
 	*Rig
-	ID       CharacterID
-	Name     string
-	Awake    bool
-	Room     *Room
-	Commands chan interface{}
-	Events   chan interface{}
+	ID        CharacterID
+	Name      string
+	Awake     bool
+	Room      *Room
+	Container Container
+	Commands  chan interface{}
+	Events    chan interface{}
 }
 
 // NewCharacter is a helper function for creating a new character in the simulation.
 // It requires the character's name and the room to spawn the character in.
 func NewCharacter(name string, room *Room) *Character {
 	return &Character{
-		ID:   CharacterID(uuid.New().String()),
-		Name: name,
-		Room: room,
-		Rig:  &Rig{},
+		ID:        CharacterID(uuid.New().String()),
+		Name:      name,
+		Room:      room,
+		Rig:       &Rig{},
+		Container: NewCharacterContainer(),
 	}
 }
 
@@ -53,16 +55,19 @@ func (c *Character) Dispatch(event interface{}) {
 }
 
 // TakeItem attempts to find a free slot in the player's inventory to place the given item.
-func (c *Character) TakeItem(item *Item) bool {
-	// currently this is the only place we could put an item and it has no limits!
-	if c.Rig.Backpack != nil {
-		c.Rig.Backpack.Container.PutItem(item)
-		return true
-	}
-
-	return false
+func (c *Character) TakeItem(item *Item) {
+	c.Container.PutItem(item)
 }
 
-func (c *Character) DropItem(item *Item) bool {
-	return c.Rig.RemoveItemFromInventory(item)
+func (c *Character) DropItem(item *Item) {
+	c.Container.RemoveItem(item.ID)
+}
+
+func (c *Character) SearchInventory(alias string) *Item {
+	for _, item := range c.Container.Items() {
+		if item.KnownAs(alias) {
+			return item
+		}
+	}
+	return nil
 }

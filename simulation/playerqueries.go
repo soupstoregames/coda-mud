@@ -22,6 +22,6 @@ func (s *Simulation) Inventory(id model.CharacterID) error {
 		return err
 	}
 
-	actor.Dispatch(model.EvtInventoryDescription{Rig: actor.Rig})
+	actor.Dispatch(model.EvtInventoryDescription{Character: actor})
 	return nil
 }

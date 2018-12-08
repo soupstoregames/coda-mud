@@ -23,7 +23,7 @@ func (s *Simulation) FindItemInInventory(id model.CharacterID, alias string) (*m
 		return nil, err
 	}
 
-	if item := actor.Rig.FindItemInContents(alias); item != nil {
+	if item := actor.SearchInventory(alias); item != nil {
 		return item, nil
 	}
 

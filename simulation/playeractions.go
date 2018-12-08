@@ -53,12 +53,7 @@ func (s *Simulation) move(actor *model.Character, c model.CommandMove) {
 }
 
 func (s *Simulation) takeItem(actor *model.Character, c model.CommandTake) {
-	ok := actor.TakeItem(c.Item)
-	if !ok {
-		actor.Dispatch(model.EvtNoSpaceToTakeItem{})
-		return
-	}
-
+	actor.TakeItem(c.Item)
 	actor.Room.Container.RemoveItem(c.Item.ID)
 	actor.Room.Dispatch(model.EvtCharacterTakesItem{
 		Character: actor,
@@ -67,12 +62,7 @@ func (s *Simulation) takeItem(actor *model.Character, c model.CommandTake) {
 }
 
 func (s *Simulation) dropItem(actor *model.Character, c model.CommandDrop) {
-	ok := actor.DropItem(c.Item)
-	if !ok {
-		actor.Dispatch(model.EvtItemNotHere{})
-		return
-	}
-
+	actor.DropItem(c.Item)
 	actor.Room.Container.PutItem(c.Item)
 	actor.Room.Dispatch(model.EvtCharacterDropsItem{
 		Character: actor,
@@ -81,8 +71,7 @@ func (s *Simulation) dropItem(actor *model.Character, c model.CommandDrop) {
 }
 
 func (s *Simulation) equipItem(actor *model.Character, c model.CommandEquip) {
-	actor.Rig.RemoveItemFromInventory(c.Item)
-
+	actor.Container.RemoveItem(c.Item.ID)
 	oldItem, err := actor.Equip(c.Item)
 	if err == model.ErrNotEquipable {
 		// do something
@@ -104,9 +93,8 @@ func (s *Simulation) equipItem(actor *model.Character, c model.CommandEquip) {
 		Item:      c.Item,
 	})
 
-	ok := actor.TakeItem(oldItem)
-	if !ok {
-		// do something
+	if oldItem != nil {
+		actor.TakeItem(oldItem)
 	}
 }
 
@@ -120,8 +108,5 @@ func (s *Simulation) unequipItem(actor *model.Character, c model.CommandUnequip)
 		Item:      c.Item,
 	})
 
-	ok := actor.TakeItem(c.Item)
-	if !ok {
-		// DO SOMETHING
-	}
+	actor.TakeItem(c.Item)
 }
