@@ -6,10 +6,6 @@ import (
 	"github.com/soupstore/go-core/logging"
 )
 
-type AdminController interface {
-	AdminSpawnItem(model.CharacterID, model.ItemDefinitionID) (err error)
-}
-
 func (s *Simulation) AdminSpawnItem(characterID model.CharacterID, id model.ItemDefinitionID) error {
 	actor, err := s.findAwakeCharacter(characterID)
 	if err != nil {

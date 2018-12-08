@@ -5,16 +5,6 @@ import (
 	"github.com/soupstore/go-core/logging"
 )
 
-// CharacterController is an interface over the Simulation that exposes all actions a connected
-// player will need to perform
-type CharacterController interface {
-	WakeUpCharacter(model.CharacterID) (characterEvents <-chan interface{}, err error)
-	SleepCharacter(model.CharacterID) error
-	QueueCommand(model.CharacterID, interface{}) error
-	Look(model.CharacterID) error
-	Inventory(model.CharacterID) error
-}
-
 func (s *Simulation) QueueCommand(id model.CharacterID, command interface{}) error {
 	char, err := s.findAwakeCharacter(id)
 	if err != nil {
@@ -79,28 +69,6 @@ func (s *Simulation) SleepCharacter(id model.CharacterID) error {
 
 	actor.Room.OnExit(actor)
 
-	return nil
-}
-
-// Look gives the character a room description
-func (s *Simulation) Look(id model.CharacterID) error {
-	actor, err := s.findAwakeCharacter(id)
-	if err != nil {
-		return err
-	}
-
-	actor.Dispatch(model.EvtRoomDescription{Room: actor.Room})
-	return nil
-}
-
-// Inventory lists the users inventory and items.
-func (s *Simulation) Inventory(id model.CharacterID) error {
-	actor, err := s.findAwakeCharacter(id)
-	if err != nil {
-		return err
-	}
-
-	actor.Dispatch(model.EvtInventoryDescription{Rig: actor.Rig})
 	return nil
 }
 
