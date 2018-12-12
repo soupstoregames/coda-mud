@@ -12,6 +12,7 @@ import (
 type Item struct {
 	Name      string
 	Aliases   []string
+	Weight    int64
 	Container *Container
 	RigSlot   string
 }

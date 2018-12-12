@@ -12,6 +12,7 @@ type ItemDefinition struct {
 	ID        ItemDefinitionID
 	Name      string
 	Aliases   []string
+	Weight    int64 // grams
 	RigSlot   RigSlot
 	Container *ContainerDefinition
 }
@@ -27,11 +28,12 @@ type Item struct {
 	Container  Container
 }
 
-func NewItemDefinition(id ItemDefinitionID, name string, aliases []string, RigSlot RigSlot, container *ContainerDefinition) *ItemDefinition {
+func NewItemDefinition(id ItemDefinitionID, name string, aliases []string, weight int64, RigSlot RigSlot, container *ContainerDefinition) *ItemDefinition {
 	return &ItemDefinition{
 		ID:        id,
 		Name:      name,
 		Aliases:   append(aliases, name),
+		Weight:    weight,
 		RigSlot:   RigSlot,
 		Container: container,
 	}

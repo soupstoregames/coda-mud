@@ -287,7 +287,7 @@ func (dw *DataWatcher) addItemToSim(itemDefinitionID model.ItemDefinitionID, ite
 		container = &model.ContainerDefinition{}
 	}
 
-	_, err := dw.sim.CreateItemDefinition(itemDefinitionID, item.Name, item.Aliases, rigSlot, container)
+	_, err := dw.sim.CreateItemDefinition(itemDefinitionID, item.Name, item.Aliases, item.Weight, rigSlot, container)
 	return err
 }
 

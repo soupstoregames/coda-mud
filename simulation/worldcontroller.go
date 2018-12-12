@@ -12,7 +12,7 @@ type WorldController interface {
 	GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error)
 	DestroyRoom(worldID model.WorldID, roomID model.RoomID) error
 	SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) error
-	CreateItemDefinition(itemID model.ItemDefinitionID, name string, aliases []string, rigSlot model.RigSlot, container *model.ContainerDefinition) (*model.ItemDefinition, error)
+	CreateItemDefinition(itemID model.ItemDefinitionID, name string, aliases []string, weight int64, rigSlot model.RigSlot, container *model.ContainerDefinition) (*model.ItemDefinition, error)
 	SpawnItem(itemDefinitionID model.ItemDefinitionID, containerID model.ContainerID) error
 }
 
@@ -90,8 +90,8 @@ func (s *Simulation) SetSpawnRoom(worldID model.WorldID, roomID model.RoomID) er
 }
 
 // CreateItemDefinition creates a new item definition
-func (s *Simulation) CreateItemDefinition(itemID model.ItemDefinitionID, name string, aliases []string, rigSlot model.RigSlot, container *model.ContainerDefinition) (*model.ItemDefinition, error) {
-	item := model.NewItemDefinition(itemID, name, aliases, rigSlot, container)
+func (s *Simulation) CreateItemDefinition(itemID model.ItemDefinitionID, name string, aliases []string, weight int64, rigSlot model.RigSlot, container *model.ContainerDefinition) (*model.ItemDefinition, error) {
+	item := model.NewItemDefinition(itemID, name, aliases, weight, rigSlot, container)
 	s.itemDefinitions[itemID] = item
 	return item, nil
 }

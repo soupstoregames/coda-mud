@@ -252,7 +252,7 @@ func renderInventoryDescription(c *connection, evt model.EvtInventoryDescription
 	c.writelnString("")
 
 	for _, v := range evt.Character.Container.Items() {
-		c.writelnString("- ", v.Definition.Name)
+		c.writelnString(fmt.Sprintf("%s    %.2fkg", v.Definition.Name, float64(v.Definition.Weight)/1000.0))
 	}
 
 	c.writePrompt()
