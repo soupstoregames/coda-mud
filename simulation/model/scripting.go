@@ -1,9 +1,10 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/soupstore/go-core/logging"
+	"github.com/soupstoregames/go-core/logging"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -43,7 +44,7 @@ type ScriptContext struct {
 	Room *Room
 }
 
-func (ctx ScriptContext) Sleep(L *lua.LState) int {
+func (ctx *ScriptContext) Sleep(L *lua.LState) int {
 	seconds := L.ToInt(1)
 
 	time.Sleep(time.Second * time.Duration(seconds))
@@ -51,9 +52,11 @@ func (ctx ScriptContext) Sleep(L *lua.LState) int {
 	return 0
 }
 
-func (ctx ScriptContext) Narrate(L *lua.LState) int {
-	characterID := L.ToInt(1)
+func (ctx *ScriptContext) Narrate(L *lua.LState) int {
+	characterID := L.ToString(1)
 	text := L.ToString(2)
+
+	fmt.Println(characterID)
 
 	for _, ch := range ctx.Room.getAwakeCharacters() {
 		if ch.ID != CharacterID(characterID) {

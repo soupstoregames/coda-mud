@@ -2,8 +2,8 @@ package simulation
 
 import (
 	"fmt"
-	"github.com/soupstore/coda/simulation/model"
-	"github.com/soupstore/go-core/logging"
+	"github.com/soupstoregames/coda-mud/simulation/model"
+	"github.com/soupstoregames/go-core/logging"
 )
 
 func (s *Simulation) AdminSpawnItem(characterID model.CharacterID, id model.ItemDefinitionID) error {
@@ -12,7 +12,7 @@ func (s *Simulation) AdminSpawnItem(characterID model.CharacterID, id model.Item
 		return err
 	}
 
-	definition, ok := s.itemDefinitions[model.ItemDefinitionID(id)]
+	definition, ok := s.itemDefinitions[id]
 	if !ok {
 		logging.Warn(fmt.Sprintf("Tried to load item for non-existant definition %d in room %d in world %s", id, actor.Room.ID, actor.Room.WorldID))
 		return nil // TODO RETURN ERROR

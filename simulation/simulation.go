@@ -1,7 +1,8 @@
 package simulation
 
 import (
-	"github.com/soupstore/coda/simulation/model"
+	"github.com/soupstoregames/coda-mud/simulation/model"
+	"sync"
 )
 
 // Simulation is the engine of the world.
@@ -14,6 +15,8 @@ type Simulation struct {
 	items           map[model.ItemID]*model.Item
 	characters      map[model.CharacterID]*model.Character
 	containers      map[model.ContainerID]model.Container
+
+	characterLock *sync.Mutex
 }
 
 // NewSimulation returns a Simulation with default params.
@@ -25,6 +28,8 @@ func NewSimulation() *Simulation {
 		items:           make(map[model.ItemID]*model.Item),
 		characters:      make(map[model.CharacterID]*model.Character),
 		containers:      make(map[model.ContainerID]model.Container),
+
+		characterLock: &sync.Mutex{},
 	}
 }
 
@@ -37,6 +42,9 @@ func (s *Simulation) Start() {
 }
 
 func (s *Simulation) processPlayerCommands() {
+	s.characterLock.Lock()
+	defer s.characterLock.Unlock()
+
 	// iterate through all connected characters to read commands
 	for _, c := range s.characters {
 		if !c.Awake {

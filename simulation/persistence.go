@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/soupstore/coda/simulation/data/state"
-	"github.com/soupstore/coda/simulation/model"
-	"github.com/soupstore/go-core/logging"
+	"github.com/soupstoregames/coda-mud/simulation/data/state"
+	"github.com/soupstoregames/coda-mud/simulation/model"
+	"github.com/soupstoregames/go-core/logging"
 )
 
 // StateController is an interface over Simulation for saving and loading the simulation's state.

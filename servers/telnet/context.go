@@ -3,13 +3,13 @@ package telnet
 import (
 	"context"
 
-	"github.com/soupstore/coda/simulation/model"
+	"github.com/soupstoregames/coda-mud/simulation/model"
 )
 
 type key int
 
 const (
-	connectionIDkey key = iota
+	connectionIDKey key = iota
 	characterIDKey
 )
 
@@ -30,5 +30,5 @@ func WithConnectionID(parent context.Context, connectionID string) context.Conte
 
 // ConnectionIDFromContext extracts the connection ID embedded in the context.
 func ConnectionIDFromContext(c context.Context) string {
-	return c.Value(connectionIDkey).(string)
+	return c.Value(connectionIDKey).(string)
 }

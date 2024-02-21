@@ -1,12 +1,13 @@
 package telnet
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 
 	"github.com/aybabtme/rgbterm"
-	"github.com/soupstore/coda/simulation/model"
-	"github.com/soupstore/go-core/logging"
+	"github.com/soupstoregames/coda-mud/simulation/model"
+	"github.com/soupstoregames/go-core/logging"
 )
 
 func renderEvents(c *connection, events <-chan interface{}) error {
@@ -91,20 +92,23 @@ func renderRoomDescription(c *connection, characterID model.CharacterID, room *m
 		logging.Error("Failed to parse room description")
 		c.writeln(styleDescription(room.Description))
 	} else {
+		var buf bytes.Buffer
 		for i := range roomDescription.Sections {
 			switch roomDescription.Sections[i].Type {
 			case SectionTypeCommand:
-				c.write(styleCommand(roomDescription.Sections[i].Text))
+				buf.Write(styleCommand(roomDescription.Sections[i].Text))
 			case SectionTypeSpeech:
-				c.write(styleSpeech(roomDescription.Sections[i].Text))
+				buf.Write(styleSpeech(roomDescription.Sections[i].Text))
 			case SectionTypeHint:
-				c.write(styleHint(roomDescription.Sections[i].Text))
+				buf.Write(styleHint(roomDescription.Sections[i].Text))
 			case SectionTypeDefault:
-				c.write(styleDescription(roomDescription.Sections[i].Text))
+				buf.Write(styleDescription(roomDescription.Sections[i].Text))
 			}
 		}
+		if c.willNAWS {
+			c.write([]byte(wrap(c.width, buf.String())))
+		}
 	}
-	c.writeln([]byte{})
 
 	awakeCharacters := []string{}
 	asleepCharacters := []string{}
@@ -165,14 +169,18 @@ func renderRoomDescription(c *connection, characterID model.CharacterID, room *m
 
 func renderCharacterWakesUp(c *connection, evt model.EvtCharacterWakesUp) {
 	c.writelnString(renderCharacter(evt.Character), "has woken up.")
+	c.writePrompt()
 }
 
 func renderCharacterFallsAsleep(c *connection, evt model.EvtCharacterFallsAsleep) {
 	c.writelnString(renderCharacter(evt.Character), "has fallen asleep.")
+	c.writePrompt()
 }
 
 func renderNarration(c *connection, evt model.EvtNarration) {
+	c.writeln(nil)
 	c.writeln(rgbterm.FgBytes([]byte(evt.Content), 0, 255, 255))
+	c.writePrompt()
 }
 
 func renderCharacterSpeaks(c *connection, evt model.EvtCharacterSpeaks) {

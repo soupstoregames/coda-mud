@@ -5,10 +5,9 @@ import (
 	"strings"
 
 	"github.com/aybabtme/rgbterm"
-
-	"github.com/soupstore/coda/config"
-	"github.com/soupstore/coda/simulation/model"
-	"github.com/soupstore/go-core/logging"
+	"github.com/soupstoregames/coda-mud/config"
+	"github.com/soupstoregames/coda-mud/simulation/model"
+	"github.com/soupstoregames/go-core/logging"
 )
 
 // state is the interface for all scenes in this package
@@ -161,46 +160,31 @@ func (s *stateWorld) handleInput(input string) error {
 	tokens := strings.Split(input, " ")
 	commandText := strings.ToLower(tokens[0])
 
-	if commandText[0] == '@' {
-		command, ok := adminCommands[commandText]
-		if !ok {
-			echo := rgbterm.String("Huh?", 255, 100, 100, 0, 0, 0)
-			s.conn.writelnString(echo)
-			s.conn.writePrompt()
-			return nil
-		}
-
-		characterID := CharacterIDFromContext(s.conn.ctx)
-		err := command(characterID, s.conn.sim, tokens[1:])
-		if err != nil {
-			echo := rgbterm.String(err.Error(), 255, 100, 100, 0, 0, 0)
-			s.conn.writelnString(echo)
-			s.conn.writePrompt()
-			return nil
-		}
-	} else {
-		command, ok := worldCommands[commandText]
-		if !ok {
-			echo := rgbterm.String("Huh?", 255, 100, 100, 0, 0, 0)
-			s.conn.writelnString(echo)
-			s.conn.writePrompt()
-			return nil
-		}
-
-		characterID := CharacterIDFromContext(s.conn.ctx)
-		err := command(characterID, s.conn.sim, tokens[1:])
-		if err != nil {
-			echo := rgbterm.String(err.Error(), 255, 100, 100, 0, 0, 0)
-			s.conn.writelnString(echo)
-			s.conn.writePrompt()
-			return nil
-		}
-	}
-
 	// TODO: I dont like this - need to fix it
 	if commandText == "quit" {
 		s.conn.close()
 		return errors.New("closed")
+	}
+
+	if commandText[0] == '@' {
+		// TODO: check admin
+	}
+
+	command, ok := commands[commandText]
+	if !ok {
+		echo := rgbterm.String("Huh?", 255, 100, 100, 0, 0, 0)
+		s.conn.writelnString(echo)
+		s.conn.writePrompt()
+		return nil
+	}
+
+	characterID := CharacterIDFromContext(s.conn.ctx)
+	err := command(characterID, s.conn.sim, tokens[1:])
+	if err != nil {
+		echo := rgbterm.String(err.Error(), 255, 100, 100, 0, 0, 0)
+		s.conn.writelnString(echo)
+		s.conn.writePrompt()
+		return nil
 	}
 
 	return nil

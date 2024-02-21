@@ -7,7 +7,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
-	"github.com/soupstore/coda/config"
+	"github.com/soupstoregames/coda-mud/config"
 )
 
 type FileSystem struct {

@@ -1,8 +1,8 @@
 package simulation
 
 import (
-	"github.com/soupstore/coda/simulation/model"
-	"github.com/soupstore/go-core/logging"
+	"github.com/soupstoregames/coda-mud/simulation/model"
+	"github.com/soupstoregames/go-core/logging"
 )
 
 func (s *Simulation) QueueCommand(id model.CharacterID, command interface{}) error {
@@ -20,6 +20,9 @@ func (s *Simulation) QueueCommand(id model.CharacterID, command interface{}) err
 // It sends a room description to the waking character.
 // It sends a character waking event to the other characters in the room.
 func (s *Simulation) WakeUpCharacter(id model.CharacterID) (characterEvents <-chan interface{}, err error) {
+	s.characterLock.Lock()
+	defer s.characterLock.Unlock()
+
 	actor, ok := s.characters[id]
 	if !ok {
 		return nil, ErrCharacterNotFound
@@ -54,6 +57,9 @@ func (s *Simulation) WakeUpCharacter(id model.CharacterID) (characterEvents <-ch
 // SleepCharacter sets a character to sleeping.
 // It sends a character sleeping event to all other characters in the room.
 func (s *Simulation) SleepCharacter(id model.CharacterID) error {
+	s.characterLock.Lock()
+	defer s.characterLock.Unlock()
+
 	actor, err := s.findAwakeCharacter(id)
 	if err != nil {
 		return err

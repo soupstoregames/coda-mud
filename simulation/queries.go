@@ -1,7 +1,7 @@
 package simulation
 
 import (
-	"github.com/soupstore/coda/simulation/model"
+	"github.com/soupstoregames/coda-mud/simulation/model"
 )
 
 func (s *Simulation) FindItemInRoom(id model.CharacterID, alias string) (*model.Item, error) {

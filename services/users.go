@@ -2,8 +2,8 @@ package services
 
 import (
 	"errors"
-	"github.com/soupstore/coda/simulation/data/state"
-	"github.com/soupstore/coda/simulation/model"
+	"github.com/soupstoregames/coda-mud/simulation/data/state"
+	"github.com/soupstoregames/coda-mud/simulation/model"
 	"golang.org/x/crypto/bcrypt"
 )
 

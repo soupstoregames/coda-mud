@@ -1,7 +1,7 @@
 package simulation
 
 import (
-	"github.com/soupstore/coda/simulation/model"
+	"github.com/soupstoregames/coda-mud/simulation/model"
 )
 
 func (s *Simulation) say(actor *model.Character, c model.CommandSay) {
@@ -49,7 +49,7 @@ func (s *Simulation) move(actor *model.Character, c model.CommandMove) {
 	newRoom.AddCharacter(actor)
 	actor.Dispatch(model.EvtRoomDescription{Room: actor.Room})
 
-	// actor.Room.OnEnter(actor)
+	actor.Room.OnEnter(actor)
 }
 
 func (s *Simulation) takeItem(actor *model.Character, c model.CommandTake) {

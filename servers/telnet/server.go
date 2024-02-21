@@ -2,25 +2,39 @@ package telnet
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"net"
 
-	"github.com/satori/go.uuid"
-	"github.com/soupstore/coda/config"
-	"github.com/soupstore/coda/services"
-	"github.com/soupstore/coda/simulation"
-	"github.com/soupstore/go-core/logging"
+	"github.com/soupstoregames/coda-mud/config"
+	"github.com/soupstoregames/coda-mud/services"
+	"github.com/soupstoregames/coda-mud/simulation"
+	"github.com/soupstoregames/go-core/logging"
 )
 
 const (
 	charNULL byte = 0
 	charLF        = 10
 	charCR        = 13
+	charNAWS      = 31
+	charSE        = 240
+	charSB        = 250
 	charWILL      = 251
-	charDO        = 252
-	charWONT      = 253
+	charWONT      = 252
+	charDO        = 253
 	charDONT      = 254
 	charIAC       = 255
 )
+
+var byteToIAC = map[byte]string{
+	charNAWS: "NAWS",
+	charSE:   "SE",
+	charSB:   "SB",
+	charWILL: "WILL",
+	charWONT: "WONT",
+	charDO:   "DO",
+	charDONT: "DONT",
+	charIAC:  "IAC",
+}
 
 // Server listens for incoming telnet connections
 type Server struct {
@@ -70,7 +84,7 @@ func (server *Server) serve(listener net.Listener) error {
 }
 
 func (server *Server) handle(tcpConn net.Conn) {
-	connectionID := uuid.NewV4().String()
+	connectionID := uuid.NewString()
 
 	c := newTelnetConnection(tcpConn, server.Config, server.sim, server.usersManager)
 	c.ctx = WithConnectionID(c.ctx, connectionID)
@@ -79,9 +93,9 @@ func (server *Server) handle(tcpConn net.Conn) {
 
 	logging.Info(fmt.Sprintf("New connection from %q.", tcpConn.RemoteAddr()))
 
-	if err := c.listen(); err != nil {
-		logger.Error(err.Error())
-	}
+	c.conn.Write([]byte{charIAC, charDO, charNAWS})
+
+	c.listen()
 
 	logger.Info(fmt.Sprintf("Connection closed from %q.", tcpConn.RemoteAddr()))
 }

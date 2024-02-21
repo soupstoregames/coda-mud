@@ -5,13 +5,13 @@ import (
 	"log"
 	"time"
 
-	"github.com/soupstore/coda/config"
-	"github.com/soupstore/coda/servers/telnet"
-	"github.com/soupstore/coda/services"
-	"github.com/soupstore/coda/simulation"
-	"github.com/soupstore/coda/simulation/data/state"
-	"github.com/soupstore/coda/simulation/data/static"
-	"github.com/soupstore/go-core/logging"
+	"github.com/soupstoregames/coda-mud/config"
+	"github.com/soupstoregames/coda-mud/servers/telnet"
+	"github.com/soupstoregames/coda-mud/services"
+	"github.com/soupstoregames/coda-mud/simulation"
+	"github.com/soupstoregames/coda-mud/simulation/data/state"
+	"github.com/soupstoregames/coda-mud/simulation/data/static"
+	"github.com/soupstoregames/go-core/logging"
 )
 
 func main() {

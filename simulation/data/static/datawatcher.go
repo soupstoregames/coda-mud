@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/nicklanng/fsdiff"
-	"github.com/soupstore/coda/simulation"
-	"github.com/soupstore/coda/simulation/model"
-	"github.com/soupstore/go-core/logging"
+	"github.com/soupstoregames/coda-mud/simulation"
+	"github.com/soupstoregames/coda-mud/simulation/model"
+	"github.com/soupstoregames/go-core/logging"
 )
 
 const roomExtension = ".toml"

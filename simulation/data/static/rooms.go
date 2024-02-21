@@ -100,7 +100,7 @@ func loadWorldFolder(folder string) (map[int]*Room, error) {
 	return rooms, nil
 }
 
-// getroomID extracts the room ID from the file name
+// getRoomID extracts the room ID from the file name
 // rooms are named "X Name.toml" where X is the room ID
 func getRoomID(filename string) (int, error) {
 	roomIDString := strings.SplitN(filename, " ", 2)[0]

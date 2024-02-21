@@ -1,7 +1,7 @@
 package simulation
 
 import (
-	"github.com/soupstore/coda/simulation/model"
+	"github.com/soupstoregames/coda-mud/simulation/model"
 )
 
 // WorldController is an interface over Simulation for modifying the world itself
