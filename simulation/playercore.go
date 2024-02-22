@@ -38,13 +38,15 @@ func (s *Simulation) WakeUpCharacter(id model.CharacterID) (characterEvents <-ch
 
 	// send character wakes up
 	wakeUpEvent := model.EvtCharacterWakesUp{Character: actor}
-	for _, c := range actor.Room.Characters {
-		// ignore the character that woke up
-		if c == actor {
-			continue
-		}
+	if !actor.Room.Alone {
+		for _, c := range actor.Room.Characters {
+			// ignore the character that woke up
+			if c == actor {
+				continue
+			}
 
-		c.Dispatch(wakeUpEvent)
+			c.Dispatch(wakeUpEvent)
+		}
 	}
 
 	actor.Room.OnWake(actor)
@@ -69,8 +71,10 @@ func (s *Simulation) SleepCharacter(id model.CharacterID) error {
 
 	// send character sleeps
 	sleepEvent := model.EvtCharacterFallsAsleep{Character: actor}
-	for _, c := range actor.Room.Characters {
-		c.Dispatch(sleepEvent)
+	if !actor.Room.Alone {
+		for _, c := range actor.Room.Characters {
+			c.Dispatch(sleepEvent)
+		}
 	}
 
 	actor.Room.OnExit(actor)

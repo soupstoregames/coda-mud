@@ -6,7 +6,7 @@ import (
 
 // WorldController is an interface over Simulation for modifying the world itself
 type WorldController interface {
-	CreateWorld(worldID model.WorldID) error
+	CreateWorld(worldID model.WorldID, instance bool, alone bool) error
 	DestroyWorld(worldID model.WorldID)
 	CreateRoom(worldID model.WorldID, roomID model.RoomID, name, region, description, script string) (*model.Room, error)
 	GetRoom(worldID model.WorldID, roomID model.RoomID) (*model.Room, error)
@@ -18,9 +18,9 @@ type WorldController interface {
 
 // CreateWorld creates a new world in the simulation.
 // Every world must have a unique WorldID, which is a type aliased sting.
-func (s *Simulation) CreateWorld(worldID model.WorldID) error {
+func (s *Simulation) CreateWorld(worldID model.WorldID, instancable bool, alone bool) error {
 	// TODO: check for uniqueness
-	s.worlds[worldID] = model.NewWorld(worldID)
+	s.worlds[worldID] = model.NewWorld(worldID, instancable, false, alone)
 	return nil
 }
 
@@ -39,7 +39,7 @@ func (s *Simulation) CreateRoom(worldID model.WorldID, roomID model.RoomID, name
 
 	// TODO: Check that room with ID does not already exist
 
-	room := model.NewRoom(roomID, worldID, name, region, description, script)
+	room := model.NewRoom(roomID, worldID, name, region, description, script, world.Alone)
 	world.Rooms[roomID] = room
 
 	container := room.Container

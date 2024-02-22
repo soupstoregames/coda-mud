@@ -73,6 +73,7 @@ func (u *UsersManager) AssociateCharacter(username string, characterID model.Cha
 }
 
 func (u *UsersManager) Save(p state.Persister) error {
+	// TODO: Save only things that need saving
 	for _, u := range u.users {
 		p.QueueUser(state.User{
 			Username:    u.username,

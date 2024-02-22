@@ -247,9 +247,8 @@ func (c *connection) writeString(str ...string) {
 	}
 }
 
-func (c *connection) writelnString(str ...string) {
-	s := strings.Join(str, " ")
-	_, err := c.conn.Write([]byte(s))
+func (c *connection) writelnString(str string) {
+	_, err := c.conn.Write([]byte(str))
 	if err != nil {
 		logging.Error(err.Error())
 	}

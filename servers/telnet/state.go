@@ -27,14 +27,15 @@ type stateLogin struct {
 
 // onEnter is called when the scene is first loaded
 func (s *stateLogin) onEnter() error {
-	s.conn.writelnString(
-		`                    .___ ` + "\r\n" +
-			`    _____  __ __  __| _/ ` + "\r\n" +
-			`   /     \|  |  \/ __ |  ` + "\r\n" +
-			`  |  Y Y  \  |  / /_/ |  ` + "\r\n" +
-			`  |__|_|  /____/\____ |  ` + "\r\n" +
-			`        \/           \/  `)
-	s.conn.writelnString()
+	s.conn.writelnString(`
+                    .___
+    _____  __ __  __| _/
+   /     \|  |  \/ __ |
+  |  Y Y  \  |  / /_/ |
+  |__|_|  /____/\____ |
+        \/           \/
+`)
+	s.conn.writeln()
 	s.conn.writelnString("Type 'connect <username> <password>' to log in.")
 	s.conn.writelnString("Type 'register <username> <password>' to create a new account.")
 

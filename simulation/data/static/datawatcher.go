@@ -205,7 +205,17 @@ func (dw *DataWatcher) applyWorldDiffs(diff *fsdiff.Diff) {
 }
 
 func (dw *DataWatcher) addWorldToSim(worldID model.WorldID, rooms map[int]*Room) {
-	dw.sim.CreateWorld(worldID)
+	var (
+		instancable bool
+		alone       bool
+	)
+	if worldID[0] == '!' {
+		instancable = true
+	}
+	if worldID[0] == '@' {
+		alone = true
+	}
+	dw.sim.CreateWorld(worldID, instancable, alone)
 
 	// load rooms
 	for roomID, room := range rooms {
@@ -253,6 +263,7 @@ func (dw *DataWatcher) updateRoomInSim(worldID model.WorldID, roomID model.RoomI
 	r.Name = room.Name
 	r.Description = room.Description
 	r.Exits = make(map[model.Direction]*model.Exit)
+	r.UpdateScript(room.Script)
 
 	// load room exits
 	for direction, exit := range room.Exits {

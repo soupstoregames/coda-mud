@@ -59,7 +59,7 @@ var commands = map[string]Command{
 	"i":         CmdInventory,
 }
 
-// CmdAdminSpawn allows admins to spawn in items into the world.
+// CmdAdminSpawn allows admins to @spawn in items into the world.
 func CmdAdminSpawn(characterID model.CharacterID, sim *simulation.Simulation, args []string) error {
 	switch args[0] {
 	case "item":
@@ -119,7 +119,7 @@ func CmdRegister(conn *connection, args []string) error {
 	if conn.usersManager.IsUsernameTaken(username) {
 		conn.writelnString("That username is taken.")
 		conn.writelnString("If this is your account type 'connect " + username + " <password>'.")
-		conn.writelnString()
+		conn.writeln()
 		conn.writePrompt()
 		return nil
 	}

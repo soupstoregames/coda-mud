@@ -57,16 +57,8 @@ func main() {
 	// load the saved state
 	loadState(stateData, usersManager, sim)
 
-	// set the spawn room
-	sim.SetSpawnRoom("spawn", 1)
-
-	// room, err := sim.GetRoom("arrival-city", 1)
-	// if err != nil {
-	// 	logging.Fatal(err.Error())
-	// }
-	// usersManager.Register("rinse", "bums")
-	// id := sim.MakeCharacter("Rinse")
-	// usersManager.AssociateCharacter("rinse", id)
+	// set the @spawn room
+	sim.SetSpawnRoom("@spawn", 1)
 
 	// set up save timing for simulation state
 	startSaveSimulationTicker(usersManager, sim, stateData)

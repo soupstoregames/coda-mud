@@ -17,9 +17,13 @@ type Room struct {
 	Container   Container
 	Characters  []*Character
 	Exits       map[Direction]*Exit
+
+	Alone bool
+
+	Lua *lua.LState
 }
 
-func NewRoom(roomID RoomID, worldID WorldID, name, region, description, script string) (r *Room) {
+func NewRoom(roomID RoomID, worldID WorldID, name, region, description, script string, alone bool) (r *Room) {
 	r = &Room{
 		ID:          roomID,
 		WorldID:     worldID,
@@ -39,12 +43,26 @@ func NewRoom(roomID RoomID, worldID WorldID, name, region, description, script s
 		},
 		Container: NewRoomContainer(),
 
+		Alone: alone,
+
 		scriptedObject: scriptedObject{
 			script: script,
 		},
 	}
 
+	if script != "" {
+		r.Lua = r.createScriptRuntime(ScriptContext{r})
+	}
+
 	return
+}
+
+func (r *Room) UpdateScript(script string) {
+	if r.Lua != nil {
+		r.Lua.Close()
+	}
+	r.script = script
+	r.Lua = r.createScriptRuntime(ScriptContext{r})
 }
 
 func (r *Room) AddCharacter(c *Character) {
@@ -76,21 +94,21 @@ func (r *Room) Dispatch(event interface{}) {
 }
 
 func (r *Room) OnEnter(c *Character) {
-	L := r.createScriptRuntime(ScriptContext{r})
-	defer L.Close()
-	callFunction(L, "onEnter", lua.LString(c.ID))
+	if r.Lua != nil {
+		callFunction(r.Lua, "onEnter", lua.LString(c.ID))
+	}
 }
 
 func (r *Room) OnWake(c *Character) {
-	L := r.createScriptRuntime(ScriptContext{r})
-	defer L.Close()
-	callFunction(L, "onWake", lua.LString(c.ID))
+	if r.Lua != nil {
+		callFunction(r.Lua, "onWake", lua.LString(c.ID))
+	}
 }
 
 func (r *Room) OnExit(c *Character) {
-	L := r.createScriptRuntime(ScriptContext{r})
-	defer L.Close()
-	callFunction(L, "onExit", lua.LString(c.ID))
+	if r.Lua != nil {
+		callFunction(r.Lua, "onExit", lua.LString(c.ID))
+	}
 }
 
 func (r *Room) getAwakeCharacters() []*Character {

@@ -17,6 +17,8 @@ type StateController interface {
 
 // Save copies the game state into the persister and tells it to persist.
 func (s *Simulation) Save(p state.Persister) error {
+	// TODO: Save only things that need saving
+
 	start := time.Now()
 
 	for i := range s.characters {
@@ -57,7 +59,7 @@ func (s *Simulation) Load(characters []state.Character, worlds []state.World) er
 			character.Rig.Backpack = item
 		}
 
-		// spawn in character's items
+		// @spawn in character's items
 		for _, i := range ch.Items {
 			definition, ok := s.itemDefinitions[model.ItemDefinitionID(i.ItemDefinition)]
 			if !ok {

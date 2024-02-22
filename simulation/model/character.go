@@ -20,7 +20,7 @@ type Character struct {
 }
 
 // NewCharacter is a helper function for creating a new character in the simulation.
-// It requires the character's name and the room to spawn the character in.
+// It requires the character's name and the room to @spawn the character in.
 func NewCharacter(name string, room *Room) *Character {
 	return &Character{
 		ID:        CharacterID(uuid.New().String()),
