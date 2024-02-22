@@ -12,28 +12,33 @@ import (
 )
 
 const (
-	charNULL byte = 0
-	charLF        = 10
-	charCR        = 13
-	charNAWS      = 31
-	charSE        = 240
-	charSB        = 250
-	charWILL      = 251
-	charWONT      = 252
-	charDO        = 253
-	charDONT      = 254
-	charIAC       = 255
+	charNULL     byte = 0
+	charECHO          = 1
+	charSGA           = 3
+	charLF            = 10
+	charCR            = 13
+	charESC           = 27
+	charNAWS          = 31
+	charLINEMODE      = 34
+	charSE            = 240
+	charSB            = 250
+	charWILL          = 251
+	charWONT          = 252
+	charDO            = 253
+	charDONT          = 254
+	charIAC           = 255
 )
 
 var byteToIAC = map[byte]string{
-	charNAWS: "NAWS",
-	charSE:   "SE",
-	charSB:   "SB",
-	charWILL: "WILL",
-	charWONT: "WONT",
-	charDO:   "DO",
-	charDONT: "DONT",
-	charIAC:  "IAC",
+	charNAWS:     "NAWS",
+	charLINEMODE: "LINEMODE",
+	charSE:       "SE",
+	charSB:       "SB",
+	charWILL:     "WILL",
+	charWONT:     "WONT",
+	charDO:       "DO",
+	charDONT:     "DONT",
+	charIAC:      "IAC",
 }
 
 // Server listens for incoming telnet connections
@@ -93,6 +98,9 @@ func (server *Server) handle(tcpConn net.Conn) {
 
 	logging.Info(fmt.Sprintf("New connection from %q.", tcpConn.RemoteAddr()))
 
+	c.conn.Write([]byte{charIAC, charWILL, charECHO})
+	c.conn.Write([]byte{charIAC, charWILL, charSGA})
+	c.conn.Write([]byte{charIAC, charWONT, charLINEMODE})
 	c.conn.Write([]byte{charIAC, charDO, charNAWS})
 
 	c.listen()

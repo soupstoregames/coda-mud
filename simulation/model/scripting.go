@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/soupstoregames/go-core/logging"
@@ -55,8 +54,6 @@ func (ctx *ScriptContext) Sleep(L *lua.LState) int {
 func (ctx *ScriptContext) Narrate(L *lua.LState) int {
 	characterID := L.ToString(1)
 	text := L.ToString(2)
-
-	fmt.Println(characterID)
 
 	for _, ch := range ctx.Room.getAwakeCharacters() {
 		if ch.ID != CharacterID(characterID) {

@@ -5,15 +5,14 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
-	"io"
-	"net"
-	"strings"
-	"time"
-
 	"github.com/soupstoregames/coda-mud/config"
 	"github.com/soupstoregames/coda-mud/services"
 	"github.com/soupstoregames/coda-mud/simulation"
 	"github.com/soupstoregames/go-core/logging"
+	"io"
+	"net"
+	"strings"
+	"time"
 )
 
 // connection is a telnet connection to the MUD
@@ -86,11 +85,6 @@ func (c *connection) close() {
 }
 
 func (c *connection) handleInput() error {
-	// empty input so do nothing
-	if c.input.Len() == 0 {
-		return nil
-	}
-
 	var input []byte
 	for {
 		b, err := c.input.ReadByte()
@@ -101,6 +95,13 @@ func (c *connection) handleInput() error {
 			input = append(input, b)
 		}
 	}
+
+	if len(input) == 0 {
+		c.input.Reset()
+		return nil
+	}
+
+	c.writeln()
 
 	// let the state handle the input
 	if err := c.state.handleInput(string(input)); err != nil {
@@ -126,8 +127,12 @@ func (c *connection) listen() {
 
 		// NUL CR and LF are all valid terminators according to telnet spec, I think
 		switch buffer[0] {
+		case 1:
+		case 3:
 		case charIAC:
 			c.handleIAC()
+		case charESC:
+
 		case charNULL:
 			fallthrough
 		case charCR:
@@ -139,7 +144,15 @@ func (c *connection) listen() {
 				return
 			}
 		default:
-			c.input.Write(p)
+			if p[0] == 127 {
+				if c.input.Len() > 0 {
+					c.write([]byte{8, 32, 8})
+					c.input.Truncate(c.input.Len() - 1)
+				}
+			} else {
+				c.input.Write(p)
+				c.write(p)
+			}
 		}
 	}
 }
@@ -263,7 +276,7 @@ func (c *connection) writePrompt() {
 	if err != nil {
 		logging.Error(err.Error())
 	}
-	_, err = c.conn.Write([]byte("> "))
+	_, err = c.conn.Write([]byte("> " + c.input.String()))
 	if err != nil {
 		logging.Error(err.Error())
 	}
@@ -303,7 +316,7 @@ func (c *connection) handleIAC() {
 			}
 		}
 
-		// handle SB
+		// handle NAWS
 		if iac[2] == charNAWS {
 			if len(iac) != 9 {
 				return // invalid NAWS SB length

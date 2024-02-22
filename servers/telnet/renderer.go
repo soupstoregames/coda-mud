@@ -128,9 +128,9 @@ func renderRoomDescription(c *connection, characterID model.CharacterID, room *m
 		if len(awakeCharacters) > 0 {
 			names, plural := renderList(awakeCharacters)
 			if plural {
-				c.writelnString(fmt.Sprintf("%s are here", names))
+				c.writelnString(fmt.Sprintf("%s are here.", names))
 			} else {
-				c.writelnString(fmt.Sprintf("%s is here", names))
+				c.writelnString(fmt.Sprintf("%s is here.", names))
 			}
 		}
 
@@ -138,9 +138,9 @@ func renderRoomDescription(c *connection, characterID model.CharacterID, room *m
 		if len(asleepCharacters) > 0 {
 			names, plural := renderList(asleepCharacters)
 			if plural {
-				c.writelnString(fmt.Sprintf("%s are sleeping", names))
+				c.writelnString(fmt.Sprintf("%s are sleeping.", names))
 			} else {
-				c.writelnString(fmt.Sprintf("%s is sleeping", names))
+				c.writelnString(fmt.Sprintf("%s is sleeping.", names))
 			}
 		}
 	}
