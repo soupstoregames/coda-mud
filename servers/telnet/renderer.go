@@ -75,7 +75,7 @@ func renderEvents(c *connection, events <-chan interface{}) error {
 		default:
 			fmt.Println("unknown event type")
 		}
-		c.writePrompt()
+		c.state.Peek().writePrompt()
 	}
 
 	return nil
@@ -190,7 +190,7 @@ func renderCharacterSpeaks(c *connection, evt model.EvtCharacterSpeaks) {
 
 	if evt.Character.ID == characterID {
 		c.writelnString(fmt.Sprintf("You say: %q.", evt.Content))
-		c.writePrompt()
+		c.state.Peek().writePrompt()
 	} else {
 		c.writelnString(fmt.Sprintf("%s says: %q.", renderCharacter(evt.Character), evt.Content))
 	}

@@ -6,5 +6,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="coda-data" />
+    <orderEntry type="module" module-name="gamelib" />
   </component>
 </module>

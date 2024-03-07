@@ -17,11 +17,16 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/sirupsen/logrus v1.9.0 h1:trlNQbNUG3OdDrDil03MCb1H2o9nJ1x4/5LYw7byDE0=
 github.com/sirupsen/logrus v1.9.0/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
+github.com/soupstoregames/gamelib v0.0.0-20230726121525-1c9f0495adc8 h1:eZ0HZ/yds1bv1pP1Vs7AIQrvYiQBeB7yD93ddFECgi0=
+github.com/soupstoregames/gamelib v0.0.0-20230726121525-1c9f0495adc8/go.mod h1:id8VrMtef1M7muB9OlqkcIBnLmI/td6i1hFFapjf2ms=
+github.com/soupstoregames/gamelib v1.0.0 h1:9lzUjiyzEvOXVdoshlR0TTxks0m4ouYOejm5lWw5bF0=
+github.com/soupstoregames/gamelib v1.0.0/go.mod h1:id8VrMtef1M7muB9OlqkcIBnLmI/td6i1hFFapjf2ms=
 github.com/soupstoregames/go-core v0.0.0-20221010190337-a35636b94d5c h1:5RxHh2KFPn4I6NMEsQMWkTpyAMKUC2FiiknG35CrBkA=
 github.com/soupstoregames/go-core v0.0.0-20221010190337-a35636b94d5c/go.mod h1:2N4bqf6HIMEDMa409Ae9dAUYS/KeHPMcR8gdVEF2ugg=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
+github.com/stretchr/testify v1.8.0 h1:pSgiaMZlXftHpm5L7V1+rVB+AZJydKsMxsQBIJw4PKk=
 github.com/yuin/gopher-lua v1.1.1 h1:kYKnWBjvbNP4XLT3+bPEwAXJx262OhaHDWDVOPjL46M=
 github.com/yuin/gopher-lua v1.1.1/go.mod h1:GBR0iDaNXjAgGg9zfCvksxSRnQx76gclCIb7kdAd1Pw=
 golang.org/x/crypto v0.19.0 h1:ENy+Az/9Y1vSrlrvBSyna3PITt4tiZLf7sgCjZBX7Wo=

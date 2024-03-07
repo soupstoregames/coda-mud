@@ -1,8 +1,6 @@
 package telnet
 
 import (
-	"errors"
-	"github.com/soupstoregames/go-core/logging"
 	"strconv"
 	"strings"
 
@@ -10,18 +8,18 @@ import (
 	"github.com/soupstoregames/coda-mud/simulation/model"
 )
 
-// LoginCommand is a function alias for commands to be used in the login state.
-type LoginCommand func(conn *connection, args []string) error
-
-var loginCommands = map[string]LoginCommand{
-	"connect":  CmdConnect,
-	"register": CmdRegister,
-}
+//// LoginCommand is a function alias for commands to be used in the login state.
+//type LoginCommand func(conn *connection, args []string) error
+//
+//var loginCommands = map[string]LoginCommand{
+//	"connect":  CmdConnect,
+//	"register": CmdRegister,
+//}
 
 // Command is a function alias for commands in the game state.
 type Command func(characterID model.CharacterID, sim *simulation.Simulation, args []string) error
 
-// all of the commands available to be used in the world state.
+// all the commands available to be used in the world state.
 var commands = map[string]Command{
 	"@spawn":    CmdAdminSpawn,
 	"look":      CmdLook,
@@ -73,69 +71,69 @@ func CmdAdminSpawn(characterID model.CharacterID, sim *simulation.Simulation, ar
 	return nil
 }
 
-// CmdConnect is the command used to login to the MUD.
-func CmdConnect(conn *connection, args []string) error {
-	if len(args) != 2 {
-		return errors.New("incorrect number of arguments")
-	}
+//// CmdConnect is the command used to login to the MUD.
+//func CmdConnect(conn *connection, args []string) error {
+//	if len(args) != 2 {
+//		return errors.New("incorrect number of arguments")
+//	}
+//
+//	username := args[0]
+//	password := args[1]
+//
+//	characterID, ok := conn.usersManager.Login(username, password)
+//	if !ok {
+//		return errors.New("invalid login")
+//	}
+//
+//	if characterID == ("") {
+//		conn.loadState(&stateCharacterCreation{
+//			conn:     conn,
+//			config:   conn.config,
+//			username: username,
+//		}, true)
+//
+//		return nil
+//	}
+//
+//	conn.ctx = WithCharacterID(conn.ctx, characterID)
+//
+//	conn.loadState(&stateWorld{
+//		conn:   conn,
+//		config: conn.config,
+//	}, true)
+//
+//	return nil
+//}
 
-	username := args[0]
-	password := args[1]
-
-	characterID, ok := conn.usersManager.Login(username, password)
-	if !ok {
-		return errors.New("invalid login")
-	}
-
-	if characterID == ("") {
-		conn.loadState(&stateCharacterCreation{
-			conn:     conn,
-			config:   conn.config,
-			username: username,
-		})
-
-		return nil
-	}
-
-	conn.ctx = WithCharacterID(conn.ctx, characterID)
-
-	conn.loadState(&stateWorld{
-		conn:   conn,
-		config: conn.config,
-	})
-
-	return nil
-}
-
-// CmdRegister is used to register a new user.
-func CmdRegister(conn *connection, args []string) error {
-	if len(args) != 2 {
-		return errors.New("incorrect number of arguments")
-	}
-
-	username := args[0]
-	password := args[1]
-
-	if conn.usersManager.IsUsernameTaken(username) {
-		conn.writelnString("That username is taken.")
-		conn.writelnString("If this is your account type 'connect " + username + " <password>'.")
-		conn.writeln()
-		conn.writePrompt()
-		return nil
-	}
-
-	if err := conn.usersManager.Register(username, password); err != nil {
-		logging.Error(err.Error())
-	}
-
-	conn.loadState(&stateCharacterCreation{
-		conn:     conn,
-		config:   conn.config,
-		username: username,
-	})
-
-	return nil
-}
+//// CmdRegister is used to register a new user.
+//func CmdRegister(conn *connection, args []string) error {
+//	if len(args) != 2 {
+//		return errors.New("incorrect number of arguments")
+//	}
+//
+//	username := args[0]
+//	password := args[1]
+//
+//	if conn.usersManager.IsUsernameTaken(username) {
+//		conn.writelnString("That username is taken.")
+//		conn.writelnString("If this is your account type 'connect " + username + " <password>'.")
+//		conn.writeln()
+//		conn.writePrompt()
+//		return nil
+//	}
+//
+//	if err := conn.usersManager.Register(username, password); err != nil {
+//		logging.Error(err.Error())
+//	}
+//
+//	conn.loadState(&stateCharacterCreation{
+//		conn:     conn,
+//		config:   conn.config,
+//		username: username,
+//	}, true)
+//
+//	return nil
+//}
 
 // all of the commands available to be used in the world state.
 
@@ -154,7 +152,7 @@ func CmdQuit(characterID model.CharacterID, cc *simulation.Simulation, args []st
 	return cc.SleepCharacter(characterID)
 }
 
-// CmdSay makes the character speak to all other charactes in the same room.
+// CmdSay makes the character speak to all other characters in the same room.
 func CmdSay(characterID model.CharacterID, cc *simulation.Simulation, args []string) error {
 	return cc.QueueCommand(characterID, model.CommandSay{
 		Content: strings.Join(args, " "),

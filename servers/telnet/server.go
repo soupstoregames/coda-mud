@@ -20,6 +20,7 @@ const (
 	charESC           = 27
 	charNAWS          = 31
 	charLINEMODE      = 34
+	charDELETE        = 127
 	charSE            = 240
 	charSB            = 250
 	charWILL          = 251

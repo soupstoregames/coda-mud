@@ -3,5 +3,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../coda-data" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../gamelib" vcs="Git" />
   </component>
 </project>

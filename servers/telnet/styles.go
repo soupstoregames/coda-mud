@@ -54,7 +54,8 @@ func wrap(maxLength int, s string) string {
 			wordLen := buf.Len() - countANSIEscapeCodes(buf.Bytes())
 
 			if wordLen+currentWidth > maxLength-1 {
-				sb.WriteRune('\n')
+				sb.WriteByte(charCR)
+				sb.WriteByte(charLF)
 				currentWidth = 0
 			}
 
@@ -66,7 +67,7 @@ func wrap(maxLength int, s string) string {
 				sb.WriteRune(c)
 				currentWidth++
 			}
-			if c == '\n' || c == '\r' {
+			if c == charCR || c == charLF {
 				sb.WriteRune(c)
 				currentWidth = 0
 			}

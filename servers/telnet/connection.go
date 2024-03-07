@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"github.com/soupstoregames/coda-mud/config"
 	"github.com/soupstoregames/coda-mud/services"
 	"github.com/soupstoregames/coda-mud/simulation"
+	"github.com/soupstoregames/gamelib/data"
 	"github.com/soupstoregames/go-core/logging"
-	"io"
 	"net"
 	"strings"
 	"time"
@@ -21,10 +22,9 @@ type connection struct {
 	sim          *simulation.Simulation
 	usersManager *services.UsersManager
 
-	input         bytes.Buffer
 	conn          net.Conn
 	ctx           context.Context
-	state         state
+	state         data.Stack[state]
 	closed        bool
 	stopHeartbeat chan struct{}
 
@@ -45,13 +45,13 @@ func newTelnetConnection(c net.Conn, conf *config.Config, sim *simulation.Simula
 	conn.createHeartbeat(time.Minute)
 
 	// create a login state and initiate it with the connection
-	conn.state = &stateLogin{
+	conn.state.Push(&stateMainMenu{
 		conn:   conn,
 		config: conf,
-	}
+	})
 
 	// run the tasks at the start of the login state
-	if err := conn.state.onEnter(); err != nil {
+	if err := conn.state.Peek().onEnter(); err != nil {
 		logging.Error(err.Error())
 	}
 
@@ -77,40 +77,12 @@ func (c *connection) close() {
 		logging.Error(err.Error())
 	}
 
-	// // run the clean up tasks on the current state and then clear it
-	if err := c.state.onExit(); err != nil {
-		logging.Error(err.Error())
-	}
-	c.state = nil
-}
-
-func (c *connection) handleInput() error {
-	var input []byte
-	for {
-		b, err := c.input.ReadByte()
-		if err == io.EOF {
-			break
-		} else {
-			// add this character to the cleansed buffer
-			input = append(input, b)
+	// // run the clean up tasks on the current states and then clear them
+	for i := c.state.Len() - 1; i >= 0; i-- {
+		if err := c.state.Pop().onExit(); err != nil {
+			logging.Error(err.Error())
 		}
 	}
-
-	if len(input) == 0 {
-		c.input.Reset()
-		return nil
-	}
-
-	c.writeln()
-
-	// let the state handle the input
-	if err := c.state.handleInput(string(input)); err != nil {
-		return err
-	}
-
-	// clear the input buffer
-	c.input.Reset()
-	return nil
 }
 
 // listen is a for loop that reads bytes from the telnet connection
@@ -132,26 +104,12 @@ func (c *connection) listen() {
 		case charIAC:
 			c.handleIAC()
 		case charESC:
-
-		case charNULL:
-			fallthrough
-		case charCR:
-			fallthrough
-		case charLF:
-			err := c.handleInput()
+			// do nothing
+		default:
+			err := c.state.Peek().handleInput(p[0])
 			if err != nil {
 				c.close()
 				return
-			}
-		default:
-			if p[0] == 127 {
-				if c.input.Len() > 0 {
-					c.write([]byte{8, 32, 8})
-					c.input.Truncate(c.input.Len() - 1)
-				}
-			} else {
-				c.input.Write(p)
-				c.write(p)
 			}
 		}
 	}
@@ -178,7 +136,8 @@ func (c *connection) readByte(p []byte) (done bool) {
 			c.close()
 			return true
 		default:
-			neterr, ok := err.(net.Error)
+			var neterr net.Error
+			ok := errors.As(err, &neterr)
 			if ok && neterr.Timeout() {
 				logging.Debug("Connection timed out")
 				c.close()
@@ -195,14 +154,6 @@ func (c *connection) readByte(p []byte) (done bool) {
 		}
 	}
 	return false
-}
-
-// used to load a new state for the connection
-// takes care of calling the onExit and onEnter of the states
-func (c *connection) loadState(s state) {
-	c.state.onExit()
-	c.state = s
-	c.state.onEnter()
 }
 
 // sets up a timer to send a telnet NOOP to the client, in an attempt to keep tcp connections alive
@@ -228,6 +179,7 @@ func (c *connection) createHeartbeat(d time.Duration) {
 // these are a bunch of write methods, pretty boring
 
 func (c *connection) write(b []byte) {
+	b = bytes.ReplaceAll(b, []byte{charLF}, []byte{charCR, charLF})
 	_, err := c.conn.Write(b)
 	if err != nil {
 		logging.Error(err.Error())
@@ -266,17 +218,6 @@ func (c *connection) writelnString(str string) {
 		logging.Error(err.Error())
 	}
 	_, err = c.conn.Write([]byte{charLF, charCR})
-	if err != nil {
-		logging.Error(err.Error())
-	}
-}
-
-func (c *connection) writePrompt() {
-	_, err := c.conn.Write([]byte{charLF, charCR})
-	if err != nil {
-		logging.Error(err.Error())
-	}
-	_, err = c.conn.Write([]byte("> " + c.input.String()))
 	if err != nil {
 		logging.Error(err.Error())
 	}
@@ -325,6 +266,7 @@ func (c *connection) handleIAC() {
 			width := binary.BigEndian.Uint16(iac[3:5])
 			height := binary.BigEndian.Uint16(iac[5:7])
 
+			fmt.Println(width, height)
 			c.width = int(width)
 			c.height = int(height)
 		}
